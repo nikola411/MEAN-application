@@ -1,0 +1,28 @@
+
+<div class="new">
+  
+    <form (submit)="addGarden()">
+        <mat-form-field appearance="fill"  class = "top">
+            <mat-label>Naziv</mat-label>
+            <input matInput class="input-field" name="plants" [formControl]="nameForm" type="place">
+          </mat-form-field>
+          <br>
+          
+        <mat-form-field appearance="fill">
+            <mat-label >Mesto rasadnika</mat-label>
+            <input matInput class="input-field" name="place" [formControl]="placeForm" type="place">
+          </mat-form-field>
+          <br>
+          <mat-form-field appearance="fill">
+            <mat-label >Visina</mat-label>
+            <input matInput class="input-field" name="plants" [formControl]="plantsForm" type="place">
+          </mat-form-field>
+          <br>
+          <mat-form-field appearance="fill"  class = "bottom">
+            <mat-label >Sirina</mat-label>
+            <input matInput class="input-field" name="plants" [formControl]="freeForm" type="place">
+          </mat-form-field>
+          <br>
+          <button type="submit" value="">Dodaj</button>
+    </form>
+</div>

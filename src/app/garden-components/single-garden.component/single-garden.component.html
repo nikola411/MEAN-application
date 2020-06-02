@@ -1,0 +1,16 @@
+<div  class= "garden" >
+    <table>
+    <tbody>
+      <tr class = "plantCol" *ngFor="let row of gardenInView">
+      
+        <th  class = "plant" *ngFor="let col of row" (mouseover) = "hoverPlant(col)">
+        {{col.state}} 
+       
+        </th>
+    
+      </tr>
+
+      </tbody>       
+    </table>
+
+  </div>

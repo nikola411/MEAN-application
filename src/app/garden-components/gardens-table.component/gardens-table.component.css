@@ -1,0 +1,54 @@
+.myTable { 
+    margin : auto;
+    width : inherit;
+    height : 80vh;
+    overflow-y : scroll;
+    overflow-x : hidden;
+    position: relative;
+
+}
+
+.mat-table{
+    margin : auto;
+    
+    width : inherit;
+}
+
+.ng-container{
+    text-align : center;
+    margin : auto;
+}
+
+th.mat-header-cell {
+    text-align: center;
+  }
+
+
+.card { 
+    height : 2vh;
+    width : 2vh;
+    margin : auto;
+    display : inline-block;
+
+}
+
+
+.gardenTable {
+    width : inherit;
+    height : inherit;
+}
+
+
+
+.deleteBttn {
+    background-color:rgba(1,1,1,0.1);
+}
+
+.deleteIcon{
+    color : white;
+}
+.router-outlet{
+    width : 100vw;
+    height : inherit;
+}
+

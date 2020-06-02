@@ -1,0 +1,40 @@
+
+div {
+    width : 80vw;
+    height : 20vh;
+}
+
+menu {
+    width : inherit;
+    height : inherit;
+}
+button.mat-menu-item:hover {
+    background-color: rgb(168, 168, 168);
+}
+
+
+.inner {
+    width : 15%;
+    background-color : rgba(29, 86, 104, 0.438);
+    display:inline-block;
+   text-align : center;
+   
+  }
+  
+  .left {
+    width : 15%;
+    background-color : rgba(29, 86, 104, 0.438);
+    display:inline-block;
+   text-align : center;
+   border-bottom-left-radius: 10px;
+      border-top-left-radius: 10px;;
+  }
+  .right{
+    width : 15%;
+    background-color : rgba(29, 86, 104, 0.438);
+    display:inline-block;
+   text-align : center;
+   border-bottom-right-radius: 10px;
+   border-top-right-radius: 10px;
+  
+  }

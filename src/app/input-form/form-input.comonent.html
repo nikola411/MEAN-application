@@ -1,0 +1,30 @@
+<form (submit) = "onSubmit()" *ngIf = " notLoggedIn">
+<div class="form">
+  <div class="email">
+    <mat-form-field appearance="fill">
+      <mat-label>Username</mat-label>
+      <input matInput id="input" class="input-field" name="input" [formControl]="input" placeholder="mail@mail.com">
+      <div *ngIf="input.invalid && input.dirty ">
+
+      </div>
+    </mat-form-field>
+  </div>
+  <br>
+  <div class="pass">
+
+    <mat-form-field appearance="fill">
+      <mat-label>Password</mat-label>
+      <input matInput class="input-field" name="password" [formControl]="password" type="password">
+      <div *ngIf="password.invalid">
+        <p>Invalid password</p>
+      </div>
+    </mat-form-field>
+  </div>
+  <br>
+  <button type="submit">submit</button>
+  <div *ngIf=" loginCredBad">
+    <h2>Neuspesno logovanje</h2>
+  </div>
+
+</div>
+</form>

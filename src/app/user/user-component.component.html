@@ -1,0 +1,82 @@
+<div class= "body">
+
+    <user-menu></user-menu>
+    <garden-form *ngIf = "showGardenForm"></garden-form>
+    <div *ngIf="showGardens" class = "myTable">
+        <table mat-table [dataSource]="gardens" class="mat">
+
+            <!--- Note that these columns can be defined in any order.
+                  The actual rendered columns are set as a property on the row definition" -->
+          
+            <!-- Position Column -->
+            <ng-container matColumnDef="ime">
+              <th mat-header-cell *matHeaderCellDef> Ime </th>
+              <td mat-cell *matCellDef="let element" (dblclick) = "tableClicked(element)"> {{element.name}} </td>
+            </ng-container>
+          
+            <!-- Name Column -->
+            <ng-container matColumnDef="mesto">
+              <th mat-header-cell *matHeaderCellDef> Mesto </th>
+              <td mat-cell *matCellDef="let element" (dblclick) = "tableClicked(element)"> {{element.place}} </td>
+            </ng-container>
+          
+            <!-- Weight Column -->
+            <ng-container matColumnDef="broj biljaka">
+              <th mat-header-cell *matHeaderCellDef> Broj biljaka </th>
+              <td mat-cell *matCellDef="let element" (dblclick) = "tableClicked(element)"> {{element.plants}} </td>
+            </ng-container>
+          
+            <!-- Symbol Column -->
+            <ng-container matColumnDef="voda">
+              <th mat-header-cell *matHeaderCellDef> Voda </th>
+              <td mat-cell *matCellDef="let element" (dblclick) = "tableClicked(element)"> {{element.water}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="izbrisi">
+              <th mat-header-cell *matHeaderCellDef> Izbrisi </th>
+              <td mat-cell *matCellDef="let element" >
+                <button class = "deleteBttn" (dblclick) = "deleteGarden(element)">
+                  <mat-icon class = "deleteIcon" aria-hidden="false" aria-label="Example home icon">delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+          
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+
+            
+       
+    </div>
+
+    <div *ngIf = "showOneGarden" class= "garden" >
+      <table>
+      <tbody>
+        <tr class = "plantCol" *ngFor="let row of gardenInView">
+        
+          <th  class = "plant" *ngFor="let col of row" (mouseover) = "hoverPlant(col)">
+          {{col.state}} 
+         
+          </th>
+      
+       
+        </tr>
+
+        </tbody>       
+      </table>
+      
+
+     
+      
+    </div>
+
+
+            
+    
+
+
+    
+
+    
+    
+</div>

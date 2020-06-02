@@ -1,0 +1,87 @@
+<form class="form" (submit)="register()">
+  <div class="choose-form">
+    <input type="radio" id="firm" name="choose" (change)="onChange($event)">
+    <label for="firm">Firma</label>
+    <input type="radio" id="worker" name="choose" (change)="onChange($event)" checked>
+    <label for="worker">Poljoprivrednik</label>
+  </div>
+  <br>
+  
+    <div class="first">
+      <mat-form-field appearance="fill">
+        <mat-label *ngIf="userType">Ime</mat-label>
+        <mat-label *ngIf="!userType">Ime firme</mat-label>
+        <input matInput class="input-field" name="firstName" [formControl]="name" [placeholder]='userType ? "Ime" : "Ime firme"'>
+      </mat-form-field>
+    </div>
+    <br *ngIf="userType">
+    <div class="last" *ngIf ="userType">
+      <mat-form-field appearance="fill" >
+        <mat-label>Prezime</mat-label>
+        <input matInput class="input-field" name="lastName" [formControl]="surrname" placeholder="Prezime">
+      </mat-form-field>
+    </div>
+    <br>
+    <div class="username">
+      <mat-form-field appearance="fill">
+        <mat-label *ngIf="userType">Korisnicko ime</mat-label>
+        <mat-label *ngIf="!userType">Jedinstveno ime firme</mat-label>
+        <input matInput class="input-field" name="username" [formControl]="username" [placeholder]="userType ? 'Korisnicko ime' : 'Jedinstveno ime'">
+
+      </mat-form-field>
+    </div>
+    <br>
+    <div class="email">
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input matInput class="input-field" name="mail" [formControl]="mail" type="email" placeholder="mail@mail.com">
+
+      </mat-form-field>
+    </div>
+    <br>
+    <div class="pass">
+      <mat-form-field appearance="fill">
+        <mat-label>Lozinka</mat-label>
+        <input matInput class="input-field" name="password" [formControl]="password" type="password">
+
+      </mat-form-field>
+    </div>
+    <br>
+    <div class="repeat">
+      <mat-form-field appearance="fill">
+        <mat-label>Ponovi lozinku</mat-label>
+        <input matInput class="input-field" name="repeat" [formControl]="repeat" type="password">
+
+      </mat-form-field>
+    </div>
+    <br *ngIf="userType">
+    <div class="number" *ngIf="userType">
+      <mat-form-field appearance="fill">
+        <mat-label>Broj telefona</mat-label>
+        <input matInput class="input-field" name="number" [formControl]="number" type="tel">
+
+      </mat-form-field>
+
+    </div>
+    <br>
+    <div class="date">
+      <mat-form-field appearance="fill">
+        <mat-label *ngIf="userType">Datum rodjenja</mat-label>
+        <mat-label *ngIf="!userType">Datum osnivanja firme</mat-label>
+        <input matInput class="input-field" name="date" [formControl]="date" type="date">
+
+      </mat-form-field>
+    </div>
+    <br>
+    <div class="place" *ngIf="!userType">
+      <mat-form-field appearance="fill">
+        <mat-label >Mesto osnivanja firme</mat-label>
+        <input matInput class="input-field" name="place" [formControl]="place" type="place">
+
+      </mat-form-field>
+    </div>
+  <!--<label class="mistake">{{mistakeLabel}}</label>-->
+ 
+  <button type="submit">submit</button>
+
+</form>

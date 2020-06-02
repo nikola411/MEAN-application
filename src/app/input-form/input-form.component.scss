@@ -1,0 +1,56 @@
+div{
+    height : 1.5cm;
+}
+.mat-label {
+    color:black;
+}
+
+::ng-deep .mat-form-field {
+    
+    height:1.8cm;
+    background-color:rgba(116, 116, 116, 0.5);
+    
+    ::placeholder{
+        color:grey;
+    }
+    .mat-input-element {
+        color: rgb(58, 58, 58);
+        
+    }
+    .mat-form-field-label {
+        color: rgb(65, 65, 65);
+        
+    }
+    .mat-form-field-underline {
+        background-color:rgba(1,1,1,0);
+    }
+    .mat-form-field-ripple {
+        background-color:rgba(1,1,1,0);
+        
+    }
+    .mat-form-field-required-marker {
+        background-color:rgba(1,1,1,0);
+        
+    }
+    
+}
+
+::ng-deep .mat-form-field.mat-focused {
+    .mat-form-field-label {
+        color: rgb(255, 117, 47);
+    }
+    .mat-form-field-ripple {
+        background-color: #ff884d;
+    }
+    .mat-form-field-required-marker {
+        color: #ff884d;
+    }
+    .mat-input-element {
+        color: #ff884d;
+    }
+}
+
+
+
+
+

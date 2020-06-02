@@ -1,0 +1,23 @@
+.plant {
+    width : 10vh;
+    height : 10vh;
+    background-color : rgb(46, 46, 46);
+    margin : auto;
+    padding : 12vh;
+    
+}
+
+.plantCol {
+    width : 120vh;
+    height : 10vh;
+    overflow : scroll;
+
+}
+
+.garden {
+   
+    height : 80vh;
+    overflow-x : scroll;
+    overflow-y : scroll;
+    background-color : rgb(105, 105, 105);
+}
