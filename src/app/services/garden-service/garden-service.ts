@@ -21,7 +21,8 @@ export class GardenService{
     }
 
     getGardenForDisplaying(obj){
-       
+        console.log("saljem objekat dalje");
+       return this.subject.next(obj);
     }
     
 

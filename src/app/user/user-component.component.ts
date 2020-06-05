@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpService } from '../services/http-service/http-service';
 import { ButtonService } from '../services/logged-service/logged-service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { UserMenu } from '../menu/user-menu/user-menu.component';
@@ -44,7 +44,11 @@ export class UserComponent {
 
 
 
-  constructor(private http: HttpService, private router: Router, private buttonService: ButtonService, private dialog: MatDialog) {
+  constructor(private http: HttpService,
+     private router: Router,
+      private buttonService: ButtonService,
+       private dialog: MatDialog,
+       private route : ActivatedRoute) {
     http.getUserData().subscribe(result => {
       //ovde hvatamo niz rasadnika cije podatke stampamo
 
@@ -52,6 +56,9 @@ export class UserComponent {
 
     buttonService.onEvent().subscribe(result => {
       if (result == "garden") {
+
+        //this.router.navigate(['garden'], {relativeTo : this.route});
+        
         this.showGardenForm = true;
         this.showGardens = false;
         this.showOneGarden = false;
@@ -75,36 +82,7 @@ export class UserComponent {
   }
 
 
-  initColumns() {
-    let i, j = 0;
-    for (i in this.gardenInView) {
-      this.columnsToDisplay[j] = "{{j}}";
-    }
-  }
-
-  tableClicked(obj) {
-    console.log(obj);
-    this.http.showMyGarden(obj).subscribe(result => {
-      var dummy1 = Object.values(result);
-      var dummy2 = Object.values(dummy1[0]);
-
-
-
-
-      this.gardenInView = dummy2[4];
-      this.showGardenForm = false;
-      this.showGardens = false;
-      this.showOneGarden = true;
-      this.initColumns();
-
-
-    });
-  }
-
-  hoverPlant(obj) {
-
-    console.log(obj);
-  }
+ 
 
   openDialog(): Observable<string> {
 

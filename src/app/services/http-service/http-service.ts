@@ -15,6 +15,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class HttpService {
     constructor ( private http:HttpClient, private router : Router, private route:ActivatedRoute){};
+
+    currUser : string = '';
     
     loginRoute = "/api/login";
     logoutRoute = "/api/logout";
@@ -25,6 +27,8 @@ export class HttpService {
     showGardenRoute = "/api/user/showgarden";
     removeGardenRoute = "/api/user/delete/garden";
 
+    plantInGardenRoute = "/api/user/garden/plant";
+
 
     isLogged() : Observable<any> {
         
@@ -33,11 +37,21 @@ export class HttpService {
     // Method retrieve all the posts
     login (user:string, pass:string):Observable<any> {
 
+ 
        let name = {user:user, pass : pass};
        return  this.http.post<any>(this.loginRoute, name);
     }
 
+    setUser(str : string) {
+        this.currUser = str;
+    }
+
+    getUser() : string {
+        return this.currUser;
+    }
+
     logout():Observable<any>{
+        this.currUser = '';
         return this.http.put<any>(this.logoutRoute, null);
     }
 
@@ -64,6 +78,10 @@ export class HttpService {
 
     removeGarden(obj):Observable<any>{
         return this.http.post(this.removeGardenRoute, obj);
+    }
+
+    plant(obj):Observable<any>{
+        return this.http.post(this.plantInGardenRoute, obj);
     }
    
 

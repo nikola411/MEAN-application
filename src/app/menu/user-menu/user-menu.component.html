@@ -1,11 +1,14 @@
 <div>
 
 <menu class="userMenu" > 
-    <button mat-menu-item class = "left" (click)= "showGardens()">Rasadnici</button>
-    <button mat-menu-item class = "inner" (click) = "addGarden()">Dodaj rasadnik</button>
+    <button mat-menu-item class = "left" (click) = "back()">
+        <mat-icon class = "deleteIcon" aria-hidden="false" aria-label="Example home icon">undo</mat-icon>
+    </button>
+    <button mat-menu-item class = "inner" (click)= "showGardens()">Rasadnici</button>
+    <button mat-menu-item class = "inner" (click) = "addGarden()">Dodaj rasadnik </button>
     <button mat-menu-item class = "inner">Prodavnica</button>
     <button mat-menu-item class = "inner">Magacin</button>
-    <button mat-menu-item class = "inner" (click) = "back()">Nazad</button>
+   
     <button mat-menu-item class = "right" (click)="logout()">
         Izloguj se
     </button>

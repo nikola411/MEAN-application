@@ -24,9 +24,11 @@ export class AppComponent {
   adminLogged : boolean = false;
   userLogged : boolean = false;
   showUser = false;
-  constructor(private router: Router, private serverService: HttpService, private buttonService: ButtonService) {
+  constructor(private router: Router, private serverService: HttpService, private buttonService: ButtonService,
+    private route : ActivatedRoute) {
 
     this.buttonService.onEvent().subscribe(result => {
+      
       if (result) {
         this.loggedIn = true;
       } else {
@@ -37,7 +39,10 @@ export class AppComponent {
     this.serverService.isLogged().subscribe(result => {
       let newRoute = result.route;
 
-      if (newRoute == "/login") {
+      console.log(newRoute);
+
+      if (newRoute == "login" || newRoute == "register") {
+        
         this.loggedIn = false;
         this.userLogged = false;
         this.adminLogged = false;
@@ -59,7 +64,7 @@ export class AppComponent {
   clickLogin() {
     this.LoginClicked = true;
     this.RegClicked = false;
-    this.router.navigate(['login']);
+    this.router.navigate(['login'], {relativeTo : this.route});
   }
 
   bodyClicked() {
@@ -78,6 +83,8 @@ export class AppComponent {
     console.log("big reveal");
     this.showUser = true;
   }
+
+
 
  
 

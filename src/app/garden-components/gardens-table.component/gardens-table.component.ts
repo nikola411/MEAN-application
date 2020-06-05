@@ -5,6 +5,7 @@ import { ButtonService } from '../../services/logged-service/logged-service';
 import { Observable } from 'rxjs';
 import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
 import { DeleteDialog } from 'src/app/dialogs/delete-dialog/delete-garden-dialog';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({
@@ -15,38 +16,30 @@ import { DeleteDialog } from 'src/app/dialogs/delete-dialog/delete-garden-dialog
 })
 
 
-export class GardenTable implements OnInit {
+export class GardenTable  {
 
     gardens: Object[];
-    show : boolean = false;
+    show: boolean = false;
 
     constructor(private http: HttpService,
-         private gardenService: GardenService,
-          private buttonService: ButtonService,
-          private dialog : MatDialog) {
+        private router: Router,
+        private route: ActivatedRoute,
+        private gardenService: GardenService,
+        private buttonService: ButtonService,
+        private dialog: MatDialog) {
 
-            this.gardenService.onEvent().subscribe(result => {
-                console.log("loging");
-                console.log(result);
-                if (result == "show-gardens") {
-                    this.show = true;
-                }
-                
-            })
-            if(this.show)
-            {this.http.showGardens().subscribe(res => {
-                console.log("basta koju smo dobili");
-                console.log(res);
-                this.gardens = Object.values(res.garden);
-            })}
-       
-    }
+        this.buttonService.onEvent().subscribe(result => {
+            if (result) {
 
-    ngOnInit(){
+                this.gardens = Object.values(result.garden);
+            }
 
-     
+
+        })
+
 
     }
+
 
     displayedColumns: string[] = ['ime', 'mesto', 'broj biljaka', 'voda', 'izbrisi'];
 
@@ -54,20 +47,13 @@ export class GardenTable implements OnInit {
 
 
     tableClicked(obj) {
-        console.log(obj);
+
         this.http.showMyGarden(obj).subscribe(result => {
-            var dummy1 = Object.values(result);
-            var dummy2 = Object.values(dummy1[0]);
 
-            this.gardenService.onEvent()
-            this.gardenInView = dummy2[4];
-
-            this.gardenService.getGardenForDisplaying(this.gardenInView);
-
-
-
-
-        });
+            this.gardenService.getGardenForDisplaying(result);
+        }
+        )
+        this.router.navigate(['user/garden/show/single']);
     }
 
     openDialog(): Observable<string> {

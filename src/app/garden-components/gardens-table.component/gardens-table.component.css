@@ -1,16 +1,15 @@
 .myTable { 
     margin : auto;
-    width : inherit;
-    height : 80vh;
-    overflow-y : scroll;
+    width : 80vw;
+    height : 70vh;
+    
     overflow-x : hidden;
     position: relative;
-
+    border-radius : 20px;
 }
 
 .mat-table{
     margin : auto;
-    
     width : inherit;
 }
 
@@ -46,6 +45,7 @@ th.mat-header-cell {
 
 .deleteIcon{
     color : white;
+    
 }
 .router-outlet{
     width : 100vw;

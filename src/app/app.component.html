@@ -1,54 +1,25 @@
+<body>
+  <h1 *ngIf="!loggedIn">Dobrodosli</h1>
+  <mat-menu #appMenu="matMenu">
+    <button mat-menu-item (click)="clickLogin()" *ngIf="!loggedIn">Uloguj se</button>
+    <button mat-menu-item (click)="regClick()" *ngIf="!loggedIn">Registruj se</button>
+    <button mat-menu-item (click)="bodyClicked()">Nazad</button>
 
-<body >
+  </mat-menu>
+  <button mat-icon-button [matMenuTriggerFor]="appMenu" class="logreg" *ngIf="!loggedIn">
+    Prijava
+  </button>
 
-  <h1>Dobrodosli</h1>
-  <div class = "home">
-    
-    <mat-menu #appMenu="matMenu" >
-      <button mat-menu-item (click) = "clickLogin()"  *ngIf = "!loggedIn">Uloguj se</button>
-      <button mat-menu-item (click) = "regClick()" *ngIf = "!loggedIn">Registruj se</button>
-      <button mat-menu-item (click) = "bodyClicked()">Nazad</button>
-      
-    </mat-menu>
-
-    <button mat-icon-button [matMenuTriggerFor]="appMenu" class = "logreg" *ngIf = "!loggedIn">
-      Prijava
-    </button>
-    
-
-
-    
-   
-    
-   
-
-    <br>
-    <div class = "mainform">
-    <div class = "form" >
-      <a routerLink="login" routerLinkActive = "active" >
-      </a>
-      
-    </div>
-    <div class = "form" >
-      <a routerLink = "register" routerLinkActive = "active"></a>
-    </div>
-    <div class = "page">
-      <a routerLink = "admin" routerLinkActive = "active"></a>
-    </div>
-    <router-outlet #routerOutlet="outlet" ></router-outlet>
-    
-      <h1 *ngIf="showUser">Uspesno logovanje</h1>
-      <h2></h2>
-
-      <router-outlet name = "userOut"></router-outlet>
-     </div>
-    
-  </div>
-  
-
-
-  <div class = "footer">
-    <h1>Footer</h1>
+  <user-menu *ngIf="loggedIn"></user-menu>
+  <div class="outlet">
+    <router-outlet></router-outlet>
   </div>
 
 </body>
+
+<footer>
+  <div class="footer">
+    <h1>Footer</h1>
+  </div>
+
+</footer>

@@ -6,6 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ButtonService } from '../../services/logged-service/logged-service';
 import { GardenForm } from '../../garden-form/garden-form.component';
 import {Location} from '@angular/common';
+import { MatGridTileHeaderCssMatStyler } from '@angular/material/grid-list';
 
 
 @Component({
@@ -18,7 +19,11 @@ export class UserMenu {
 
     
 
-  constructor(private http: HttpService, private router: Router, private buttonService: ButtonService, private location: Location) {
+  constructor(private http: HttpService,
+     private router: Router, 
+     private buttonService: ButtonService,
+     private route : ActivatedRoute, 
+     private location: Location) {
 
   }
 
@@ -30,8 +35,8 @@ export class UserMenu {
   }
 
   addGarden() {
-    console.log("dodajem bastu");
-    //this.router.navigate(["garden-reg"]);
+    
+    this.router.navigate(['user/garden/registration'], {relativeTo : this.route});
     this.buttonService.registerGarden();
   }
 
@@ -44,6 +49,7 @@ export class UserMenu {
       this.buttonService.showGardens(result);
 
     });
+    this.router.navigate(['user/garden/show/all'], {relativeTo : this.route});
   }
 
 
