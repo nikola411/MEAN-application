@@ -16,6 +16,8 @@ const SESS_SECRET = 'ssh!quiet,it\'sasecret';
 const url = 'mongodb://127.0.0.1:27017';
 const myDB = 'myDB';
 
+let loggedIn = false;
+
 
 let currId = 1;
 let db;
@@ -53,30 +55,30 @@ app.listen(3000, (req, res) => {
 })
 
 const checkLogin = (req, res, next) => {
-    if (req.session.userId) {
+    if (req.session.userId && loggedIn) {
         res.send({ route: "/user" });
         console.log("logged in");
         next();
 
     } else {
         res.send("/login");
-        
+
     }
 }
 
 const checkRegister = (req, res, next) => {
 
-    console.log(check(['password']).isLowercase().isLength({min:5}).matches(/\d/));
+    console.log(check(['password']).isLowercase().isLength({ min: 5 }).matches(/\d/));
     check('username').not().contains("@");
     check('password').not().isEmpty();
-    
-    
-    
+
+
+
     const errors = validationResult(req);
     console.log(errors);
-    
-    if(!errors.isEmpty()){
-       
+
+    if (!errors.isEmpty()) {
+
         return res.status(422).json({ errors: errors.array() });
     } else {
         console.log("registrujemo");
@@ -89,6 +91,7 @@ MongoClient.connect(url, { useUnifiedTopology: true }, (err, client) => {
     if (err) console.log(err);
 
     db = client.db(myDB);
+    collection = db.collection("users");
     console.log(`Connected to db : ${url}`);
     console.log(`Database : ${db}`);
 
@@ -96,14 +99,13 @@ MongoClient.connect(url, { useUnifiedTopology: true }, (err, client) => {
 })
 app.get('/api/boot', (req, res) => {
 
-    
-
-    if (req.session.userId) {
+    //change for admin
+    if (req.session.userId && loggedIn) {
         console.log('Logged in');
-        res.send({ route: "/user" });
+        res.send({ route: "user" });
     } else {
         console.log('Not logged in');
-        res.send({ route: "/login" });
+        res.send({ route: "login" });
     }
 
 
@@ -123,42 +125,45 @@ app.put('/api/register', [
         })
     }),
     check('password', 'password not strong enough').matches('^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,32}$')*/
-  ],  (req, res) => {
-    
+], (req, res) => {
+
     const errors = validationResult(req);
-    
+
 
     let ret;
-    if(!errors.isEmpty()){
+    if (!errors.isEmpty()) {
         console.log(errors);
-        res.send({status : errors});
+        res.send({ status: errors });
     } else {
-        
+
         db.collection('users').insertOne(req.body);
-       
-        res.send({status : "registered"});
+
+        res.send({ status: "registered" });
 
     }
-    
+
 })
 
 app.put("/api/logout", (req, res) => {
     req.session.destroy();
-    res.send({route : '/login'});
+    loggedIn = false;
+    res.send({ route: '/login' });
 })
 
 app.post('/api/login', (req, res) => {
 
     let password = req.body.pass;
     let user = req.body.user;
-    
-    
+
+
     db.collection('users').find({ username: req.body.user, password: req.body.pass }).toArray().then(results => {
         for (i in results) {
             if (results[i].password == password) {
                 req.session.userId = currId++;
                 req.session.user = req.body.user;
+                loggedIn = true;
 
+                //console.log(results[i].garden[0].garden);
                 res.send({ route: "/user" });
                 return;
             }
@@ -173,23 +178,23 @@ app.post('/api/login', (req, res) => {
 
 });
 
-app.get('/api/user',   (req,res)=>{
+app.get('/api/user', (req, res) => {
     let user = req.session.user;
-    db.collection("users").findOne({username : user}).then(result =>{
-        
-            console.log(result);
-            res.send(result);
-            //es.send(result.garden);
-        
+    db.collection("users").findOne({ username: user }).then(result => {
+
+        console.log(result);
+        res.send(result);
+        //es.send(result.garden);
+
     })
 
 })
 
-app.put('/api/user/addgarden', checkLogin, (req,res)=>{
+app.put('/api/user/addgarden', checkLogin, (req, res) => {
     let user = req.session.user;
 
-    let newGarden =  req.body;
-    let oldData ;
+    let newGarden = req.body;
+    let oldData;
 
     let height = parseInt(req.body.height);
     let width = parseInt(req.body.width);
@@ -197,58 +202,134 @@ app.put('/api/user/addgarden', checkLogin, (req,res)=>{
 
     req.body.garden = new Array(height);
 
-    for(var i= 0;i<height; i++){
+    for (var i = 0; i < height; i++) {
         req.body.garden[i] = new Array(width);
-        for(var j = 0; j<width; j++){
-            req.body.garden[i][j] = {state : "x", x : i, y : j};
-            
+        for (var j = 0; j < width; j++) {
+            req.body.garden[i][j] = { state: -1, x: i, y: j, name: "" };
+
         }
     }
+    req.body.water = 70;
+    req.body.temp = 18;
+    req.body.free = width * height;
 
-    db.collection('users').updateOne({ "username" : req.session.user},{
-        $push : {"garden" : req.body}
+    db.collection('users').updateOne({ "username": req.session.user }, {
+        $push: { "garden": req.body }
     });
 
 
-    }
+}
 )
 
-app.post("/api/user/delete/garden", (req,res)=>{
+app.post("/api/user/delete/garden", (req, res) => {
     console.log("deleteig garden");
-    db.collection('users').updateOne({username : req.session.user}, {
-        $pull : {"garden" : {name : req.body.name, "place"  : req.body.place }}
+    db.collection('users').updateOne({ username: req.session.user }, {
+        $pull: { "garden": { name: req.body.name, "place": req.body.place } }
     }).then(result => {
-        
+
     })
-    
-    res.send({status : " "});
+
+    res.send({ status: " " });
 })
 
-app.get("/api/user/gardens",  (req,res)=>{
-    db.collection('users').findOne({username : req.session.user},{projection :{garden : 1, _id : 0}}).then(result =>{
-       
-       //ovako filtriramo rezultat - pogodno za trazenje baste 
-      
-        
+app.get("/api/user/gardens", (req, res) => {
+    db.collection('users').findOne({ username: req.session.user }, { projection: { garden: 1, _id: 0 } }).then(result => {
+
+        //ovako filtriramo rezultat - pogodno za trazenje baste 
+
+
         res.send(result);
     })
 })
 
-app.post("/api/user/showGarden", (req,res)=>{
+app.post("/api/user/showGarden", (req, res) => {
     let user = req.session.user;
     let garden = req.body;
-    
 
-    db.collection('users').findOne({username : user},{projection : {garden : 1}}).then(result=>{
+
+    db.collection('users').findOne({ username: user }, { projection: { garden: 1 } }).then(result => {
         var picked = result['garden'].filter(result => {
 
             return result.name === req.body.name;
-            } 
+        }
         );
 
-        
+
         res.send(picked);
     })
+})
+
+app.post("/api/user/garden/plant", (req, res) => {
+    let user = req.session.user;
+
+    let name = req.body.name;
+    let gardenMat = req.body.garden;
+    let i = parseInt(req.body.x);
+    let j = parseInt(req.body.y);
+    gardenMat[i][j].state = 0;
+
+
+
+    db.collection('users').findOneAndUpdate(
+        {username : user},
+        {$set : {"garden.$[element].garden" : gardenMat}},
+        {arrayFilters : [{"element.name" : {$eq : name}}]}
+    )
+    .then(result => res.send({status : result}));
+
+    
+/*
+    collection.aggregate([
+        { $match: { username: user } },
+        {
+            $project: {
+                _id: 0,
+                garden: {
+                    $filter: {
+                        input: "$garden",
+                        as: "elem",
+                        cond: { $eq: ["$$elem.name", name] }
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                garden: {
+                    $arrayElemAt:
+                        ["$garden", 0]
+
+                }
+            }
+        }, {
+            $project: {
+                garden: {
+                    garden: 1,
+                }
+            }
+        }, {
+            $set : {
+                "garden.garden"  : gardenMat
+            }
+        }
+
+
+
+    ], (err, cursor) => {
+        //console.log(cursor.operation);
+
+        cursor.toArray((err, docs) => {
+            console.log(docs);
+        })
+    }
+
+    )
+
+   
+
+
+*/
+
 })
 
 
