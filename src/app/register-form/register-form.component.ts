@@ -7,6 +7,7 @@ import { Farmer } from '../models/farmer';
 import { Company } from '../models/company';
 import { Router, ActivatedRoute } from '@angular/router';
 import { User } from '../models/user';
+import { PlatformLocation } from '@angular/common';
 
 
 @Component({
@@ -70,7 +71,14 @@ export class RegisterForm {
           date: this.date.value,
           number: this.number.value,
           garden : [],
-          warehouse : []
+          warehouse : [
+            {type : "plant", name : "biljka1", producer : "nepoznati1", quantity : 20},
+            {type : "chemical", name : "prozivod1", producer : "nepoznati1", quantity : 10},
+            {type : "plant", name : "biljka2", producer : "nepoznati2", quantity : 2},
+            {type : "plant", name : "biljka3", producer : "nepoznati3", quantity : 15},
+            {type : "chemical", name : "prozivod2", producer : "nepoznati2", quantity : 2},
+
+          ]
         } as Farmer;
       } else {
           sendUser = {

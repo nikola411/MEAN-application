@@ -1,10 +1,27 @@
 <div  class = "warehouse">
-    <table mat-table [dataSource]="warehouse" class="chemicals">
+    <div class="slider">
+     
+        <mat-button-toggle-group name="show" aria-label="Izaberi:">
+          <mat-button-toggle value="bold" (click)="showWarehouse()" pressed >Magacin</mat-button-toggle>
+          <mat-button-toggle value="bold" (click)="showPending()">Zahtevi</mat-button-toggle>
+        </mat-button-toggle-group>
+       
+     
+    </div>
+    <table *ngIf = "!pending" mat-table [dataSource]="warehouse" class="chemicals">
 
-        <!--- Note that these columns can be defined in any order.
-              The actual rendered columns are set as a property on the row definition" -->
+        <ng-container matColumnDef="tip">
+          <th mat-header-cell *matHeaderCellDef> Tip </th>
+          <td mat-cell *matCellDef="let element" > 
+            <div *ngIf="isPlant(element)">
+              <img src="https://www.iconspng.com/uploads/small-plant/small-plant.png" >
+            </div>
+            <div *ngIf="!isPlant(element)">
+              <img src = "https://www.iconspng.com/uploads/conical-flask-chemistry/conical-flask-chemistry.png">
+            </div>
+          </td>
+        </ng-container>
       
-        <!-- Position Column -->
         <ng-container matColumnDef="ime">
           <th mat-header-cell *matHeaderCellDef> Naziv </th>
           <td mat-cell *matCellDef="let element" > {{element.name}} </td>
@@ -13,13 +30,13 @@
         <!-- Name Column -->
         <ng-container matColumnDef="proizvodjac">
           <th mat-header-cell *matHeaderCellDef> Proizvodjac </th>
-          <td mat-cell *matCellDef="let element" > {{element.place}} </td>
+          <td mat-cell *matCellDef="let element" > {{element.producer}} </td>
         </ng-container>
       
         <!-- Weight Column -->
         <ng-container matColumnDef="kolicina">
           <th mat-header-cell *matHeaderCellDef> Kolicina </th>
-          <td mat-cell *matCellDef="let element"> {{element.free}} </td>
+          <td mat-cell *matCellDef="let element"> {{element.quantity}} </td>
         </ng-container>
 
       
@@ -27,12 +44,21 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
 
-    <table mat-table [dataSource]="pending" class="pending">
+    <table *ngIf = "pending" mat-table [dataSource]="pendingRequests" class="pending">
 
-        <!--- Note that these columns can be defined in any order.
-              The actual rendered columns are set as a property on the row definition" -->
-      
-        <!-- Position Column -->
+    
+        <ng-container matColumnDef="tip">
+          <th mat-header-cell *matHeaderCellDef> Tip </th>
+          <td mat-cell *matCellDef="let element" > 
+            <div *ngIf="isPlant(element)">
+              <img src="https://www.iconspng.com/uploads/small-plant/small-plant.png" >
+            </div>
+            <div *ngIf="!isPlant(element)">
+              <img src = "https://www.iconspng.com/uploads/conical-flask-chemistry/conical-flask-chemistry.png">
+            </div>
+          </td>
+        </ng-container>
+
         <ng-container matColumnDef="ime">
           <th mat-header-cell *matHeaderCellDef> Naziv </th>
           <td mat-cell *matCellDef="let element" > {{element.name}} </td>
@@ -41,13 +67,13 @@
         <!-- Name Column -->
         <ng-container matColumnDef="proizvodjac">
           <th mat-header-cell *matHeaderCellDef> Proizvodjac </th>
-          <td mat-cell *matCellDef="let element" > {{element.place}} </td>
+          <td mat-cell *matCellDef="let element" > {{element.producer}} </td>
         </ng-container>
       
         <!-- Weight Column -->
         <ng-container matColumnDef="kolicina">
           <th mat-header-cell *matHeaderCellDef> Kolicina </th>
-          <td mat-cell *matCellDef="let element"> {{element.free}} </td>
+          <td mat-cell *matCellDef="let element"> {{element.quantity}} </td>
         </ng-container>
       
 

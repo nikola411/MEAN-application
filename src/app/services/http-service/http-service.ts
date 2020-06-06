@@ -35,6 +35,8 @@ export class HttpService {
     raiseTempRoute = "/api/user/garden/raise/temp";
     lowerTempRoute = "/api/user/garden/lower/temp";
 
+    warehouseRoute = "/api/user/warehouse";
+
 
     isLogged(): Observable<any> {
 
@@ -118,6 +120,10 @@ export class HttpService {
 
         return this.http.post(this.lowerTempRoute, {name : gardenName});
 
+    }
+
+    getWarehouse():Observable<any> {
+        return this.http.put(this.warehouseRoute, null);
     }
 
 

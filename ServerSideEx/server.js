@@ -135,7 +135,7 @@ app.put('/api/register', [
         console.log(errors);
         res.send({ status: errors });
     } else {
-
+        req.body.pending = null;
         db.collection('users').insertOne(req.body);
 
         res.send({ status: "registered" });
@@ -205,7 +205,7 @@ app.put('/api/user/addgarden', checkLogin, (req, res) => {
     for (var i = 0; i < height; i++) {
         req.body.garden[i] = new Array(width);
         for (var j = 0; j < width; j++) {
-            req.body.garden[i][j] = { state: -1, x: i, y: j, name: "" };
+            req.body.garden[i][j] = { state: -1, x: i, y: j, name: "", producer : "" };
 
         }
     }
@@ -274,6 +274,8 @@ app.post("/api/user/garden/plant", (req, res) => {
     let name = req.body.name;
     let i = parseInt(req.body.x);
     let j = parseInt(req.body.y);
+    let producer = req.body.producer;
+    let plantName = req.body.plantName;
 
 
     db.collection('users').findOneAndUpdate(
@@ -282,16 +284,19 @@ app.post("/api/user/garden/plant", (req, res) => {
             $inc: {
                 "garden.$[element].garden.$[i].$[j].state": 1,
                 "garden.$[element].free": -1,
+                "warehouse.$[elem].quantity" : -1
+            },
+            $set :{
+                "garden.$[element].garden.$[i].$[j].name" : plantName,
+                "garden.$[element].garden.$[i].$[j].producer" :producer,
             }
         },
         {
-            arrayFilters: [
-                { "elem.name": { $eq: name } }
-
-            ],
+           
             arrayFilters: [
                 { "element.name": { $eq: name } },
-                { "i.x": { $eq: i } }, { "j.y": { $eq: j } }
+                { "i.x": { $eq: i } }, { "j.y": { $eq: j } },
+                { "elem.name": { $eq: plantName }, "elem.producer" : {$eq : producer} }
             ],
             returnOriginal: false
         },
@@ -428,6 +433,23 @@ app.post("/api/user/garden/lower/temp", (req, res) => {
         res.send(Object.values(filt[0]));
     })
 
+})
+
+app.put("/api/user/warehouse", (req,res)=>{
+    let user = req.session.user;
+
+    db.collection("users").findOneAndUpdate(
+        {username : user},
+        
+        {$pull : {warehouse :{quantity : {$eq :0}} }},
+        
+        {returnOriginal : false}
+        )
+    .then(result =>{
+        console.log(result.value.warehouse);
+        //sending warehouse obj[]
+        res.send({pending : null, warehouse : result.value.warehouse});
+    })
 })
 
 

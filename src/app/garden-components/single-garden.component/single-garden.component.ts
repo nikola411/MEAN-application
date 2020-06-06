@@ -6,6 +6,7 @@ import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
 import { GardenService } from '../../services/garden-service/garden-service';
 import { DeleteDialog } from 'src/app/dialogs/delete-dialog/delete-garden-dialog';
 import { Router } from '@angular/router';
+import { PlantDialog } from 'src/app/dialogs/plant-dialog/plant-dialog.component';
 
 interface myObj {
   hover: boolean;
@@ -27,7 +28,7 @@ export class SingleGarden {
   gardenFreeSpace: number;
   gardenWaterLevel: number;
   gardenTemperature: number;
-  gardenOccSpace : number;
+  gardenOccSpace: number;
 
   garden: Object = null;
 
@@ -38,7 +39,8 @@ export class SingleGarden {
   constructor(private http: HttpService,
     private router: Router,
     private gardenService: GardenService,
-    private dialog: MatDialog) {
+    private dialog: MatDialog,
+  ) {
 
     this.gardenService.onEvent().subscribe(res => {
 
@@ -67,8 +69,8 @@ export class SingleGarden {
 
     });
 
-  
-    
+
+
   }
 
 
@@ -109,8 +111,8 @@ export class SingleGarden {
 
   }
 
-  toTakeOut(obj) : boolean{
-    
+  toTakeOut(obj): boolean {
+
     return obj.state == 100 ? true : false;
   }
 
@@ -128,50 +130,79 @@ export class SingleGarden {
   }
 
   plant(obj) {
-    var req = { name: this.gardenName, x: parseInt(obj.x), y: parseInt(obj.y) };
-    this.hover[req.x][req.y].planted = true;
-    this.http.plant(req).subscribe(result => {
+    var req = { name: this.gardenName, x: parseInt(obj.x), y: parseInt(obj.y), producer: null, plantName : null };
+    this.openDialog().subscribe(result => {
+      console.log("ovo je stiglo");
+      console.log(result);
+    
+      if (result) {
+        console.log(result);
+        req.plantName = JSON.parse(JSON.stringify(result)).name;
+        req.producer = JSON.parse(JSON.stringify(result)).producer;
+        console.log(req);
+        this.http.plant(req).subscribe(result => {
 
-      this.gardenService.getGardenForDisplaying(result);
+          this.gardenService.getGardenForDisplaying(result);
+        })
+      }
+
     })
+
+
   }
 
-  takeOut(obj){
+  takeOut(obj) {
     var req = { name: this.gardenName, x: parseInt(obj.x), y: parseInt(obj.y) };
     this.hover[req.x][req.y].planted = false;
     //this.gardenInView[req.x][req.y].state = -1;
-    this.http.takeOut(req).subscribe(result=>{
+    this.http.takeOut(req).subscribe(result => {
       this.gardenService.getGardenForDisplaying(result);
     })
 
   }
 
-  addWater(){
-  
-    this.http.addWater(this.gardenName).subscribe(result=>{
+  addWater() {
+
+    this.http.addWater(this.gardenName).subscribe(result => {
       this.gardenService.getGardenForDisplaying(result);
     });
 
   }
 
-  removeWater(){
+  removeWater() {
 
-    this.http.removeWater(this.gardenName).subscribe(result=>{
+    this.http.removeWater(this.gardenName).subscribe(result => {
       this.gardenService.getGardenForDisplaying(result);
     });
 
   }
 
-  raiseTemp(){
-    this.http.raiseTemp(this.gardenName).subscribe(result=>{
+  raiseTemp() {
+    this.http.raiseTemp(this.gardenName).subscribe(result => {
       this.gardenService.getGardenForDisplaying(result);
     });
   }
 
-  lowerTemp(){
-    this.http.lowerTemp(this.gardenName).subscribe(result=>{
+  lowerTemp() {
+    this.http.lowerTemp(this.gardenName).subscribe(result => {
       this.gardenService.getGardenForDisplaying(result);
     });
+
+  }
+
+  openDialog(): Observable<string> {
+
+    console.log("opening dialog");
+
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+
+
+    const dialogRef = this.dialog.open(PlantDialog, dialogConfig);
+
+    return dialogRef.afterClosed();
 
   }
 

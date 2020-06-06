@@ -45,13 +45,13 @@
         <th class="plant" *ngFor="let col of row" (mouseenter)="hoverPlant(col)" (mouseleave)="unhoverPlant(col)">
           <div *ngIf="hovering(col)" class="hovering">
             <div *ngIf="!isPlanted(col)" class="empty">
-              <button class="plantButton" (click)="plant(col)">Zasadi</button>
+              <button mat-raised-button class="plantButton" (click)="plant(col)">Zasadi</button>
             </div>
             <div *ngIf="isPlanted(col)" class="plantCell">
               <br>
               <br>
               <label for="progres">Progres: </label>
-              <mat-progress-bar mode="determinate" value="{{col.state}}" name="progres"></mat-progress-bar>
+              <mat-progress-bar thumbLabel mode="determinate" value="{{col.state}}" name="progres"></mat-progress-bar>
               <br>
               <p>Ime: {{col.name}} </p>
 

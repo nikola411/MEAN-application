@@ -9,6 +9,7 @@ import { GardenForm } from './garden-form/garden-form.component';
 import { AuthGuard } from './services/auth-guard/auth-guard-service';
 import { GardenTable } from './garden-components/gardens-table.component/gardens-table.component';
 import { SingleGarden } from './garden-components/single-garden.component/single-garden.component';
+import { Warehouse } from './warehouse/warehouse.component';
 
 
 const routes: Routes = [
@@ -36,6 +37,9 @@ const routes: Routes = [
 
         ]
       },
+      {
+        path : 'warehouse', component : Warehouse
+      }
       //{ path: 'garden-reg', component: GardenForm},
 
 
