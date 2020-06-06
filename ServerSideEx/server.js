@@ -163,7 +163,7 @@ app.post('/api/login', (req, res) => {
                 req.session.user = req.body.user;
                 loggedIn = true;
 
-                //console.log(results[i].garden[0].garden);
+                console.log(results[i]);
                 res.send({ route: "/user" });
                 return;
             }
@@ -223,19 +223,28 @@ app.put('/api/user/addgarden', checkLogin, (req, res) => {
 
 app.post("/api/user/delete/garden", (req, res) => {
     console.log("deleteig garden");
-    db.collection('users').updateOne({ username: req.session.user }, {
-        $pull: { "garden": { name: req.body.name, "place": req.body.place } }
-    }).then(result => {
+    db.collection('users').findOneAndUpdate(
+        { username: req.session.user },
+        {
+            $pull: { "garden": { name: req.body.name, "place": req.body.place } }
+        },
+        {
+            returnOriginal: false
+        }
+    ).then(result => {
 
+        res.send({ garden: result.value.garden });
     })
 
-    res.send({ status: " " });
+
 })
 
 app.get("/api/user/gardens", (req, res) => {
     db.collection('users').findOne({ username: req.session.user }, { projection: { garden: 1, _id: 0 } }).then(result => {
 
-        //ovako filtriramo rezultat - pogodno za trazenje baste 
+        //ovako filtriramo rezultat - pogodno za trazenje baste
+
+        // console.log(result);
 
 
         res.send(result);
@@ -263,72 +272,161 @@ app.post("/api/user/garden/plant", (req, res) => {
     let user = req.session.user;
 
     let name = req.body.name;
-    let gardenMat = req.body.garden;
     let i = parseInt(req.body.x);
     let j = parseInt(req.body.y);
-    gardenMat[i][j].state = 0;
-
 
 
     db.collection('users').findOneAndUpdate(
-        {username : user},
-        {$set : {"garden.$[element].garden" : gardenMat}},
-        {arrayFilters : [{"element.name" : {$eq : name}}]}
-    )
-    .then(result => res.send({status : result}));
-
-    
-/*
-    collection.aggregate([
-        { $match: { username: user } },
+        { username: user },
         {
-            $project: {
-                _id: 0,
-                garden: {
-                    $filter: {
-                        input: "$garden",
-                        as: "elem",
-                        cond: { $eq: ["$$elem.name", name] }
-                    }
-                }
+            $inc: {
+                "garden.$[element].garden.$[i].$[j].state": 1,
+                "garden.$[element].free": -1,
             }
         },
         {
-            $project: {
-                garden: {
-                    $arrayElemAt:
-                        ["$garden", 0]
+            arrayFilters: [
+                { "elem.name": { $eq: name } }
 
-                }
-            }
-        }, {
-            $project: {
-                garden: {
-                    garden: 1,
-                }
-            }
-        }, {
-            $set : {
-                "garden.garden"  : gardenMat
-            }
-        }
-
-
-
-    ], (err, cursor) => {
-        //console.log(cursor.operation);
-
-        cursor.toArray((err, docs) => {
-            console.log(docs);
-        })
-    }
+            ],
+            arrayFilters: [
+                { "element.name": { $eq: name } },
+                { "i.x": { $eq: i } }, { "j.y": { $eq: j } }
+            ],
+            returnOriginal: false
+        },
 
     )
+        .then(result => {
+            filt = result.value.garden.filter(x => x.name == name);
+            res.send(Object.values(filt[0]));
+        });
 
+})
+
+app.post("/api/user/garden/take-out", (req, res) => {
+    let user = req.session.user;
    
+    let name = req.body.name;
+    let i = parseInt(req.body.x);
+    let j = parseInt(req.body.y);
 
 
-*/
+    db.collection('users').findOneAndUpdate(
+        { username: user },
+        {
+            $set: {
+                "garden.$[element].garden.$[i].$[j].state": -1,
+            },
+            $inc: {
+                "garden.$[element].free": 1,
+                
+            }
+        },
+        {
+            arrayFilters: [
+                { "element.name": { $eq: name } },
+                { "i.x": { $eq: i } }, { "j.y": { $eq: j } }
+            ],
+            returnOriginal: false
+        },
+
+    )
+        .then(result => {
+           
+            filt = result.value.garden.filter(x => x.name == name);
+           
+            res.send(Object.values(filt[0]));
+        });
+
+})
+
+app.post("/api/user/garden/add/water", (req, res) => {
+
+    let user = req.session.user;
+    let name = req.body.name;
+    console.log("adding water");
+
+    db.collection("users").findOneAndUpdate(
+        { username: user },
+        { $inc: { "garden.$[element].water": 1 } },
+        {
+            arrayFilters: [
+                { "element.name": { $eq: name } }
+            ],
+            returnOriginal: false
+        }
+    ).then(result => {
+        filt = result.value.garden.filter(x => x.name == name);
+
+        res.send(Object.values(filt[0]));
+    })
+
+})
+
+app.post("/api/user/garden/remove/water", (req, res) => {
+
+    let user = req.session.user;
+    let name = req.body.name;
+
+    db.collection("users").findOneAndUpdate(
+        { username: user },
+        { $inc: { "garden.$[element].water": -1 } },
+        {
+            arrayFilters: [
+                { "element.name": { $eq: name } }
+            ],
+            returnOriginal: false
+        }
+    ).then(result => {
+        filt = result.value.garden.filter(x => x.name == name);
+
+        res.send(Object.values(filt[0]));
+    })
+
+})
+
+app.post("/api/user/garden/raise/temp", (req, res) => {
+
+    let user = req.session.user;
+    let name = req.body.name;
+
+    db.collection("users").findOneAndUpdate(
+        { username: user },
+        { $inc: { "garden.$[element].temp": 1 } },
+        {
+            arrayFilters: [
+                { "element.name": { $eq: name } }
+            ],
+            returnOriginal: false
+        }
+    ).then(result => {
+        filt = result.value.garden.filter(x => x.name == name);
+
+        res.send(Object.values(filt[0]));
+    })
+
+})
+
+app.post("/api/user/garden/lower/temp", (req, res) => {
+
+    let user = req.session.user;
+    let name = req.body.name;
+
+    db.collection("users").findOneAndUpdate(
+        { username: user },
+        { $inc: { "garden.$[element].temp": -1 } },
+        {
+            arrayFilters: [
+                { "element.name": { $eq: name } }
+            ],
+            returnOriginal: false
+        }
+    ).then(result => {
+        filt = result.value.garden.filter(x => x.name == name);
+
+        res.send(Object.values(filt[0]));
+    })
 
 })
 

@@ -55,13 +55,15 @@ import { InputForm } from './input-form/input-form.component';
 import { RegisterForm } from './register-form/register-form.component';
 import { GardenForm } from './garden-form/garden-form.component';
 import { GardenTable } from './garden-components/gardens-table.component/gardens-table.component';
-
 import {SingleGarden } from './garden-components/single-garden.component/single-garden.component';
+
+import {Warehouse} from './warehouse/warehouse.component';
 
 import { UserComponent } from './user/user-component.component';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { UserMenu } from './menu/user-menu/user-menu.component';
+
 
 import {HttpClientModule} from '@angular/common/http';
 
@@ -75,7 +77,8 @@ import {HttpClientModule} from '@angular/common/http';
     GardenForm,
     UserMenu, 
     GardenTable,
-    SingleGarden
+    SingleGarden,
+    Warehouse
   
   ],
   imports: [

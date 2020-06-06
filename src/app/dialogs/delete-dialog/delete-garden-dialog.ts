@@ -18,19 +18,12 @@ export class DeleteDialog {
         @Inject(MAT_DIALOG_DATA) data) {}
     
 
-
-
     close() {
         this.dialogRef.close();
     }
     save(obj){
         this.dialogRef.close(obj);
     }
-
-
- 
-
-    
     
 }
 

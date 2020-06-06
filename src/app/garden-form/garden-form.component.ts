@@ -41,6 +41,7 @@ export class GardenForm {
         }*/
 
         this.http.addGarden(newGarden).subscribe();
+        this.router.navigate(['user/garden/show/all', {relativeTo : this.route}]);
     }
 }
 

@@ -45,10 +45,7 @@ export class UserMenu {
   }
 
   showGardens() {
-    this.http.showGardens().subscribe(result =>{
-      this.buttonService.showGardens(result);
-
-    });
+   
     this.router.navigate(['user/garden/show/all'], {relativeTo : this.route});
   }
 

@@ -11,13 +11,13 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 
 @Injectable({
-    providedIn : 'root'
+    providedIn: 'root'
 })
 export class HttpService {
-    constructor ( private http:HttpClient, private router : Router, private route:ActivatedRoute){};
+    constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) { };
 
-    currUser : string = '';
-    
+    currUser: string = '';
+
     loginRoute = "/api/login";
     logoutRoute = "/api/logout";
     registerRoute = "/api/register";
@@ -28,65 +28,101 @@ export class HttpService {
     removeGardenRoute = "/api/user/delete/garden";
 
     plantInGardenRoute = "/api/user/garden/plant";
+    plantTakeOutRoute = "/api/user/garden/take-out";
+    
+    addWaterRoute = "/api/user/garden/add/water";
+    removeWaterRoute = "/api/user/garden/remove/water";
+    raiseTempRoute = "/api/user/garden/raise/temp";
+    lowerTempRoute = "/api/user/garden/lower/temp";
 
 
-    isLogged() : Observable<any> {
-        
+    isLogged(): Observable<any> {
+
         return this.http.get<any>("/api/boot");
     }
     // Method retrieve all the posts
-    login (user:string, pass:string):Observable<any> {
+    login(user: string, pass: string): Observable<any> {
 
- 
-       let name = {user:user, pass : pass};
-       return  this.http.post<any>(this.loginRoute, name);
+
+        let name = { user: user, pass: pass };
+        return this.http.post<any>(this.loginRoute, name);
     }
 
-    setUser(str : string) {
+    setUser(str: string) {
         this.currUser = str;
     }
 
-    getUser() : string {
+    getUser(): string {
         return this.currUser;
     }
 
-    logout():Observable<any>{
+    logout(): Observable<any> {
         this.currUser = '';
         return this.http.put<any>(this.logoutRoute, null);
     }
 
-    register(user : User):Observable<any>{
-       return this.http.put<User>(this.registerRoute, user);
-      
+    register(user: User): Observable<any> {
+        return this.http.put<User>(this.registerRoute, user);
+
     }
-    getUserData():Observable<any>{
+    getUserData(): Observable<any> {
         return this.http.get<any>(this.userRoute);
     }
 
-    addGarden(obj: any){
+    addGarden(obj: any) {
         console.log("adding garden");
-         return this.http.put(this.addGardenRoute, obj);
+        return this.http.put(this.addGardenRoute, obj);
     }
 
-    showMyGarden(obj : any):Observable<any>{
-        return this.http.post(this.showGardenRoute,obj);
+    showMyGarden(obj: any): Observable<any> {
+        return this.http.post(this.showGardenRoute, obj);
     }
 
-    showGardens():Observable<any>{
+    showGardens(): Observable<any> {
         return this.http.get(this.showGardensRoute);
     }
 
-    removeGarden(obj):Observable<any>{
+    removeGarden(obj): Observable<any> {
+        console.log(obj);
         return this.http.post(this.removeGardenRoute, obj);
+        
     }
 
-    plant(obj):Observable<any>{
+    plant(obj): Observable<any> {
         return this.http.post(this.plantInGardenRoute, obj);
     }
-   
+
+    takeOut(obj):Observable<any>{
+        return this.http.post(this.plantTakeOutRoute, obj);
+    }
+
+    addWater(gardenName) : Observable<any> {
+        console.log(gardenName);
+        return this.http.post(this.addWaterRoute, {name : gardenName});
+
+    }
+
+    removeWater(gardenName): Observable<any> {
+
+        return this.http.post(this.removeWaterRoute, {name : gardenName});
+
+    }
+
+    raiseTemp(gardenName) : Observable<any> {
+
+        return this.http.post(this.raiseTempRoute, {name : gardenName});
+
+    }
+
+    lowerTemp(gardenName) : Observable<any> {
+
+        return this.http.post(this.lowerTempRoute, {name : gardenName});
+
+    }
+
 
     // This method parses the data to JSON
-    private parseData(res: Response)  {
+    private parseData(res: Response) {
         return res.json() || [];
     }
 
@@ -103,4 +139,4 @@ export class HttpService {
         return Observable.throw(errorMessage);
     }
 }
- 
+

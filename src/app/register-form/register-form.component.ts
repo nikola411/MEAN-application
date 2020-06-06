@@ -69,7 +69,8 @@ export class RegisterForm {
           email: this.mail.value,
           date: this.date.value,
           number: this.number.value,
-          gardens : []
+          garden : [],
+          warehouse : []
         } as Farmer;
       } else {
           sendUser = {
