@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../../services/http-service/http-service';
 import { GardenService } from '../../services/garden-service/garden-service';
 import { ButtonService } from '../../services/logged-service/logged-service';
@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { MatDialogConfig, MatDialog } from '@angular/material/dialog';
 import { DeleteDialog } from 'src/app/dialogs/delete-dialog/delete-garden-dialog';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatTableDataSource, MatTable } from '@angular/material/table';
 
 
 @Component({
@@ -18,8 +19,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 export class GardenTable {
 
-    gardens: Object[];
+    gardens = new MatTableDataSource<any>();
+    gardensArr: Object[];
     show: boolean = false;
+
+    @ViewChild(MatTable) table: MatTable<any>;
 
     constructor(private http: HttpService,
         private router: Router,
@@ -27,12 +31,11 @@ export class GardenTable {
         private gardenService: GardenService,
         private buttonService: ButtonService,
         private dialog: MatDialog) {
-            this.http.showGardens().subscribe(result =>{
-                this.gardens = Object.values(result.garden);
-               
-  
-
-            });
+            this.http.showGardens().subscribe(result=>{
+                this.gardens.data = result.garden;
+                
+            })
+          
     }
 
 
@@ -79,12 +82,11 @@ export class GardenTable {
     deleteGarden(obj) {
 
         this.openDialog().subscribe(result => {
-
-
             if (result == "true") {
 
                 this.http.removeGarden(obj).subscribe(result => {
-                    this.buttonService.showGardens(result);
+                    this.gardens.data = result.garden;
+                    this.table.renderRows();
                 });
                 
             }
@@ -92,6 +94,5 @@ export class GardenTable {
         })
 
     }
-
 
 }

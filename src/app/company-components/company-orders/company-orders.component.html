@@ -1,0 +1,50 @@
+
+
+<div *ngIf="!hasOrders()" class="empty">
+    <h1>Trenutno nema pordzbina na cekanju</h1>
+</div>
+<div class="productTable">
+    <table mat-table *ngIf="hasOrders()" [dataSource]="orders" class="mat">
+
+        <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="orderId">
+            <mat-header-cell *matHeaderCellDef> Id </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="product">
+            <mat-header-cell *matHeaderCellDef> Proizvod </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.product}} </mat-cell>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="customer">
+            <mat-header-cell *matHeaderCellDef> Narucilac </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.customer}} </mat-cell>
+        </ng-container>
+
+        <!-- Symbol Column -->
+        <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.status}} </mat-cell>
+        </ng-container>
+
+
+        <ng-container matColumnDef="options">
+            <mat-header-cell *matHeaderCellDef> Opcije </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <button class="deleteBttn">
+                    <mat-icon class="deleteIcon" aria-hidden="false" aria-label="Example home icon">delete</mat-icon>
+                </button>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </table>
+
+</div>

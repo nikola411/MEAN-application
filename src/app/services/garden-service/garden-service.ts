@@ -16,8 +16,8 @@ export class GardenService{
         return this.subject.next("garden-form");
     }
 
-    showGardens(){
-        return this.subject.next();
+    showGardens(obj){
+        return this.subject.next(obj);
     }
 
     getGardenForDisplaying(obj){

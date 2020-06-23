@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import {FormControl } from '@angular/forms';
+import { Component, Directive, Input, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import {FormControl, FormGroup, ControlValueAccessor } from '@angular/forms';
 import { Validators } from '@angular/forms';
 
 import { HttpService } from '../services/http-service/http-service';
@@ -8,6 +8,11 @@ import { Company } from '../models/company';
 import { Router, ActivatedRoute } from '@angular/router';
 import { User } from '../models/user';
 import { PlatformLocation } from '@angular/common';
+import { CaptchaComponent } from 'angular-captcha'; 
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+
+
+
 
 
 @Component({
@@ -16,39 +21,88 @@ import { PlatformLocation } from '@angular/common';
   styleUrls : ['./register-form.component.scss']
   
 })
-export class RegisterForm {
+export class RegisterForm{
+  
+  @ViewChild(CaptchaComponent, { static: true }) captchaComponent: CaptchaComponent;
+ 
 
-  constructor(private http:HttpService, private router:Router, private route:ActivatedRoute){};
+  showCaptcha : boolean = false;
+  myCaptcha : string;
+  values : any;
+  registered : FormGroup;
 
-  mail = new FormControl('', Validators.compose([
-		Validators.required,
-    Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')
-  ]));
-  username = new FormControl('',Validators.required);
-  password = new FormControl('',Validators.required);
-  name = new FormControl('', Validators.required);
-  surrname = new FormControl('',Validators.required);
-  repeat = new FormControl('',Validators.required);
-  date = new FormControl('',Validators.required);
-  number = new FormControl('',Validators.required);
-  place = new FormControl('',Validators.required);
+  constructor(private http:HttpService, private router:Router, private route:ActivatedRoute){
+
+    this.registered = new FormGroup({
+      mail : new FormControl('', Validators.compose([
+        Validators.required,
+        Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')
+      ])),
+      username : new FormControl('',Validators.required),
+      password : new FormControl('',Validators.required),
+      name : new FormControl('', Validators.required),
+      surrname : new FormControl('',Validators.required),
+      repeat : new FormControl('',Validators.required),
+      date : new FormControl('',Validators.required),
+      number : new FormControl('',Validators.required),
+      place : new FormControl('',Validators.required)
+    }, {updateOn : "blur"}
+    )
+    let sent = {target : {id : "comp"}};
+    this.onChange(sent);
+
+  }
+
+
+  showCaptchaB(){
+    console.log("showing captcha"); 
+    this.showCaptcha = true;
+  }
+  
+  isValid():boolean{
+    console.log(this.registered.valid);
+    return this.registered.valid;
+  }
+
+  logEvent(obj){
+    console.log(this.registered);
+    console.log(obj);
+  }
+  resolved(captchaResponse: string) {
+    this.http.validateToken(captchaResponse).subscribe(result=>{
+      console.log(result);
+      if(result.success == true){
+        this.register();
+      } else {
+        this.router.navigate(['register'], {relativeTo : this.route});
+      }
+    })
+    console.log(`Resolved response token: ${captchaResponse}`);
+   
+  }
 
   userType :boolean = true;
 
   mistakeLabel : string = 'farmer';
 
   setLabel(value : string ){
-    console.log("greska");
+
     this.mistakeLabel = value;
+
   }
 
   onChange(event){
     let target = event.target;
-    console.log("event");
     if(target.id == 'firm'){
-      this.userType = false;
+        
+        this.userType = false;
+        this.registered.setValue(
+          {mail : "",name :"",username : "", password : "",  surrname : "/", repeat: "", date : "", number : "/" , place : ""});
+        
       
     } else  {
+      this.registered.setValue(
+        {mail : "",name :"",username : "", password : "",  surrname : "", repeat: "", date : "", number : "" , place : "/"});
       this.userType = true;
     }
   }
@@ -56,20 +110,23 @@ export class RegisterForm {
   register(){
    
     
-    if(this.repeat.value == this.password.value && this.mail.valid){
+    if(this.registered.value.repeat == this.registered.value.password && this.registered.value.mail){
       let sendUser = {} as User;
       if (this.userType) {
+
+        this.values = this.registered.value;
         
         sendUser = {
-          firstName: this.name.value,
-          username: this.username.value,
-          lastName: this.surrname.value,
-          password: this.password.value,
-          repeat: this.repeat.value,
-          id: this.username.value,
-          email: this.mail.value,
-          date: this.date.value,
-          number: this.number.value,
+          type : "farmer",
+          firstName: this.registered.value.name,
+          username: this.registered.value.username,
+          lastName: this.registered.value.surrname,
+          password: this.registered.value.password,
+          repeat: this.registered.value.repeat,
+          id: this.registered.value.username,
+          email: this.registered.value.mail,
+          date: this.registered.value.date,
+          number: this.registered.value.number,
           garden : [],
           warehouse : [
             {type : "plant", name : "biljka1", producer : "nepoznati1", quantity : 20},
@@ -82,23 +139,25 @@ export class RegisterForm {
         } as Farmer;
       } else {
           sendUser = {
-            firmName : this.name.value,
-            username : this.username.value,
-            email : this.mail.value,
-            place : this.place.value,
-            number : this.number.value,
-            password : this.password.value,
-            repeat : this.repeat.value,
-            date : this.date.value,
-            shop : []
+            type : "company",
+            firmName : this.registered.value.name,
+            username : this.registered.value.username,
+            email : this.registered.value.mail,
+            place : this.registered.value.place,
+            number : this.registered.value.number,
+            password : this.registered.value.password,
+            repeat : this.registered.value.repeat,
+            date : this.registered.value.date,
+            shop : [],
+            orders : []
           } as Company;
       }
-
+      console.log(sendUser);
       return this.http.register(sendUser).subscribe(result =>{
 
         if(result.status != "registered"){
             
-            this.password.markAsDirty();
+            this.registered.value.password.markAsDirty();
             this.setLabel("Lozinka ili mejl neipsravni");
             console.log(result);
         } else {

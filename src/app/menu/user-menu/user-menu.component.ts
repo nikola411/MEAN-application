@@ -7,6 +7,7 @@ import { ButtonService } from '../../services/logged-service/logged-service';
 import { GardenForm } from '../../garden-form/garden-form.component';
 import {Location} from '@angular/common';
 import { MatGridTileHeaderCssMatStyler } from '@angular/material/grid-list';
+import { GardenService } from 'src/app/services/garden-service/garden-service';
 
 
 @Component({
@@ -23,13 +24,14 @@ export class UserMenu {
      private router: Router, 
      private buttonService: ButtonService,
      private route : ActivatedRoute, 
+     private gardenService : GardenService,
      private location: Location) {
 
   }
 
   logout() {
     this.http.logout().subscribe(result => {
-      this.buttonService.clearInfo();
+      this.buttonService.clearInfo("farmer");
       this.router.navigate(['login']);
     });
   }
@@ -37,7 +39,7 @@ export class UserMenu {
   addGarden() {
     
     this.router.navigate(['user/garden/registration'], {relativeTo : this.route});
-    this.buttonService.registerGarden();
+    //this.buttonService.registerGarden();
   }
 
   back() {
@@ -51,6 +53,10 @@ export class UserMenu {
 
   showWarehouse(){
     this.router.navigate(['user/warehouse'], {relativeTo : this.route});
+  }
+
+  getShop(){
+    this.router.navigate(['shop'], {relativeTo : this.route});
   }
 
 

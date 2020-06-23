@@ -1,0 +1,84 @@
+<h1 *ngIf="!success">Dodavanje novog proizvoda</h1>
+<h1 *ngIf="success">Uspesno dodavanje novog prozivoda!</h1>
+<br>
+<div *ngIf="steps[0]">
+    <form (submit)="next()">
+
+        <mat-form-field>
+            <label mat-label for="name">Ime</label>
+            <input [formControl]="productName" type="text" name="name" matInput>
+        </mat-form-field>
+        <br>
+        <button mat-raised-button type="submit">Dalje</button>
+    </form>
+</div>
+<div *ngIf="steps[1]">
+
+    <form (submit)="next()">
+        <mat-form-field>
+            <label mat-label for="quantity">Kolicina</label>
+            <input [formControl]="productQuantity" type="text" name="quantity" matInput>
+        </mat-form-field>
+        <br>
+        <button mat-raised-button type="submit">Dalje</button>
+    </form>
+</div>
+
+<div *ngIf="steps[2]">
+
+    <form (submit)="next()">
+        <mat-form-field>
+            <label mat-label for="properties">Svojstva</label>
+            <input [formControl]="productProperties" type="text" name="properties" matInput>
+        </mat-form-field>
+        <br>
+        <button mat-raised-button type="submit">Dalje</button>
+    </form>
+
+</div>
+<div *ngIf="steps[3]">
+
+    <form (submit)="next()">
+        <mat-form-field>
+            <label mat-label for="price">Cena</label>
+            <input [formControl]="productPrice" type="text" name="price" matInput>
+        </mat-form-field>
+        <button mat-raised-button type="submit">Dalje</button>
+    </form>
+
+</div>
+
+
+<form *ngIf="finish" (submit)="add()">
+    <div class="product">
+        <table>
+            <tr>
+                <th>Naziv</th>
+                <td>
+                    {{productName.value}}
+                </td>
+            </tr>
+            <tr>
+                <th>Kolicina</th>
+                <td>
+                    {{productQuantity.value}}
+                </td>
+            </tr>
+            <tr>
+                <th>Svojstva</th>
+                <td>
+                    {{productProperties.value}}
+                </td>
+            </tr>
+            <tr>
+                <th>Cena</th>
+                <td>
+                    {{productPrice.value}}
+                </td>
+            </tr>
+        </table>
+
+    </div>
+    <button mat-raised-button type="submit">Zavrsi</button>
+    <button mat-raised-button (click)="back()">Nazad</button>
+</form>

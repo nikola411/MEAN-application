@@ -40,10 +40,11 @@ export class InputForm  {
         //ako je los unos onda ponovo na login
         //ako ne postoji korisnik na register
         //let object = JSON.parse(JSON.stringify(result));
-        console.log(result.route);
+        console.log(result);
         if(result.route != "/login" || result.route != "/register") {
-          this.buttonService.setInfo();
-          this.loginService.setUser('/user');
+          this.buttonService.setInfo(result.user);
+          this.loginService.setUser(result.user);
+          console.log(result);
           
         } 
         

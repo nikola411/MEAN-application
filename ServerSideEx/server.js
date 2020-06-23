@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const { check, validationResult } = require('express-validator');
 
+const request = require("request");
+
 const MongoClient = require('mongodb').MongoClient;
 
 
@@ -15,12 +17,15 @@ const SESS_ID = 'sid';
 const SESS_SECRET = 'ssh!quiet,it\'sasecret';
 const url = 'mongodb://127.0.0.1:27017';
 const myDB = 'myDB';
+//used for captcha validation
+const secretkey = "6LcAfgEVAAAAAPrN9EDUPbqWQSwcQ5pCGGMEhBlC";
 
-let loggedIn = false;
+let loggedIn = "";
 
 
 let currId = 1;
 let db;
+let prodId = 0;
 let currUser = null;
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -100,14 +105,55 @@ MongoClient.connect(url, { useUnifiedTopology: true }, (err, client) => {
 app.get('/api/boot', (req, res) => {
 
     //change for admin
-    if (req.session.userId && loggedIn) {
+    /*console.log("admin");
+    db.collection('users').insertOne({
+        username : "admin",
+        password : "admin",
+        type : "admin",
+        email : "admin@admin.com",
+        number : "222-2222222",
+        status : "registered"
+    });
+    console.log("reeee");*/
+
+
+
+
+    if (req.session.userId && loggedIn != "") {
         console.log('Logged in');
-        res.send({ route: "user" });
+        res.send({ route: "user", type: loggedIn });
     } else {
         console.log('Not logged in');
         res.send({ route: "login" });
     }
 
+
+})
+
+app.post('/api/validate/token', (req, res) => {
+    let token = req.body.token;
+    const secretKey = "6LcAfgEVAAAAAPrN9EDUPbqWQSwcQ5pCGGMEhBlC";
+    const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${token}&remoteip=${req.connection.remoteAddress}`
+
+    if (token === null || token === undefined) {
+        res.status(201).send({ success: false, message: "Token is empty or invalid" })
+        return console.log("token empty");
+    }
+
+    request(url, function (err, response, body) {
+
+        body = JSON.parse(body);
+
+        //check if the validation failed
+        if (body.success !== undefined && !body.success) {
+            res.send({ success: false, 'message': "recaptcha failed" });
+            return console.log("failed")
+        }
+
+        //if passed response success message to client
+        res.send({ "success": true, 'message': "recaptcha passed" });
+
+    })
 
 })
 
@@ -134,9 +180,14 @@ app.put('/api/register', [
     if (!errors.isEmpty()) {
         console.log(errors);
         res.send({ status: errors });
+
     } else {
-        req.body.pending = null;
+        req.body.productId = 0;
+        req.body.status = "pending";
+        console.log(req.body);
+        
         db.collection('users').insertOne(req.body);
+
 
         res.send({ status: "registered" });
 
@@ -155,26 +206,35 @@ app.post('/api/login', (req, res) => {
     let password = req.body.pass;
     let user = req.body.user;
 
+    db.collection('users').find(
+        { username: req.body.user, password: req.body.pass, status: "registered" }
+    )
+        .toArray()
+        .then(results => {
+            for (i in results) {
+                if (results[i].password == password) {
+                    req.session.userId = currId++;
+                    req.session.user = req.body.user;
+                    loggedIn = results[i].type;
+                    if (loggedIn == "company") {
+                        prodId = results[i].productId;
+                    }
+                    if (results[i].type != "admin") {
+                        res.send({ route: "/user", user: results[i].type });
+                    } else {
+                        res.send({ route: "/admin", user: results[i].type });
+                    }
 
-    db.collection('users').find({ username: req.body.user, password: req.body.pass }).toArray().then(results => {
-        for (i in results) {
-            if (results[i].password == password) {
-                req.session.userId = currId++;
-                req.session.user = req.body.user;
-                loggedIn = true;
-
-                console.log(results[i]);
-                res.send({ route: "/user" });
-                return;
+                    return;
+                }
             }
+
+            console.log("didnt find anything");
+            res.send({ route: "/register" });
+
         }
 
-        console.log("didnt find anything");
-        res.send({ route: "/register" });
-
-    }
-
-    );
+        );
 
 });
 
@@ -190,7 +250,7 @@ app.get('/api/user', (req, res) => {
 
 })
 
-app.put('/api/user/addgarden', checkLogin, (req, res) => {
+app.post('/api/user/addgarden', (req, res) => {
     let user = req.session.user;
 
     let newGarden = req.body;
@@ -205,7 +265,7 @@ app.put('/api/user/addgarden', checkLogin, (req, res) => {
     for (var i = 0; i < height; i++) {
         req.body.garden[i] = new Array(width);
         for (var j = 0; j < width; j++) {
-            req.body.garden[i][j] = { state: -1, x: i, y: j, name: "", producer : "" };
+            req.body.garden[i][j] = { state: -1, x: i, y: j, name: "", producer: "" };
 
         }
     }
@@ -213,8 +273,11 @@ app.put('/api/user/addgarden', checkLogin, (req, res) => {
     req.body.temp = 18;
     req.body.free = width * height;
 
-    db.collection('users').updateOne({ "username": req.session.user }, {
+    db.collection('users').findOneAndUpdate({ "username": req.session.user }, {
         $push: { "garden": req.body }
+    }).then(result => {
+        console.log(result);
+        res.send(result.value.garden);
     });
 
 
@@ -284,19 +347,19 @@ app.post("/api/user/garden/plant", (req, res) => {
             $inc: {
                 "garden.$[element].garden.$[i].$[j].state": 1,
                 "garden.$[element].free": -1,
-                "warehouse.$[elem].quantity" : -1
+                "warehouse.$[elem].quantity": -1
             },
-            $set :{
-                "garden.$[element].garden.$[i].$[j].name" : plantName,
-                "garden.$[element].garden.$[i].$[j].producer" :producer,
+            $set: {
+                "garden.$[element].garden.$[i].$[j].name": plantName,
+                "garden.$[element].garden.$[i].$[j].producer": producer,
             }
         },
         {
-           
+
             arrayFilters: [
                 { "element.name": { $eq: name } },
                 { "i.x": { $eq: i } }, { "j.y": { $eq: j } },
-                { "elem.name": { $eq: plantName }, "elem.producer" : {$eq : producer} }
+                { "elem.name": { $eq: plantName }, "elem.producer": { $eq: producer } }
             ],
             returnOriginal: false
         },
@@ -311,7 +374,7 @@ app.post("/api/user/garden/plant", (req, res) => {
 
 app.post("/api/user/garden/take-out", (req, res) => {
     let user = req.session.user;
-   
+
     let name = req.body.name;
     let i = parseInt(req.body.x);
     let j = parseInt(req.body.y);
@@ -325,7 +388,7 @@ app.post("/api/user/garden/take-out", (req, res) => {
             },
             $inc: {
                 "garden.$[element].free": 1,
-                
+
             }
         },
         {
@@ -338,9 +401,9 @@ app.post("/api/user/garden/take-out", (req, res) => {
 
     )
         .then(result => {
-           
+
             filt = result.value.garden.filter(x => x.name == name);
-           
+
             res.send(Object.values(filt[0]));
         });
 
@@ -435,23 +498,134 @@ app.post("/api/user/garden/lower/temp", (req, res) => {
 
 })
 
-app.put("/api/user/warehouse", (req,res)=>{
+app.put("/api/user/warehouse", (req, res) => {
     let user = req.session.user;
 
     db.collection("users").findOneAndUpdate(
-        {username : user},
-        
-        {$pull : {warehouse :{quantity : {$eq :0}} }},
-        
-        {returnOriginal : false}
-        )
-    .then(result =>{
-        console.log(result.value.warehouse);
-        //sending warehouse obj[]
-        res.send({pending : null, warehouse : result.value.warehouse});
+        { username: user },
+
+        { $pull: { warehouse: { quantity: { $eq: 0 } } } },
+
+        { returnOriginal: false }
+    )
+        .then(result => {
+            console.log(result.value.warehouse);
+            //sending warehouse obj[]
+            res.send({ pending: null, warehouse: result.value.warehouse });
+        })
+})
+
+
+app.post("/api/company/orders", (req, res) => {
+    let user = req.session.user;
+
+    db.collection("users").findOne({ username: user }, {
+        projection: {
+            orders: 1, _id: 0
+        }
+    }).then(result => {
+        res.send(result);
     })
 })
 
+app.post("/api/company/orders/add", (req, res) => {
+
+})
+
+
+app.post("/api/company/products", (req, res) => {
+    let user = req.session.user;
+
+    db.collection("users").findOne({ username: user }, { projection: { shop: 1, _id: 0 } })
+        .then(result => {
+            res.send(result);
+        })
+})
+
+app.post("/api/company/product/add", (req, res) => {
+    let user = req.session.user;
+    let product = req.body;
+    product.comments = [];
+    product.rating = null;
+    product.id = prodId++;
+
+
+    db.collection("users").findOneAndUpdate({ username: user },
+        {
+            $push: { shop: product },
+            $inc: { productId: 1 }
+        }
+    ).then(result => {
+        res.send(result);
+    }
+
+    )
+})
+
+app.post("/api/company/product/remove", (req, res) => {
+    let user = req.session.user;
+    let productName = req.body.name;
+    let productId = req.body.id;
+
+    db.collection('users').findOneAndUpdate(
+        { username: user },
+        {
+            $pull: { shop: { name: productName, id: productId } },
+
+        }).then(result => {
+            res.send(result);
+        })
+})
+
+app.post("/api/shop", (req, res) => {
+    db.collection('users').find({ type: "company" },
+        { projection: { _id: 0, firmName: 1, shop: 1, place: 1 } }).toArray().then(result => {
+            res.send(result)
+        });
+})
+
+
+app.post("/api/admin/users", (req, res) => {
+    db.collection('users').find({},
+        { projection: { _id: 1, username: 1, email: 1, type: 1 } })
+        .toArray()
+        .then(result => {
+            res.send(result);
+        })
+})
+
+app.post("/api/admin/users/remove", (req, res) => {
+    let user = req.body.user;
+    let email = req.body.email;
+
+    console.log("removing users");
+
+
+    db.collection('users').deleteOne({ username: user, email: email }).then(result => console.log(result));
+    res.send({ removed: true });
+
+})
+
+app.post("/api/admin/requests", (req, res) => {
+    db.collection('users').find(
+        { status: "pending" }, { projection: { _id: 1, username: 1, email: 1, type: 1 } })
+        .toArray()
+        .then(result => {
+        res.send(result);
+        console.log(result)
+    })
+})
+
+app.post("/api/admin/requests/add", (req, res) => {
+    db.collection('users').find({ status: "pending" }, { projection: { username: 1, email: 1, type: 1 } })
+        .toArray()
+        .then(result => {res.send(result); console.log(result)});
+})
+
+app.post("/api/admin/requests/confirm", (req, res) => {
+    let user = req.body.user;
+    db.collection("users").updateOne({ username: user }, { $set: { status: "registered" } });
+})
 
 
 

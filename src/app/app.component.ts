@@ -14,6 +14,7 @@ export class AppComponent {
 
   title = 'myApp';
   loggedIn: boolean = false;
+  companyLogged : boolean = false;
   @Input() loggedInUser(value: boolean) {
     console.log("event received");
     this.loggedIn = value;
@@ -28,30 +29,49 @@ export class AppComponent {
     private route : ActivatedRoute) {
 
     this.buttonService.onEvent().subscribe(result => {
-      
-      if (result) {
-        this.loggedIn = true;
+      console.log("treba da sklonim dugme");
+      console.log(result)
+      if(result.status == true){
+        if (result.user=="farmer") {
+          this.loggedIn = true;
+        } else if(result.user == "company") {
+          this.companyLogged = true;
+        } else if (result.user == "admin"){
+          this.adminLogged = true;
+        } else {
+          this.companyLogged = false;
+          this.loggedIn = false;
+          this.adminLogged = false;
+        }
       } else {
+        this.companyLogged = false;
         this.loggedIn = false;
+        this.adminLogged = false;
       }
+      
     })
 
     this.serverService.isLogged().subscribe(result => {
       let newRoute = result.route;
-
-      console.log(newRoute);
+      let userType = result.type;
+      console.log("logujem rezultat sa servera")
+      console.log(result);
 
       if (newRoute == "login" || newRoute == "register") {
         
         this.loggedIn = false;
         this.userLogged = false;
         this.adminLogged = false;
-      } else  {
+      } else  if (userType =="farmer"){
         this.loggedIn = true;
-      }
-
+      } else if(userType == "company") {
+        this.companyLogged = true;
+      } else if(userType == "admin"){
+        this.adminLogged = true;
       
 
+      }
+        
       this.router.navigate([newRoute]);
     });
   };

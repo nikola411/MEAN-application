@@ -8,47 +8,48 @@
        
      
     </div>
-    <table *ngIf = "!pending" mat-table [dataSource]="warehouse" class="chemicals">
+   
+    <mat-table *ngIf="!pending"  [dataSource]="sortedData" matSort (matSortChange)="sortData($event)"  class="chemicals">
 
-        <ng-container matColumnDef="tip">
-          <th mat-header-cell *matHeaderCellDef> Tip </th>
-          <td mat-cell *matCellDef="let element" > 
+        <ng-container matColumnDef="type">
+          <mat-header-cell *matHeaderCellDef  class="header-cell"> Tip </mat-header-cell>
+          <mat-cell *matCellDef="let element" > 
             <div *ngIf="isPlant(element)">
               <img src="https://www.iconspng.com/uploads/small-plant/small-plant.png" >
             </div>
             <div *ngIf="!isPlant(element)">
               <img src = "https://www.iconspng.com/uploads/conical-flask-chemistry/conical-flask-chemistry.png">
             </div>
-          </td>
+          </mat-cell>
         </ng-container>
       
-        <ng-container matColumnDef="ime">
-          <th mat-header-cell *matHeaderCellDef> Naziv </th>
-          <td mat-cell *matCellDef="let element" > {{element.name}} </td>
+        <ng-container matColumnDef="name">
+          <mat-header-cell name = "name" *matHeaderCellDef mat-sort-header class="header-cell" > Naziv </mat-header-cell>
+          <mat-cell *matCellDef="let element" > {{element.name}} </mat-cell>
         </ng-container>
       
         <!-- Name Column -->
-        <ng-container matColumnDef="proizvodjac">
-          <th mat-header-cell *matHeaderCellDef> Proizvodjac </th>
-          <td mat-cell *matCellDef="let element" > {{element.producer}} </td>
+        <ng-container matColumnDef="producer">
+          <mat-header-cell  name = "producer" *matHeaderCellDef mat-sort-header class="header-cell" > Proizvodjac </mat-header-cell>
+          <mat-cell *matCellDef="let element" > {{element.producer}} </mat-cell>
         </ng-container>
       
         <!-- Weight Column -->
-        <ng-container matColumnDef="kolicina">
-          <th mat-header-cell *matHeaderCellDef> Kolicina </th>
-          <td mat-cell *matCellDef="let element"> {{element.quantity}} </td>
+        <ng-container matColumnDef="quantity">
+          <mat-header-cell  name = "quantity" *matHeaderCellDef mat-sort-header class="header-cell" > Kolicina </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.quantity}} </mat-cell>
         </ng-container>
 
       
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      </mat-table>
 
     <table *ngIf = "pending" mat-table [dataSource]="pendingRequests" class="pending">
 
     
         <ng-container matColumnDef="tip">
-          <th mat-header-cell *matHeaderCellDef> Tip </th>
+          <th mat-header-cell *matHeaderCellDef> Tipsss </th>
           <td mat-cell *matCellDef="let element" > 
             <div *ngIf="isPlant(element)">
               <img src="https://www.iconspng.com/uploads/small-plant/small-plant.png" >

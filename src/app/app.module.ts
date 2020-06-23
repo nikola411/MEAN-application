@@ -51,6 +51,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 import { FormsModule } from '@angular/forms';
 
+import { BotDetectCaptchaModule } from 'angular-captcha'; 
+import { RecaptchaModule, RecaptchaFormsModule } from 'ng-recaptcha';
+
 import { InputForm } from './input-form/input-form.component';
 import { RegisterForm } from './register-form/register-form.component';
 import { GardenForm } from './garden-form/garden-form.component';
@@ -66,8 +69,17 @@ import { UserMenu } from './menu/user-menu/user-menu.component';
 
 import { PlantDialog } from './dialogs/plant-dialog/plant-dialog.component';
 
+import { CompanyMenu } from './menu/company-menu/company-menu.component';
+import { CompanyOrders } from './company-components/company-orders/company-orders.component';
+import { CompanyProducts } from './company-components/company-products/company-products.component';
+
 
 import { HttpClientModule } from '@angular/common/http';
+import { OrderSteps } from './company-components/company-product-steps/steps.component';
+import { Shop } from './shop/shop.component';
+import { AdminMenu } from './menu/admin-menu/admin-menu.component';
+import { Users } from './admin-components/users.component.ts/users.component';
+import { Requests } from './admin-components/requests/requests.component';
 
 
 @NgModule({
@@ -81,7 +93,15 @@ import { HttpClientModule } from '@angular/common/http';
     GardenTable,
     SingleGarden,
     Warehouse,
-    PlantDialog
+    PlantDialog,
+    CompanyMenu,
+    CompanyOrders,
+    CompanyProducts,
+    OrderSteps,
+    Shop,
+    AdminMenu,
+    Users,
+    Requests
 
   ],
   imports: [
@@ -89,6 +109,7 @@ import { HttpClientModule } from '@angular/common/http';
     FormsModule,
     ReactiveFormsModule,
     BrowserModule,
+    BotDetectCaptchaModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatFormFieldModule,
@@ -137,6 +158,8 @@ import { HttpClientModule } from '@angular/common/http';
     MatTreeModule,
     PortalModule,
     ScrollingModule,
+    RecaptchaFormsModule,
+    RecaptchaModule
 
   ],
   providers: [],

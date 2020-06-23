@@ -37,6 +37,21 @@ export class HttpService {
 
     warehouseRoute = "/api/user/warehouse";
 
+    validateTokenRoute = "/api/validate/token";
+
+    ordersRoute = "/api/company/orders";
+    productsRoute = "/api/company/products";
+    addProductRoute = "/api/company/product/add";
+    removeProductRoute = "/api/company/product/remove";
+
+    shopRoute = "/api/shop";
+
+    adminUsersRoute = "/api/admin/users";
+    adminRequestsRoute = "/api/admin/requests";
+    adminUsersRemoveRoute = "/api/admin/users/remove";
+    adminRequestsConfirmRoute = "/api/admin/requests/confirm";
+    
+
 
     isLogged(): Observable<any> {
 
@@ -73,7 +88,7 @@ export class HttpService {
 
     addGarden(obj: any) {
         console.log("adding garden");
-        return this.http.put(this.addGardenRoute, obj);
+        return this.http.post(this.addGardenRoute, obj);
     }
 
     showMyGarden(obj: any): Observable<any> {
@@ -124,6 +139,49 @@ export class HttpService {
 
     getWarehouse():Observable<any> {
         return this.http.put(this.warehouseRoute, null);
+    }
+
+    validateToken(token):Observable<any>{
+        return this.http.post(this.validateTokenRoute,{token : token});
+    }
+
+
+    getCompanyOrders():Observable<any>{
+        return this.http.post(this.ordersRoute, null);
+    }
+
+    getCompanyProducts() : Observable<any>{
+        return this.http.post(this.productsRoute, null);
+    }
+
+    addProduct(product):Observable<any>{
+        return this.http.post(this.addProductRoute, product);
+    }
+
+    removeProduct(product) : Observable<any>{
+        return this.http.post(this.removeProductRoute, product);
+    }
+
+
+
+    shop():Observable<any>{
+        return this.http.post(this.shopRoute, null);
+    }
+
+    showUsers():Observable<any>{
+        return this.http.post(this.adminUsersRoute, null);
+    }
+
+    removeUser(user):Observable<any>{
+        return this.http.post(this.adminUsersRemoveRoute, user);
+    }
+
+    showRequests():Observable<any>{
+        return this.http.post(this.adminRequestsRoute, null);
+    }
+
+    confirmRequest(elem):Observable<any>{
+        return this.http.post(this.adminRequestsConfirmRoute, {user : elem.username});
     }
 
 

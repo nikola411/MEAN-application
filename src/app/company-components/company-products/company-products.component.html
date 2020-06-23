@@ -1,0 +1,52 @@
+
+
+<div class="add-remove">
+    <button mat-raised-button (click)="addProduct()">
+        <mat-icon class = "deleteIcon" aria-hidden="false" aria-label="Example home icon">add</mat-icon>
+        Dodaj
+    </button>
+</div>
+<br>
+<mat-table [dataSource]="tableSource" class="mat">
+
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+  
+    <!-- Position Column -->
+    <ng-container matColumnDef="productId">
+      <mat-header-cell *matHeaderCellDef> Id </mat-header-cell>
+      <mat-cell *matCellDef="let element" > {{element.id}} </mat-cell>
+    </ng-container>
+  
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef> Proizvod </mat-header-cell>
+      <mat-cell *matCellDef="let element" > {{element.name}} </mat-cell>
+    </ng-container>
+  
+    <!-- Weight Column -->
+    <ng-container matColumnDef="quantity">
+      <mat-header-cell *matHeaderCellDef> Kolicina </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.quantity}} </mat-cell>
+    </ng-container>
+  
+    <!-- Symbol Column -->
+
+
+    <ng-container matColumnDef="options">
+      <mat-header-cell *matHeaderCellDef> Opcije </mat-header-cell>
+      <mat-cell *matCellDef="let element" >
+        <button class = "showPage" (click)="show(element)" >
+          <mat-icon class = "deleteIcon" aria-hidden="false" aria-label="Example home icon" matTooltip="Prikazi proizvod">pageview</mat-icon>
+        </button>
+        <br>
+        <button class = "deleteBttn" (click)="delete(element)" matTooltip="Obrisi proizvod">
+            <mat-icon class = "deleteIcon" aria-hidden="false" aria-label="Example home icon">delete</mat-icon>
+          </button>
+      </mat-cell>
+    </ng-container>
+  
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</mat-table>
+

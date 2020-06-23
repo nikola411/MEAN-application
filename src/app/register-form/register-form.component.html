@@ -1,4 +1,7 @@
-<form class="form" (submit)="register()">
+
+<div class="registerForm">
+  <!--<form class="form"  [formGroup]="registered" (submit)="showCaptchaB()" *ngIf="!showCaptcha"> --> 
+<form class="form"  [formGroup]="registered" (submit)="register()" *ngIf="!showCaptcha">
   <div class="choose-form">
     <input type="radio" id="firm" name="choose" (change)="onChange($event)">
     <label for="firm">Firma</label>
@@ -11,14 +14,14 @@
       <mat-form-field appearance="fill">
         <mat-label *ngIf="userType">Ime</mat-label>
         <mat-label *ngIf="!userType">Ime firme</mat-label>
-        <input matInput class="input-field" name="firstName" [formControl]="name" [placeholder]='userType ? "Ime" : "Ime firme"'>
+        <input matInput class="input-field" name="firstName" formControlName="name" [placeholder]='userType ? "Ime" : "Ime firme"'>
       </mat-form-field>
     </div>
     <br *ngIf="userType">
     <div class="last" *ngIf ="userType">
       <mat-form-field appearance="fill" >
         <mat-label>Prezime</mat-label>
-        <input matInput class="input-field" name="lastName" [formControl]="surrname" placeholder="Prezime">
+        <input matInput class="input-field" name="lastName" formControlName="surrname" placeholder="Prezime">
       </mat-form-field>
     </div>
     <br>
@@ -26,7 +29,7 @@
       <mat-form-field appearance="fill">
         <mat-label *ngIf="userType">Korisnicko ime</mat-label>
         <mat-label *ngIf="!userType">Jedinstveno ime firme</mat-label>
-        <input matInput class="input-field" name="username" [formControl]="username" [placeholder]="userType ? 'Korisnicko ime' : 'Jedinstveno ime'">
+        <input matInput class="input-field" name="username" formControlName="username" [placeholder]="userType ? 'Korisnicko ime' : 'Jedinstveno ime'">
 
       </mat-form-field>
     </div>
@@ -34,7 +37,7 @@
     <div class="email">
       <mat-form-field appearance="fill">
         <mat-label>Email</mat-label>
-        <input matInput class="input-field" name="mail" [formControl]="mail" type="email" placeholder="mail@mail.com">
+        <input matInput class="input-field" name="mail" formControlName="mail" type="email" placeholder="mail@mail.com">
 
       </mat-form-field>
     </div>
@@ -42,7 +45,7 @@
     <div class="pass">
       <mat-form-field appearance="fill">
         <mat-label>Lozinka</mat-label>
-        <input matInput class="input-field" name="password" [formControl]="password" type="password">
+        <input matInput class="input-field" name="password" formControlName="password" type="password">
 
       </mat-form-field>
     </div>
@@ -50,7 +53,7 @@
     <div class="repeat">
       <mat-form-field appearance="fill">
         <mat-label>Ponovi lozinku</mat-label>
-        <input matInput class="input-field" name="repeat" [formControl]="repeat" type="password">
+        <input matInput class="input-field" name="repeat" formControlName="repeat" type="password">
 
       </mat-form-field>
     </div>
@@ -58,7 +61,7 @@
     <div class="number" *ngIf="userType">
       <mat-form-field appearance="fill">
         <mat-label>Broj telefona</mat-label>
-        <input matInput class="input-field" name="number" [formControl]="number" type="tel">
+        <input matInput class="input-field" name="number" formControlName="number" type="tel">
 
       </mat-form-field>
 
@@ -68,7 +71,7 @@
       <mat-form-field appearance="fill">
         <mat-label *ngIf="userType">Datum rodjenja</mat-label>
         <mat-label *ngIf="!userType">Datum osnivanja firme</mat-label>
-        <input matInput class="input-field" name="date" [formControl]="date" type="date">
+        <input matInput class="input-field" name="date" formControlName="date" type="date">
 
       </mat-form-field>
     </div>
@@ -76,12 +79,31 @@
     <div class="place" *ngIf="!userType">
       <mat-form-field appearance="fill">
         <mat-label >Mesto osnivanja firme</mat-label>
-        <input matInput class="input-field" name="place" [formControl]="place" type="place">
+        <input matInput class="input-field" name="place" formControlName="place" type="place">
 
       </mat-form-field>
     </div>
-  <!--<label class="mistake">{{mistakeLabel}}</label>-->
- 
-  <button type="submit">submit</button>
 
+    <br>
+  <!--<label class="mistake">{{mistakeLabel}}</label>-->
+  <button [disabled]="registered.invalid" type="submit">submit</button>
 </form>
+<!--<form *ngIf = "showCaptcha" class="captcha">
+  
+  <div class = "gcaptcha">
+    <p class="para">Jos samo par trenutaka...</p>
+    <re-captcha
+    #captchaRef="reCaptcha"
+    (resolved)="resolved($event)"
+    [(ngModel)]="myCaptcha"
+    name="captcha"
+    required
+    siteKey="6LcAfgEVAAAAABtAw9aJtPHeYkRVKzEbMDJjPQ2c"
+  ></re-captcha>
+
+  </div>
+ 
+</form> -->
+
+</div>
+

@@ -5,6 +5,7 @@ import { HttpService } from '../services/http-service/http-service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ButtonService } from './../services/logged-service/logged-service';
 import { UserMenu } from '../menu/user-menu/user-menu.component';
+import { GardenService } from '../services/garden-service/garden-service';
 
 
 @Component({
@@ -23,7 +24,8 @@ export class GardenForm {
     tempsForm = new FormControl();
 
     constructor(private http: HttpService, private router: Router,
-        private route: ActivatedRoute, private buttonService: ButtonService) {
+        private route: ActivatedRoute, private buttonService: ButtonService,
+        private gardenService : GardenService) {
            
          }
 
@@ -40,7 +42,9 @@ export class GardenForm {
             newGarden.garden[newGarden.height] = new Array(newGarden.width);
         }*/
 
-        this.http.addGarden(newGarden).subscribe();
+        this.http.addGarden(newGarden).subscribe(result=>{
+            this.gardenService.showGardens(result);
+        });
         this.router.navigate(['user/garden/show/all', {relativeTo : this.route}]);
     }
 }

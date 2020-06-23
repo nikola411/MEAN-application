@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+import { userInfo } from 'os';
 
 
 @Injectable({
@@ -12,12 +13,12 @@ export class ButtonService{
         return this.subject.next();
     }
 
-    setInfo(){
-        return this.subject.next(true);
+    setInfo(user){
+        return this.subject.next({user: user, status : true});
     }
 
-    clearInfo(){
-        return this.subject.next(false);
+    clearInfo(user){
+        return this.subject.next({user : user, status : false});
     }
 
     onEvent(){ 
@@ -30,6 +31,10 @@ export class ButtonService{
 
     showGardens(obj){
         return this.subject.next(obj);
+    }
+
+    sendProducts(obj, user){
+        return this.subject.next({user : user, status : true, products :obj});
     }
     
     deleteGarden(obj:boolean){

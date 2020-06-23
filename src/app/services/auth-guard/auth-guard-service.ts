@@ -16,7 +16,7 @@ export class AuthGuard implements CanActivate {
 
         var ret: boolean;
         var user = this.httpService.getUser();
-        if (user == '/user') {
+        if (user == 'farmer' || user == "company") {
             if (next.routeConfig.path == "login" || next.routeConfig.path == "register") {
                 ret = false;
             } else {
@@ -25,12 +25,12 @@ export class AuthGuard implements CanActivate {
         } else {
             if (next.routeConfig.path == "login" || next.routeConfig.path == "register") {
                 ret = true;
-                this.buttonService.clearInfo();
+                this.buttonService.clearInfo("farmer");
+                this.buttonService.clearInfo("company");
                 
             } else {
                 ret = false;
                 
-                this.buttonService.setInfo();
             }
             
         }

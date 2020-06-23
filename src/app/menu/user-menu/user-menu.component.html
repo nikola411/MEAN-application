@@ -6,7 +6,7 @@
     </button>
     <button mat-menu-item class = "inner" (click)= "showGardens()">Rasadnici</button>
     <button mat-menu-item class = "inner" (click) = "addGarden()">Dodaj rasadnik </button>
-    <button mat-menu-item class = "inner">Prodavnica</button>
+    <button mat-menu-item class = "inner" (click) = "getShop()">Prodavnica</button>
     <button mat-menu-item class = "inner" (click)="showWarehouse()">Magacin</button>
    
     <button mat-menu-item class = "right" (click)="logout()">
@@ -14,6 +14,4 @@
     </button>
 </menu>
 
-
-<router-outlet name = "userOut"></router-outlet>
 </div>

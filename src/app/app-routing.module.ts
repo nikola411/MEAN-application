@@ -10,7 +10,12 @@ import { AuthGuard } from './services/auth-guard/auth-guard-service';
 import { GardenTable } from './garden-components/gardens-table.component/gardens-table.component';
 import { SingleGarden } from './garden-components/single-garden.component/single-garden.component';
 import { Warehouse } from './warehouse/warehouse.component';
-
+import { CompanyOrders } from './company-components/company-orders/company-orders.component';
+import { CompanyProducts } from './company-components/company-products/company-products.component';
+import { OrderSteps } from './company-components/company-product-steps/steps.component';
+import { Shop } from './shop/shop.component';
+import { Users } from './admin-components/users.component.ts/users.component';
+import { Requests } from './admin-components/requests/requests.component';
 
 const routes: Routes = [
   { path: 'home', component: UserComponent },
@@ -25,33 +30,37 @@ const routes: Routes = [
           {
             path: 'show', children: [
               { path: 'all', component: GardenTable },
-              { path : 'single', component : SingleGarden}
+              { path: 'single', component: SingleGarden }
             ]
           }
-
-
-
-
-
-
-
         ]
       },
       {
-        path : 'warehouse', component : Warehouse
+        path: 'warehouse', component: Warehouse
       }
-      //{ path: 'garden-reg', component: GardenForm},
-
-
-
-
-
-      // otherwise redirect to home
-
-    ]}
-  ]
+    ]
+  },
+  {
+    path: "company", children: [
+      { path: "orders", component: CompanyOrders },
+      { path : "products", component : CompanyProducts },
+      { path : "product" , children : [
+        {path : "add", component : OrderSteps}
+      ]}
+    ]
+  },
+  {path : "shop", component : Shop},
+  {path : "admin", children :[
+    {
+      path : "users", component : Users,
+    },
+    {
+      path : "requests", component : Requests
+    }
+  ]}
+]
 @NgModule({
-      imports: [RouterModule.forRoot(routes)],
-      exports: [RouterModule]
-    })
-export class AppRoutingModule { }
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { } 

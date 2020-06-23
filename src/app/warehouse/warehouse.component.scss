@@ -1,0 +1,65 @@
+.warehouse { 
+    margin : auto;
+    width : 80vw;
+    height : 70vh;
+    
+    overflow-x : hidden;
+    position: relative;
+    border-radius : 20px;
+}
+
+.warehouse::-webkit-scrollbar{
+    display : none;
+}
+
+.slider {
+    position : fixed;
+    right : calc(80vw / 2);
+    top : 15vh;
+}
+
+.mat-table{
+    margin : auto;
+    width : inherit;
+    height : inherit;
+   
+}
+
+.ng-container{
+    text-align : center;
+    margin : auto;
+}
+
+ .header-cell{
+    width : 20vw;
+    height : 5vh;
+   text-align :center;
+ 
+}
+
+
+
+
+
+  img {
+      width :4vh;
+      height : 4vh;
+      background:transparent;
+      user-select: none;
+  }
+
+
+
+.choice{
+    margin : auto;
+    width : 5vh;
+    height : 3vh;
+    
+  
+    background: transparent;
+}
+
+.mat-button-toggle-checked {
+    background-color:#00ad00;
+   
+  }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { HttpService } from '../services/http-service/http-service';
 import { ButtonService } from '../services/logged-service/logged-service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -12,6 +12,17 @@ import { Observable } from 'rxjs';
 import { removeSummaryDuplicates } from '@angular/compiler';
 
 import { PlantDialog } from '../dialogs/plant-dialog/plant-dialog.component';
+import { MatSort } from '@angular/material/sort';
+import { Sort } from '@angular/material/sort';
+import { MatTable, MatTableDataSource } from '@angular/material/table';
+
+
+interface Plant {
+  type: string,
+  name: string,
+  producer: string,
+  quantity: number
+}
 
 
 @Component({
@@ -24,41 +35,86 @@ import { PlantDialog } from '../dialogs/plant-dialog/plant-dialog.component';
 
 export class Warehouse {
 
-    plants : JSON[];
-    warehouse : JSON[];
-    pending : boolean = false;
-    pendingRequests : JSON[];
+  plants: JSON[];
+  sortedData: any;
+
+  filterForm: FormControl = new FormControl();
+  filterFormField: string;
+
+
+  warehouse: Plant[];
+  pending: boolean = false;
+  pendingRequests: JSON[];
+
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
+
+
+  displayedColumns = ['type', 'name', 'quantity', 'producer'];
+
+  constructor(private http: HttpService, private dialog: MatDialog) {
+    this.http.getWarehouse().subscribe(result => {
+      
+      this.pending = result.pending;
+      this.warehouse = result.warehouse as Plant[];
+      this.sortedData = this.warehouse;
+
+
+
+    })
+  }
+
+  isPlant(obj): boolean {
+    if (obj.type == "plant") {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  showPending() {
+    this.pending = true;
+  }
+
+  showWarehouse() {
     
+    this.pending = false;
+  }
 
-    displayedColumns  = [ 'tip','ime', 'kolicina', 'proizvodjac'];
 
-    constructor(private http : HttpService, private dialog : MatDialog ){
-      this.http.getWarehouse().subscribe( result => {
-        console.log(result);
-        this.pending = result.pending;
-        this.warehouse = result.warehouse;
-        this.showWarehouse();
-        
-      })
+
+  sortData(sort: Sort) {
+    console.log(sort);
+    const data = this.warehouse.slice();
+    if (!sort.active || sort.direction === '') {
+      this.sortedData = data;
+      return;
     }
 
-    isPlant(obj):boolean {
-      if(obj.type == "plant") {
-        return true;
-      } else {
-        return false;
+    this.sortedData = data.sort((a: Plant, b: Plant) => {
+      const isAsc = sort.direction === 'asc';
+      
+      switch (sort.active) {
+        case 'name': {
+
+          return compare(a.name, b.name, isAsc)
+        };
+        case 'producer': return compare(a.producer, b.producer, isAsc);
+        case 'quantity': return compare(a.quantity, b.quantity, isAsc);
+
+        default: return 0;
       }
-    }
+    }).filter(x => { return x });
 
-    showPending(){
-      this.pending = true;
-    }
+  }
 
-    showWarehouse(){
-      console.log("showing warehouse")
-      this.pending = false;
-    }
 
-    
 
+
+
+
+
+}
+
+function compare(a: number | string, b: number | string, isAsc: boolean) {
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }
