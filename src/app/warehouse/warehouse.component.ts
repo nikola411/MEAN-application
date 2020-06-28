@@ -83,7 +83,7 @@ export class Warehouse {
 
 
   sortData(sort: Sort) {
-    console.log(sort);
+    
     const data = this.warehouse.slice();
     if (!sort.active || sort.direction === '') {
       this.sortedData = data;
@@ -107,14 +107,9 @@ export class Warehouse {
 
   }
 
-
-
-
-
-
-
 }
 
 function compare(a: number | string, b: number | string, isAsc: boolean) {
-  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+  
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }

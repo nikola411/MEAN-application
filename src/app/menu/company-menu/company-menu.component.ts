@@ -7,7 +7,7 @@ import { ButtonService } from '../../services/logged-service/logged-service';
 import { GardenForm } from '../../garden-form/garden-form.component';
 import { Location } from '@angular/common';
 import { MatGridTileHeaderCssMatStyler } from '@angular/material/grid-list';
-import { ProductsService } from 'src/app/services/products-service/products-service';
+
 
 
 @Component({
@@ -22,7 +22,7 @@ export class CompanyMenu {
 
   constructor(private http: HttpService,
     private router: Router,
-    private productService : ProductsService,
+   
     private buttonService : ButtonService,
     private route: ActivatedRoute,
     private location: Location) {
@@ -43,10 +43,7 @@ export class CompanyMenu {
   showProducts() {
      
     
-        this.router.navigate(['/company/products'], { relativeTo: this.route });
-    
-   
-    
+    this.router.navigate(['/company/products'], { relativeTo: this.route });
   }
 
   showStats() {

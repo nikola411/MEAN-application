@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { HttpService } from 'src/app/services/http-service/http-service';
 import { ButtonService } from 'src/app/services/logged-service/logged-service';
+import { CompanyService } from 'src/app/services/company-service/company-service.service';
 
 @Component({
     selector: 'company-orders',
@@ -15,11 +16,11 @@ import { ButtonService } from 'src/app/services/logged-service/logged-service';
     displayedColumns = ['orderId', 'product', 'customer', 'status', 'options'];
 
 
-    constructor(private http :HttpService, private buttonService : ButtonService ){
+    constructor(private http :HttpService, private buttonService : ButtonService, private companyService : CompanyService ){
       this.buttonService.onEvent().subscribe(result=>{
         this.orders = result;
       })
-       this.http.getCompanyOrders().subscribe(result=>console.log(result));
+       this.companyService.getCompanyOrders().subscribe(result=>console.log(result));
     }
 
     hasOrders() : boolean{

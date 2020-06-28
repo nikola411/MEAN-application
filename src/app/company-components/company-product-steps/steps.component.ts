@@ -3,7 +3,8 @@ import { HttpService } from 'src/app/services/http-service/http-service';
 import { FormControl, Validators } from '@angular/forms';
 import { finished } from 'stream';
 import { Router } from '@angular/router';
-import { ProductsService } from 'src/app/services/products-service/products-service';
+import { CompanyService } from 'src/app/services/company-service/company-service.service';
+
 
 @Component({
     selector: 'order-steps',
@@ -28,7 +29,7 @@ import { ProductsService } from 'src/app/services/products-service/products-serv
     productPrice = new FormControl("", Validators.required);
 
 
-    constructor(private http :HttpService, private router:Router, private productService : ProductsService){
+    constructor(private companyService :CompanyService, private router:Router){
 
     }
 
@@ -55,10 +56,10 @@ import { ProductsService } from 'src/app/services/products-service/products-serv
                     properties : this.productProperties.value,
                     price : this.productPrice.value};
         
-        this.http.addProduct(obj).subscribe(result=>{
+        this.companyService.addProduct(obj).subscribe(result=>{
             this.finish = false;
             this.success = true;
-            this.productService.sendProducts(result.value.shop);
+            
             this.router.navigate(['/company/products']);
 
         })

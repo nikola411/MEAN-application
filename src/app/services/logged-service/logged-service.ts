@@ -25,23 +25,6 @@ export class ButtonService{
         return this.subject.asObservable();
     }
 
-    registerGarden(){
-        return this.subject.next("garden");
-    }
-
-    showGardens(obj){
-        return this.subject.next(obj);
-    }
-
-    sendProducts(obj, user){
-        return this.subject.next({user : user, status : true, products :obj});
-    }
+ 
     
-    deleteGarden(obj:boolean){
-        return obj;
-    }
-
-    refresh(){
-        return;
-    }
 }

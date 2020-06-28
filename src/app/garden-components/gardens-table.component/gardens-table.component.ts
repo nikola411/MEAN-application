@@ -31,7 +31,7 @@ export class GardenTable {
         private gardenService: GardenService,
         private buttonService: ButtonService,
         private dialog: MatDialog) {
-            this.http.showGardens().subscribe(result=>{
+            this.gardenService.showGardens().subscribe(result=>{
                 this.gardens.data = result.garden;
                 
             })
@@ -46,20 +46,21 @@ export class GardenTable {
 
     tableClicked(obj) {
 
-        this.http.showMyGarden(obj).subscribe(result => {
+        this.gardenService.setGarden(obj);
+
+        /*this.http.showMyGarden(obj).subscribe(result => {
             /* result is an object of format {0: {name : '',place : '', widht: '', height:'', garden:'', water:'', temp:'', free:''}}
       so dummy1 is an array of values of fields of result(only 0) and dummy2 is an array of values of dummy 1
       (length = 7)
-      */
+      
 
 
             var dummy1 = Object.values(result);
             var dummy2 = Object.values(dummy1[0]);
 
-
             this.gardenService.getGardenForDisplaying(dummy2);
         }
-        )
+        )*/
         this.router.navigate(['user/garden/show/single']);
     }
 
@@ -84,7 +85,7 @@ export class GardenTable {
         this.openDialog().subscribe(result => {
             if (result == "true") {
 
-                this.http.removeGarden(obj).subscribe(result => {
+                this.gardenService.removeGarden(obj).subscribe(result => {
                     this.gardens.data = result.garden;
                     this.table.renderRows();
                 });

@@ -3,8 +3,9 @@ import { HttpService } from 'src/app/services/http-service/http-service';
 import { FormControl, Validators } from '@angular/forms';
 import { finished } from 'stream';
 import { Router } from '@angular/router';
-import { ProductsService } from 'src/app/services/products-service/products-service';
+
 import { MatTable, MatTableDataSource } from '@angular/material/table';
+import { AdminService } from 'src/app/services/admin-service/admin.service';
 
 @Component({
     selector: 'requests',
@@ -20,8 +21,8 @@ import { MatTable, MatTableDataSource } from '@angular/material/table';
     tableSource = new MatTableDataSource<any>();
     displayedColumns = ['id', 'username', 'email', 'type', 'options'];
 
-    constructor(private http : HttpService){
-        this.http.showRequests().subscribe(result=>{
+    constructor(private http : HttpService, private adminService : AdminService){
+        this.adminService.showRequests().subscribe(result=>{
             console.log(result)
             this.requests = result;
             this.tableSource.data = this.requests;
@@ -32,19 +33,19 @@ import { MatTable, MatTableDataSource } from '@angular/material/table';
     removeRequest(elem){
         console.log("removing user");
         console.log(elem);
-        //this.http.removeRequest({user : elem.username, email : elem.email}).subscribe(result=>{
-     //      this.refresh();
-      //  })
+        this.adminService.removeRequest({user : elem.username, email : elem.email}).subscribe(result=>{
+           this.refresh();
+        })
     }
 
     confirmRequest(elem){
-        this.http.confirmRequest(elem).subscribe(result=>{
+        this.adminService.confirmRequest(elem).subscribe(result=>{
             this.refresh();
         });
     }
 
     private refresh(){
-        this.http.showRequests().subscribe(result=>{
+        this.adminService.showRequests().subscribe(result=>{
             console.log("refreshing");
             this.requests = result;
             this.tableSource.data= this.requests;

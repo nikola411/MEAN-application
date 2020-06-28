@@ -3,8 +3,9 @@ import { HttpService } from 'src/app/services/http-service/http-service';
 import { FormControl, Validators } from '@angular/forms';
 import { finished } from 'stream';
 import { Router } from '@angular/router';
-import { ProductsService } from 'src/app/services/products-service/products-service';
+
 import { MatTableDataSource, MatTable } from '@angular/material/table';
+import { AdminService } from 'src/app/services/admin-service/admin.service';
 
 @Component({
     selector: 'users',
@@ -20,8 +21,8 @@ import { MatTableDataSource, MatTable } from '@angular/material/table';
     tableSource = new MatTableDataSource<any>();
     displayedColumns = ['id', 'username', 'email', 'type', 'options'];
 
-    constructor(private http : HttpService){
-        this.http.showUsers().subscribe(result=>{
+    constructor(private http : HttpService, private adminService : AdminService){
+        this.adminService.showUsers().subscribe(result=>{
             this.users = result;
             this.tableSource.data = this.users;
             console.log(this.users);
@@ -31,14 +32,13 @@ import { MatTableDataSource, MatTable } from '@angular/material/table';
     removeUser(elem){
         console.log("removing user");
         console.log(elem);
-        this.http.removeUser({user : elem.username, email : elem.email}).subscribe(result=>{
+        this.adminService.removeUser({user : elem.username, email : elem.email}).subscribe(result=>{
             this.refresh();
         })
     }
 
     private refresh(){
-        this.http.showUsers().subscribe(result=>{
-            console.log("refreshing");
+        this.adminService.showUsers().subscribe(result=>{
             this.users = result;
             this.tableSource.data= this.users;
             this.table.renderRows();

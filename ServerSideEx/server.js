@@ -584,9 +584,29 @@ app.post("/api/shop", (req, res) => {
         });
 })
 
+app.post("/api/shop/product", (req,res)=>{
+   
+    let comp = req.body.companyName;
+    let prod = req.body.product;
+    db.collection('users').findOne({username : comp},{projection : {shop : 1}}).then(result=>{
+        console.log("result : " + result);
+        
+            let x = result.shop;
+            let ret = x.filter(y=> y.name == prod);
+            res.send({product : ret[0]});
+
+        
+       
+        //filtriraj proizvod koji se zove prod
+        //posalji nazad taj proizvod
+        
+        console.log("product sent");
+    })
+})
+
 
 app.post("/api/admin/users", (req, res) => {
-    db.collection('users').find({},
+    db.collection('users').find({status : "registered"},
         { projection: { _id: 1, username: 1, email: 1, type: 1 } })
         .toArray()
         .then(result => {
@@ -624,7 +644,14 @@ app.post("/api/admin/requests/add", (req, res) => {
 
 app.post("/api/admin/requests/confirm", (req, res) => {
     let user = req.body.user;
-    db.collection("users").updateOne({ username: user }, { $set: { status: "registered" } });
+    db.collection("users").updateOne({ username: user }, { $set: { status: "registered" } }).then(res.send({registered : true}));
+})
+
+app.post("/api/admin/requests/remove", (req,res)=>{
+    let user = req.body.user;
+    db.collection("users").deleteOne({username : user, status : "pending"}).then(result=>{
+        res.send({removed : result.deletedCount == 1 ? true  : false});
+    });
 })
 
 

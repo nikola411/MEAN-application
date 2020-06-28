@@ -76,10 +76,11 @@ import { CompanyProducts } from './company-components/company-products/company-p
 
 import { HttpClientModule } from '@angular/common/http';
 import { OrderSteps } from './company-components/company-product-steps/steps.component';
-import { Shop } from './shop/shop.component';
+import { Shop } from './shop/shop/shop.component';
 import { AdminMenu } from './menu/admin-menu/admin-menu.component';
 import { Users } from './admin-components/users.component.ts/users.component';
 import { Requests } from './admin-components/requests/requests.component';
+import { Product } from './shop/product/product.component';
 
 
 @NgModule({
@@ -101,7 +102,8 @@ import { Requests } from './admin-components/requests/requests.component';
     Shop,
     AdminMenu,
     Users,
-    Requests
+    Requests,
+    Product
 
   ],
   imports: [

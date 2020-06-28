@@ -3,8 +3,9 @@ import { HttpService } from 'src/app/services/http-service/http-service';
 import { Router, ActivatedRoute } from '@angular/router';
 
 
-import { ProductsService } from '../../services/products-service/products-service';
+import { ProductService } from '../../services/product-service/product-service';
 import { MatTableDataSource, MatTable } from '@angular/material/table';
+import {CompanyService } from '../../services/company-service/company-service.service';
 
 @Component({
     selector: 'company-products',
@@ -26,9 +27,9 @@ export class CompanyProducts {
         private http: HttpService,
         private router: Router,
         private route: ActivatedRoute,
-        private productService: ProductsService
+        private companyService : CompanyService
         ) {
-            this.http.getCompanyProducts().subscribe(result=>{
+            this.companyService.getCompanyProducts().subscribe(result=>{
                 this.products = result.shop;
                 this.tableSource.data = this.products;
             })
@@ -51,7 +52,7 @@ export class CompanyProducts {
 
     delete(product) {
 
-        this.http.removeProduct(product).subscribe(result => {
+        this.companyService.removeProduct(product).subscribe(result => {
             console.log("refreshing");
             this.refresh();
             
@@ -60,7 +61,7 @@ export class CompanyProducts {
 
 
     private refresh(){
-        this.http.getCompanyProducts().subscribe(result=>{
+        this.companyService.getCompanyProducts().subscribe(result=>{
             this.products = result.shop;
             this.tableSource.data= this.products;
             this.table.renderRows();

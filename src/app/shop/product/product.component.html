@@ -1,0 +1,65 @@
+
+<div class = "outer">
+
+
+<div class = "wrapper">
+    <!-- product info-->
+    <h1>Informacije o prozivodu</h1>
+    <div class = "info" >
+        
+
+        
+            <span>Ime : {{product1.name}} </span>
+       
+            <br>
+        
+            <span>Cena : {{product1.price}}</span>
+        
+        
+            <br>
+            <span>Na stanju : {{product1.quantity}}</span>
+        
+            <br>
+        
+            <span>Svojstva : {{product1.properties}}</span>
+        
+        
+    
+    </div> 
+</div>
+
+
+<div class = "wrapper">
+    <h1>Komentari:</h1>
+    <p *ngIf="!hasComments()">Nema komentara za ovaj prozivod</p>
+    <ul *ngIf="hasComments()">
+        <li *ngFor="let comm in product1.comments">
+            {{comm}}
+        </li>
+    </ul>
+   
+    <!--product comments-->
+</div>
+<div class = "wrapper">   
+    <!-- add comment-->
+
+    <form [formControl]="comment" (submit)="submitComment()">
+        <mat-form-field hintLabel="Max 256 characters" appearance="fill">
+            <mat-label>Komentar:</mat-label>
+            <textarea matInput #input maxlength="256" placeholder="Vas komentar"></textarea>
+            <mat-hint align="end">{{input.value?.length || 0}}/256</mat-hint>
+        </mat-form-field>
+        <br>
+
+        <button mat-raised-button type="submit">Dodaj</button>
+
+    </form>
+    
+
+   
+</div>
+
+</div>
+
+
+

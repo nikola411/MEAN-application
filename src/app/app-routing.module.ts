@@ -13,9 +13,10 @@ import { Warehouse } from './warehouse/warehouse.component';
 import { CompanyOrders } from './company-components/company-orders/company-orders.component';
 import { CompanyProducts } from './company-components/company-products/company-products.component';
 import { OrderSteps } from './company-components/company-product-steps/steps.component';
-import { Shop } from './shop/shop.component';
+import { Shop } from './shop/shop/shop.component';
 import { Users } from './admin-components/users.component.ts/users.component';
 import { Requests } from './admin-components/requests/requests.component';
+import { Product } from './shop/product/product.component';
 
 const routes: Routes = [
   { path: 'home', component: UserComponent },
@@ -49,7 +50,10 @@ const routes: Routes = [
       ]}
     ]
   },
-  {path : "shop", component : Shop},
+  {path : "shop", children:[
+    {path : "all", component : Shop},
+    {path : "product", component : Product}
+  ]},
   {path : "admin", children :[
     {
       path : "users", component : Users,

@@ -42,8 +42,10 @@ export class SingleGarden {
     private dialog: MatDialog,
   ) {
 
-    this.gardenService.onEvent().subscribe(res => {
+    this.gardenService.getGardenForDisplaying().subscribe(result => {
 
+      var dummy1 = Object.values(result);
+      var res = Object.values(dummy1[0]);
       this.garden = res;
 
       this.gardenInView = res[4];
@@ -132,17 +134,24 @@ export class SingleGarden {
   plant(obj) {
     var req = { name: this.gardenName, x: parseInt(obj.x), y: parseInt(obj.y), producer: null, plantName : null };
     this.openDialog().subscribe(result => {
-      console.log("ovo je stiglo");
-      console.log(result);
-    
+
       if (result) {
         console.log(result);
         req.plantName = JSON.parse(JSON.stringify(result)).name;
         req.producer = JSON.parse(JSON.stringify(result)).producer;
         console.log(req);
-        this.http.plant(req).subscribe(result => {
+        this.gardenService.plant(req).subscribe(result => {
 
-          this.gardenService.getGardenForDisplaying(result);
+          console.log("ovosmo update" );
+          console.log( this.gardenInView[req.x][req.y]);
+          this.gardenInView[req.x][req.y].name = req.plantName;
+          this.gardenInView[req.x][req.y].state = 0;
+          this.gardenInView[req.x][req.y].producer = req.producer;
+          this.hover[req.x][req.y].planted = true;
+          this.gardenFreeSpace--;
+          this.gardenOccSpace++;
+
+          //this.gardenService.getGardenForDisplaying(result);
         })
       }
 
@@ -155,37 +164,42 @@ export class SingleGarden {
     var req = { name: this.gardenName, x: parseInt(obj.x), y: parseInt(obj.y) };
     this.hover[req.x][req.y].planted = false;
     //this.gardenInView[req.x][req.y].state = -1;
-    this.http.takeOut(req).subscribe(result => {
-      this.gardenService.getGardenForDisplaying(result);
+    this.gardenService.takeOut(req).subscribe(result => {
+      this.gardenInView[req.x][req.y].state = -1;
+      this.gardenInView[req.x][req.y].name = "";
+      this.gardenInView[req.x][req.y].producer = "";
+      this.gardenFreeSpace++;
+      this.gardenOccSpace--;
+      
     })
 
   }
 
   addWater() {
 
-    this.http.addWater(this.gardenName).subscribe(result => {
-      this.gardenService.getGardenForDisplaying(result);
+    this.gardenService.addWater(this.gardenName).subscribe(result => {
+      this.gardenWaterLevel++;
     });
 
   }
 
   removeWater() {
 
-    this.http.removeWater(this.gardenName).subscribe(result => {
-      this.gardenService.getGardenForDisplaying(result);
+    this.gardenService.removeWater(this.gardenName).subscribe(result => {
+      this.gardenWaterLevel--;
     });
 
   }
 
   raiseTemp() {
-    this.http.raiseTemp(this.gardenName).subscribe(result => {
-      this.gardenService.getGardenForDisplaying(result);
+    this.gardenService.raiseTemp(this.gardenName).subscribe(result => {
+      this.gardenTemperature++;
     });
   }
 
   lowerTemp() {
-    this.http.lowerTemp(this.gardenName).subscribe(result => {
-      this.gardenService.getGardenForDisplaying(result);
+    this.gardenService.lowerTemp(this.gardenName).subscribe(result => {
+      this.gardenTemperature--;
     });
 
   }

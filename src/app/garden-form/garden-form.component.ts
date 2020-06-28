@@ -37,15 +37,12 @@ export class GardenForm {
             width: this.freeForm.value,
             garden : null
         }
-        /*newGarden.garden = new Array(newGarden.height);
-        for(var i ;i<newGarden.height;i++){
-            newGarden.garden[newGarden.height] = new Array(newGarden.width);
-        }*/
 
-        this.http.addGarden(newGarden).subscribe(result=>{
-            this.gardenService.showGardens(result);
+
+        this.gardenService.addGarden(newGarden).subscribe(result=>{
+            this.router.navigate(['user/garden/show/all', {relativeTo : this.route}]);
         });
-        this.router.navigate(['user/garden/show/all', {relativeTo : this.route}]);
+        
     }
 }
 

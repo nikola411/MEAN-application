@@ -1,6 +1,5 @@
-
-
-<mat-table [dataSource]="tableSource" class="mat">
+<div class = "shop"> 
+  <mat-table [dataSource]="tableSource" class="mat">
 
     <ng-container matColumnDef="compName">
       <mat-header-cell *matHeaderCellDef> Ime firme </mat-header-cell>
@@ -35,7 +34,7 @@
     <ng-container matColumnDef="options">
       <mat-header-cell *matHeaderCellDef> Opcije </mat-header-cell>
       <mat-cell *matCellDef="let element" >
-        <button class = "showPage" >
+        <button class = "showPage" (click)="showProduct(element)" >
           <mat-icon class = "deleteIcon" aria-hidden="false" aria-label="Example home icon" matTooltip="Prikazi proizvod">pageview</mat-icon>
         </button>
         <br>
@@ -48,3 +47,6 @@
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
 </mat-table>
+
+</div>
+

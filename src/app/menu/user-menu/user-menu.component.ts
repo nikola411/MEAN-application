@@ -56,7 +56,7 @@ export class UserMenu {
   }
 
   getShop(){
-    this.router.navigate(['shop'], {relativeTo : this.route});
+    this.router.navigate(['shop/all'], {relativeTo : this.route});
   }
 
 

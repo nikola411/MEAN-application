@@ -6,7 +6,7 @@ import { ButtonService } from '../../services/logged-service/logged-service';
 
 import { Location } from '@angular/common';
 
-import { ProductsService } from 'src/app/services/products-service/products-service';
+
 
 
 @Component({
@@ -21,7 +21,7 @@ export class AdminMenu {
 
   constructor(private http: HttpService,
     private router: Router,
-    private productService : ProductsService,
+
     private buttonService : ButtonService,
     private route: ActivatedRoute,
     private location: Location) {

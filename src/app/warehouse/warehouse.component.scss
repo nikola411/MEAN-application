@@ -1,11 +1,11 @@
 .warehouse { 
     margin : auto;
     width : 80vw;
-    height : 70vh;
+
     
     overflow-x : hidden;
     position: relative;
-    border-radius : 20px;
+    
 }
 
 .warehouse::-webkit-scrollbar{
@@ -13,7 +13,9 @@
 }
 
 .slider {
-    position : fixed;
+    
+    margin : auto;
+    margin-bottom : 5vh;
     right : calc(80vw / 2);
     top : 15vh;
 }
@@ -22,6 +24,7 @@
     margin : auto;
     width : inherit;
     height : inherit;
+    border-radius : 20px;
    
 }
 
