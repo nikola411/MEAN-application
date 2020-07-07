@@ -3,17 +3,18 @@ div {
     height : 20vh;
 }
 
-menu {
-    width : inherit;
-    height : inherit;
-}
-button.mat-menu-item:hover {
+
+.mat-button-toggle:hover {
+    
     background-color: rgb(168, 168, 168);
+}
+
+.mat-button-toggle{
+    width : 20vw;
 }
 
 
 .inner {
-    width : 15%;
     background-color : rgba(29, 86, 104, 0.438);
     display:inline-block;
    text-align : center;
@@ -21,7 +22,7 @@ button.mat-menu-item:hover {
   }
   
   .left {
-    width : 15%;
+    
     background-color : rgba(29, 86, 104, 0.438);
     display:inline-block;
    text-align : center;
@@ -29,7 +30,7 @@ button.mat-menu-item:hover {
       border-top-left-radius: 10px;;
   }
   .right{
-    width : 15%;
+    
     background-color : rgba(29, 86, 104, 0.438);
     display:inline-block;
    text-align : center;

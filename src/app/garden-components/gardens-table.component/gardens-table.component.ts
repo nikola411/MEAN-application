@@ -22,6 +22,7 @@ export class GardenTable {
     gardens = new MatTableDataSource<any>();
     gardensArr: Object[];
     show: boolean = false;
+    hasGardens : boolean = true;
 
     @ViewChild(MatTable) table: MatTable<any>;
 
@@ -33,6 +34,7 @@ export class GardenTable {
         private dialog: MatDialog) {
             this.gardenService.showGardens().subscribe(result=>{
                 this.gardens.data = result.garden;
+                if(this.gardens.data.length ==0)this.hasGardens = false;
                 
             })
           

@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class ShopService {
 
-  shopRoute = "/api/shop";
+  private shopRoute = "/api/shop";
 
   constructor(private http : HttpClient) { }
 

@@ -16,7 +16,12 @@ export class AuthGuard implements CanActivate {
 
         var ret: boolean;
         var user = this.httpService.getUser();
-        if (user == 'farmer' || user == "company") {
+        if(user == null){
+            ret = false;
+        } else {
+            ret = true;
+        }
+        /*if (user == 'farmer' || user == "company") {
             if (next.routeConfig.path == "login" || next.routeConfig.path == "register") {
                 ret = false;
             } else {
@@ -33,7 +38,7 @@ export class AuthGuard implements CanActivate {
                 
             }
             
-        }
+        }*/
 
         console.log(ret);
         return ret;

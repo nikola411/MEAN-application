@@ -4,7 +4,7 @@
     <form (submit)="addGarden()">
         <mat-form-field appearance="fill"  class = "top">
             <mat-label>Naziv</mat-label>
-            <input matInput class="input-field" name="plants" [formControl]="nameForm" type="place">
+            <input matInput class="input-field" name="plants" [formControl]="nameForm" type="text">
           </mat-form-field>
           <br>
           
@@ -15,12 +15,12 @@
           <br>
           <mat-form-field appearance="fill">
             <mat-label >Visina</mat-label>
-            <input matInput class="input-field" name="plants" [formControl]="plantsForm" type="place">
+            <input matInput class="input-field" name="plants" [formControl]="plantsForm" type="number">
           </mat-form-field>
           <br>
           <mat-form-field appearance="fill"  class = "bottom">
             <mat-label >Sirina</mat-label>
-            <input matInput class="input-field" name="plants" [formControl]="freeForm" type="place">
+            <input matInput class="input-field" name="plants" [formControl]="freeForm" type="number">
           </mat-form-field>
           <br>
           <button type="submit" value="">Dodaj</button>

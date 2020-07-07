@@ -16,24 +16,19 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class HttpService {
     constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) { };
 
-    currUser: string = '';
+    private currUser: string = '';
+    private currUsername : string = '';
 
-    loginRoute = "/api/login";
-    logoutRoute = "/api/logout";
-    registerRoute = "/api/register";
-    userRoute = "/api/user";
+    private userInfo : Object;
 
-
-    warehouseRoute = "/api/user/warehouse";
-
-    validateTokenRoute = "/api/validate/token";
-
-
-  
-
-
-    
-
+    private loginRoute = "/api/login";
+    private logoutRoute = "/api/logout";
+    private registerRoute = "/api/register";
+    private userRoute = "/api/user";
+    private warehouseRoute = "/api/user/warehouse";
+    private validateTokenRoute = "/api/validate/token";
+    private getFooterInfoRoute = "/api/user/footer";
+    private changePasswordRoute = "/api/user/change/password";
 
     isLogged(): Observable<any> {
 
@@ -47,12 +42,21 @@ export class HttpService {
         return this.http.post<any>(this.loginRoute, name);
     }
 
-    setUser(str: string) {
-        this.currUser = str;
+    setUser(obj) {
+
+        this.currUser = obj.type;
+        this.currUsername = obj.username;
+        this.userInfo = obj.user;
+        console.log(obj);
     }
 
     getUser(): string {
-        return this.currUser;
+        return this.currUsername;
+    }
+
+    getUserInfo():any{
+        console.log(this.userInfo)
+        return this.userInfo;
     }
 
     logout(): Observable<any> {
@@ -78,27 +82,14 @@ export class HttpService {
         return this.http.post(this.validateTokenRoute,{token : token});
     }
 
+    getFooterInfo():Observable<any>{
+        return this.http.post(this.getFooterInfoRoute, null);
+    }
+
 
 
 
     
 
-    // This method parses the data to JSON
-    private parseData(res: Response) {
-        return res.json() || [];
-    }
-
-    // Displays the error message
-    private handleError(error: Response | any) {
-        let errorMessage: string;
-
-        errorMessage = error.message ? error.message : error.toString();
-
-        // In real world application, call to log error to remote server
-        // logError(error);
-
-        // This returns another Observable for the observer to subscribe to
-        return Observable.throw(errorMessage);
-    }
 }
 

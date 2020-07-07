@@ -63,6 +63,7 @@ export class Shop {
     }
 
     showProduct(prod){
+        console.log(prod);
         
         this.productService.setProduct(prod);
         this.router.navigate(['shop/product']);

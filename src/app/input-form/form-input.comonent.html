@@ -21,6 +21,9 @@
     </mat-form-field>
   </div>
   <br>
+  <div>
+    <a routerLink="register" (click)="register()">Niste registrovani?</a>
+  </div>
   <button type="submit">submit</button>
   <div *ngIf=" loginCredBad">
     <h2>Neuspesno logovanje</h2>

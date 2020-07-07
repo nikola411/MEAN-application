@@ -1,16 +1,19 @@
 <div>
 
-    <menu class="userMenu" > 
-        <button mat-menu-item class = "left" (click) = "back()">
+    <mat-button-toggle-group>
+        <mat-button-toggle  class = "left" (click) = "back()">
             <mat-icon class = "deleteIcon" aria-hidden="false" aria-label="Example home icon">undo</mat-icon>
-        </button>
-        <button mat-menu-item class = "inner" (click)= "showPending()">Zahtevi</button>
-        <button mat-menu-item class = "inner" (click) = "showUsers()">Korisnici </button>
+        </mat-button-toggle>
+        <mat-button-toggle  class = "inner" (click)= "showPending()">Zahtevi</mat-button-toggle>
+        <mat-button-toggle  class = "inner" (click) = "showUsers()">Korisnici </mat-button-toggle>
 
-        <button mat-menu-item class = "right" (click)="logout()">
+        <mat-button-toggle class = "right" (click)="logout()">
             Izloguj se
-        </button>
-    </menu>
+        </mat-button-toggle>
+  
+
+    </mat-button-toggle-group>
+     
     
     
 

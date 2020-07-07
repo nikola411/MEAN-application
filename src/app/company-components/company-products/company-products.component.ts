@@ -52,23 +52,13 @@ export class CompanyProducts {
 
     delete(product) {
 
+        let index = this.products.indexOf(product);
+        this.products.splice(index,1);
+        this.table.renderRows();
         this.companyService.removeProduct(product).subscribe(result => {
-            console.log("refreshing");
-            this.refresh();
             
         })  
     }
-
-
-    private refresh(){
-        this.companyService.getCompanyProducts().subscribe(result=>{
-            this.products = result.shop;
-            this.tableSource.data= this.products;
-            this.table.renderRows();
-
-        })
-    }
-
 
 
 }

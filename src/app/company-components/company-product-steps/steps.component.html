@@ -17,7 +17,7 @@
     <form (submit)="next()">
         <mat-form-field>
             <label mat-label for="quantity">Kolicina</label>
-            <input [formControl]="productQuantity" type="text" name="quantity" matInput>
+            <input [formControl]="productQuantity" type="number" name="quantity" matInput>
         </mat-form-field>
         <br>
         <button mat-raised-button type="submit">Dalje</button>
@@ -29,7 +29,7 @@
     <form (submit)="next()">
         <mat-form-field>
             <label mat-label for="properties">Svojstva</label>
-            <input [formControl]="productProperties" type="text" name="properties" matInput>
+            <input [formControl]="productProperties" type="number" name="properties" matInput>
         </mat-form-field>
         <br>
         <button mat-raised-button type="submit">Dalje</button>
@@ -41,7 +41,7 @@
     <form (submit)="next()">
         <mat-form-field>
             <label mat-label for="price">Cena</label>
-            <input [formControl]="productPrice" type="text" name="price" matInput>
+            <input [formControl]="productPrice" type="number" name="price" matInput>
         </mat-form-field>
         <button mat-raised-button type="submit">Dalje</button>
     </form>

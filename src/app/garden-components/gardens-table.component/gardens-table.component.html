@@ -1,6 +1,6 @@
 
 
-<div  class = "myTable">
+<div  class = "myTable" *ngIf="hasGardens">
     <table mat-table [dataSource]="gardens" class="mat">
 
         <!--- Note that these columns can be defined in any order.
@@ -48,6 +48,8 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
 
-        
+          
    
 </div>
+
+<h2 *ngIf="!hasGardens">Trenutno nemate nijedan rasadnik</h2>

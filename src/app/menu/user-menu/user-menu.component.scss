@@ -1,29 +1,28 @@
+
 div {
     width : inherit ;
     height : 20vh;
 }
 
+
 menu {
     width : 100vw;
-    text-align : center;
-    height : inherit;
+    height : 8vh;
 }
 .mat-button-toggle-group{
-    width : 70vw;
-    text-align : center;
-    margin : auto;
+    width : 80vw;
 }
 .mat-button-toggle:hover {
     background-color: rgb(168, 168, 168);
 }
+
 .mat-button-toggle{
     width : 20vw;
 }
 
 
-
 .inner {
-   
+    
     background-color : rgba(29, 86, 104, 0.438);
     display:inline-block;
    text-align : center;
@@ -31,7 +30,7 @@ menu {
   }
   
   .left {
-  
+    
     background-color : rgba(29, 86, 104, 0.438);
     display:inline-block;
    text-align : center;

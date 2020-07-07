@@ -15,6 +15,7 @@ import { PlantDialog } from '../dialogs/plant-dialog/plant-dialog.component';
 import { MatSort } from '@angular/material/sort';
 import { Sort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
+import { ProductService } from '../services/product-service/product-service';
 
 
 interface Plant {
@@ -22,6 +23,18 @@ interface Plant {
   name: string,
   producer: string,
   quantity: number
+}
+
+//'name', 'type', 'properties','producer','quantity','courier','action'
+
+interface Request {
+  name : string,
+  type : string,
+  time: string,
+  quantity : number,
+  properties : string,
+  producer : string,
+
 }
 
 
@@ -35,6 +48,10 @@ interface Plant {
 
 export class Warehouse {
 
+  @ViewChild(MatTable) table : MatTable<any>;
+      
+
+
   plants: JSON[];
   sortedData: any;
 
@@ -44,21 +61,20 @@ export class Warehouse {
 
   warehouse: Plant[];
   pending: boolean = false;
-  pendingRequests: JSON[];
+  pendingRequests: Request[];
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
 
   displayedColumns = ['type', 'name', 'quantity', 'producer'];
 
-  constructor(private http: HttpService, private dialog: MatDialog) {
+  displayedColumns2 = ['name', 'type', 'properties','producer','quantity','courier','action'];
+
+  constructor(private http: HttpService, private productService : ProductService, private dialog: MatDialog) {
     this.http.getWarehouse().subscribe(result => {
       
-      this.pending = result.pending;
       this.warehouse = result.warehouse as Plant[];
       this.sortedData = this.warehouse;
-
-
 
     })
   }
@@ -72,8 +88,24 @@ export class Warehouse {
   }
 
   showPending() {
-    this.pending = true;
+    this.productService.getOrders().subscribe(result=>{
+      console.log(result);
+      this.pending = true;
+      this.pendingRequests = result.response as Request[];
+    })
+    
   }
+
+  cancelOrder(elem){
+    let index = this.pendingRequests.indexOf(elem);
+    //this is a much better method for 
+    //refreshing table data
+    
+    this.pendingRequests.splice(index,1);
+    this.table.renderRows();
+    
+    this.productService.cancelOrder(elem).subscribe();
+}
 
   showWarehouse() {
     
@@ -106,6 +138,9 @@ export class Warehouse {
     }).filter(x => { return x });
 
   }
+
+
+
 
 }
 

@@ -24,7 +24,7 @@ const routes: Routes = [
   { path: 'register', component: RegisterForm, canActivate: [AuthGuard] },
 
   {
-    path: 'user', children: [
+    path: 'user', canActivate : [AuthGuard], children: [
       {
         path: 'garden', children: [
           { path: 'registration', component: GardenForm },
@@ -42,7 +42,7 @@ const routes: Routes = [
     ]
   },
   {
-    path: "company", children: [
+    path: "company",canActivate : [AuthGuard], children: [
       { path: "orders", component: CompanyOrders },
       { path : "products", component : CompanyProducts },
       { path : "product" , children : [
@@ -50,11 +50,11 @@ const routes: Routes = [
       ]}
     ]
   },
-  {path : "shop", children:[
+  {path : "shop",canActivate : [AuthGuard], children:[
     {path : "all", component : Shop},
     {path : "product", component : Product}
   ]},
-  {path : "admin", children :[
+  {path : "admin",canActivate : [AuthGuard], children :[
     {
       path : "users", component : Users,
     },

@@ -76,9 +76,10 @@
       </mat-form-field>
     </div>
     <br>
-    <div class="place" *ngIf="!userType">
+    <div class="place">
       <mat-form-field appearance="fill">
-        <mat-label >Mesto osnivanja firme</mat-label>
+        <mat-label *ngIf="!userType">Mesto osnivanja firme</mat-label>
+        <mat-label *ngIf="userType">Mesto prebivalista</mat-label>
         <input matInput class="input-field" name="place" formControlName="place" type="place">
 
       </mat-form-field>

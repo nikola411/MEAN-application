@@ -2,64 +2,97 @@
 <div class = "outer">
 
 
-<div class = "wrapper">
+<div class = "info">
     <!-- product info-->
     <h1>Informacije o prozivodu</h1>
     <div class = "info" >
-        
-
-        
-            <span>Ime : {{product1.name}} </span>
-       
-            <br>
-        
-            <span>Cena : {{product1.price}}</span>
-        
-        
-            <br>
-            <span>Na stanju : {{product1.quantity}}</span>
-        
-            <br>
-        
-            <span>Svojstva : {{product1.properties}}</span>
-        
-        
-    
+            <span><b>Ime </b>: {{product1.name}}  </span>
+            <span><b>Cena</b> : {{product1.price}}  </span>
+            <span><b>Na stanju</b> : {{product1.quantity}}  </span>
+            <span><b>Svojstva</b> : {{product1.properties}}  </span>
+            <span><b>Proizvodjac</b> : {{product1.producer}}  </span>
+            <span><b>Lokacija </b>: {{product1.producerLocation}} </span>
+            
     </div> 
 </div>
+<br>
+<button mat-raised-button (click)="orderProductForm()" *ngIf="!ordering">Naruci</button>
+<button mat-raised-button (click)="cancelOrdering()" *ngIf="ordering">Odustani</button>
+<br>
 
-
-<div class = "wrapper">
-    <h1>Komentari:</h1>
-    <p *ngIf="!hasComments()">Nema komentara za ovaj prozivod</p>
-    <ul *ngIf="hasComments()">
-        <li *ngFor="let comm in product1.comments">
-            {{comm}}
-        </li>
-    </ul>
-   
-    <!--product comments-->
+<div *ngIf="ordering">
+    <br>
+    <mat-form-field>
+        <mat-label for="quant">Kolicina</mat-label>
+        <input matInput [formControl]="quantity" name="quant">
+    </mat-form-field>
+    <br>
+    <button mat-raised-button (click)="finishOrder()">Zavrsi</button>
 </div>
-<div class = "wrapper">   
-    <!-- add comment-->
+<br>
+<div class = "wrapper" *ngIf="!ordering">
+    <h2>Komentari:</h2>
+    <p *ngIf="!hasComments() && !isCommenting">Nema komentara za ovaj prozivod</p>
+    <div *ngIf="hasComments() && !isCommenting" class = "comments" >
+        <div *ngFor="let comm of product1.comments">
+            <mat-card>
+                <mat-card-title>
+                    {{comm.user}}
+                </mat-card-title>
+                <mat-card-content >
+                    Komentar : <p>{{comm.text}}</p>
+                    Ocena : {{comm.rating}}
+                </mat-card-content>
+                
+            </mat-card>
+           
+        </div>
+    </div>
+    <br>
+    <button mat-raised-button (click)="leaveComment()" *ngIf="!isCommenting">Ostavi komentar</button>
+    <button mat-raised-button (click)="backToComments()" *ngIf="isCommenting">Nazad na komentare</button>
 
-    <form [formControl]="comment" (submit)="submitComment()">
-        <mat-form-field hintLabel="Max 256 characters" appearance="fill">
-            <mat-label>Komentar:</mat-label>
-            <textarea matInput #input maxlength="256" placeholder="Vas komentar"></textarea>
-            <mat-hint align="end">{{input.value?.length || 0}}/256</mat-hint>
-        </mat-form-field>
-        <br>
+    <h2 *ngIf="!canRate && isCommenting">Ne mozete ostaviti komentar za ovaj proizvod</h2>
+    <div class = "rating" *ngIf="canRate && isCommenting">
+        <h2>Oceni</h2>
+        <div class="rating">
+            <button mat-icon-button (click)="rated(1)">
+                <mat-icon *ngIf="ratedArr[0]">star</mat-icon>
+                <mat-icon *ngIf="!ratedArr[0]">star_border</mat-icon>
+            </button>
+            <button mat-icon-button (click)="rated(2)">
+                <mat-icon *ngIf="ratedArr[1]">star</mat-icon>
+                <mat-icon *ngIf="!ratedArr[1]">star_border</mat-icon>
+            </button>
+            <button mat-icon-button (click)="rated(3)">
+                <mat-icon *ngIf="ratedArr[2]">star</mat-icon>
+                <mat-icon *ngIf="!ratedArr[2]">star_border</mat-icon>
+            </button>
+            <button mat-icon-button (click)="rated(4)">
+                <mat-icon *ngIf="ratedArr[3]">star</mat-icon>
+                <mat-icon *ngIf="!ratedArr[3]">star_border</mat-icon>
+            </button>
+            <button mat-icon-button (click)="rated(5)">
+                <mat-icon *ngIf="ratedArr[4]">star</mat-icon>
+                <mat-icon *ngIf="!ratedArr[4]">star_border</mat-icon>
+            </button>
+        </div>
+     
+        <form name = "comment" [formGroup]="comment" (submit)="submitComment()">
+            <mat-form-field hintLabel="Max 256 karaktera" appearance="fill">
+                <mat-label>Komentar:</mat-label>
+                <textarea formControlName = "text" matInput #input maxlength="256" placeholder="Vas komentar"></textarea>
+                <mat-hint align="end">{{input.value?.length || 0}}/256</mat-hint>
+            </mat-form-field>
+            <br>
+          
+            <button mat-raised-button [disabled]="comment.invalid" type="submit">Dodaj</button>
+        </form>
+    </div>
 
-        <button mat-raised-button type="submit">Dodaj</button>
-
-    </form>
-    
-
-   
 </div>
 
-</div>
+
 
 
 

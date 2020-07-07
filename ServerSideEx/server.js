@@ -4,11 +4,28 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const { check, validationResult } = require('express-validator');
+const nodemailer = require('nodemailer');
 
 const request = require("request");
 
 const MongoClient = require('mongodb').MongoClient;
 
+const DISTANCE_API_KEY = "AqZHdc6VCnHj7GO5sOMgY_6mEeae6NH-yh71uFes1sxYVh--4lp2Ihhzt4XahGd0";
+const LOCATION_API_URL = "http://dev.virtualearth.net/REST/v1/Locations/";
+const DISTANCE_API_URL = "http://dev.virtualearth.net/REST/v1/Routes/DistanceMatrix/";
+
+const BingDistanceMatrix = require('bing-distance-matrix');
+const bdm = new BingDistanceMatrix(DISTANCE_API_KEY);
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'mojrasadnik.pia.etf@gmail.com',
+      pass: 'nikolacar11'
+    }
+  });
+
+const APP_EMAIL = "mojrasadnik.pia.etf@gmail.com";
 
 //we instantiate express to be able to use it
 const app = express();
@@ -19,6 +36,7 @@ const url = 'mongodb://127.0.0.1:27017';
 const myDB = 'myDB';
 //used for captcha validation
 const secretkey = "6LcAfgEVAAAAAPrN9EDUPbqWQSwcQ5pCGGMEhBlC";
+
 
 let loggedIn = "";
 
@@ -55,9 +73,60 @@ app.use(session({
     }
 }));
 
+
+
+app.post("/api/position", (req, res) => {
+
+})
+
 app.listen(3000, (req, res) => {
     console.log("Server init");
+
+    //ovde pisemo funkciju za pozicioni api
+    //odakle vadimo start i finish
+    //f
+
+    /* let start = "Wuhan, Wuhan";
+     let end = "Beograd";
+ 
+     const locationUrl = "http://dev.virtualearth.net/REST/v1/Locations/";
+     const distanceUrl = "http://dev.virtualearth.net/REST/v1/Routes/DistanceMatrix/";
+     
+     let srcCoordUrl = locationUrl + start + "?key=" + DISTANCE_API_KEY;
+     let dstCoordUrl = locationUrl + end + "?key=" + DISTANCE_API_KEY;
+     console.log("lokacija")
+ 
+     request(srcCoordUrl, (err,response, body)=>{
+         let telo = JSON.parse(body);            
+         let srcCoords = telo.resourceSets[0].resources[0].point.coordinates;            
+        
+         request(dstCoordUrl , (err , response , body)=>{
+             
+             let telo = JSON.parse(body);            
+             let dstCoords = telo.resourceSets[0].resources[0].point.coordinates; 
+ 
+             let razdaljinaUrl = distanceUrl + "?origins=" + srcCoords.join() 
+                                                      + "&destinations=" + dstCoords.join()
+                                                      + "&travelMode=driving&key=" + DISTANCE_API_KEY;
+ 
+             request(razdaljinaUrl , (err , response , body)=>{              
+             
+                 let telo = JSON.parse(body);                                 
+                 console.log(telo.resourceSets[0].resources[0].results[0]);                         
+                 
+             });
+ 
+     
+         });
+     })
+ 
+ 
+ 
+     */
+
 })
+
+
 
 const checkLogin = (req, res, next) => {
     if (req.session.userId && loggedIn) {
@@ -103,20 +172,6 @@ MongoClient.connect(url, { useUnifiedTopology: true }, (err, client) => {
 
 })
 app.get('/api/boot', (req, res) => {
-
-    //change for admin
-    /*console.log("admin");
-    db.collection('users').insertOne({
-        username : "admin",
-        password : "admin",
-        type : "admin",
-        email : "admin@admin.com",
-        number : "222-2222222",
-        status : "registered"
-    });
-    console.log("reeee");*/
-
-
 
 
     if (req.session.userId && loggedIn != "") {
@@ -185,7 +240,7 @@ app.put('/api/register', [
         req.body.productId = 0;
         req.body.status = "pending";
         console.log(req.body);
-        
+
         db.collection('users').insertOne(req.body);
 
 
@@ -211,18 +266,28 @@ app.post('/api/login', (req, res) => {
     )
         .toArray()
         .then(results => {
+            console.log(results);
             for (i in results) {
                 if (results[i].password == password) {
                     req.session.userId = currId++;
                     req.session.user = req.body.user;
+
                     loggedIn = results[i].type;
+
+                    let userInfo = {
+                        username: results[i].username, place: results[i].place,
+                        email: results[i].email, firstName: results[i].firstName,
+                        lastName: results[i].lastName, date: results[i].date,
+                        type: results[i].type
+                    };
+
                     if (loggedIn == "company") {
                         prodId = results[i].productId;
                     }
                     if (results[i].type != "admin") {
-                        res.send({ route: "/user", user: results[i].type });
+                        res.send({ route: "/user", user: userInfo });
                     } else {
-                        res.send({ route: "/admin", user: results[i].type });
+                        res.send({ route: "/admin", user: userInfo });
                     }
 
                     return;
@@ -249,6 +314,49 @@ app.get('/api/user', (req, res) => {
     })
 
 })
+
+app.post("/api/user/footer",(req,res)=>{
+    let user = req.session.user;
+    db.collection("users").findOne({username : user}).then(result=>{
+        let response = "";
+        let alert = "";
+        let number = 0;
+        for(i in result.garden){
+            if(result.garden[i].temp<18 || result.garden[i].water<70  ){
+                alert+=result.garden[i].name +" ";
+                number++;
+            }
+        }
+        if(number>1){
+            response = "U rasadnicima: " +alert + "su nepovoljni uslovi!!!";
+      
+        }else if(number == 1){
+            response = "U rasadniku: " + alert + "su nepovoljni uslovi!!!";
+        } 
+        
+        res.send({alert : response, number : number});
+    })
+})
+
+function checkingGardens() {
+    db.collection('users').find({type : "farmer"}).toArray().then(result=>{
+        let receivers = "";
+        for(i in result){
+            for(j in result.garden){
+                if(result.garden[j].temp < 18 ||result.garden[j].water < 70){
+                   receivers+=result[i].email + ",";
+                   console.log(result.garden[j].temp);
+                   console.log(result.garden[j].temp);
+                }
+            }
+        }
+        console.log(receivers);
+    })
+   
+  }
+  
+//setInterval(checkingGardens, 1500);
+
 
 app.post('/api/user/addgarden', (req, res) => {
     let user = req.session.user;
@@ -528,7 +636,105 @@ app.post("/api/company/orders", (req, res) => {
     })
 })
 
-app.post("/api/company/orders/add", (req, res) => {
+app.post("/api/shop/product/order", (req, res) => {
+    console.log(req.body);
+
+    let company = req.body.company;
+    let product = req.body.product;
+
+    //username, email, phonenumber, 
+    let user = req.body.user;
+    let quantity = req.body.quantity;
+    let type = req.body.type;
+    let properties = req.body.properties;
+    let date = new Date;
+
+    let order = { 
+                username : user.username,
+                email : user.email,
+                place : user.place, 
+                product: product, 
+                time: date, 
+                quantity : quantity, 
+                properties : properties, 
+                type : type 
+            };
+    console.log(order);
+
+    //inserts order into order array and returns product that is ordered
+    //we cannot atomically acces the shop courires, so we need another funciton for that
+    //we return a product to put in users warehouse\\\\\\\\\\\\\ as an order
+
+    db.collection('users').updateOne({ firmName: company, type: "company" }, {
+        $push: { orders: order },
+        $inc: { "shop.$[element].quantity": -quantity },
+
+    }, {
+        arrayFilters: [
+            { "element.name": { $eq: product } }
+        ],
+        
+    }).then(result => {
+
+        res.send({ updated: true });
+    })
+})
+
+app.post("/api/company/orders/shop/courier", (req, res) => {
+
+    let request = req.body.request;
+    let start = request.start;
+    let end = request.goingTo;
+
+    let srcCoordUrl = LOCATION_API_URL + start + "?key=" + DISTANCE_API_KEY;
+    let dstCoordUrl = LOCATION_API_URL + end + "?key=" + DISTANCE_API_KEY;
+
+
+    request(srcCoordUrl, (err, response, body) => {
+        let ret = JSON.parse(body);
+        let srcCoords = ret.resourceSets[0].resources[0].point.coordinates;
+
+        request(dstCoordUrl, (err, response, body) => {
+
+            let ret = JSON.parse(body);
+            let dstCoords = ret.resourceSets[0].resources[0].point.coordinates;
+
+            let distanceUrl = DISTANCE_API_URL + "?origins=" + srcCoords.join()
+                + "&destinations=" + dstCoords.join()
+                + "&travelMode=driving&key=" + DISTANCE_API_KEY;
+
+            request(distanceUrl, (err, response, body) => {
+
+                let ret = JSON.parse(body);
+
+                // console.log(ret.resourceSets[0].resources[0].results[0]); 
+                db.collection("users").updateOne({ type: "shop" },
+                    {
+                        "shop.couiers[element]":
+                        {
+                            $set:
+                                { startTime: request.start, goingTo: request.goingTo, busy: true }
+                        }
+
+                    }, {
+                    arrayFilters: [
+                        { "element.busy": { $eq: false } }
+                    ]
+                }
+                ).then(result => {
+                    //if(result.updated) res.send({deliveryTime : time});
+                    console.log(ret, result);
+                })
+
+            });
+
+
+        });
+    })
+
+
+
+
 
 })
 
@@ -547,7 +753,7 @@ app.post("/api/company/product/add", (req, res) => {
     let product = req.body;
     product.comments = [];
     product.rating = null;
-    product.id = prodId++;
+    ///product.id = prodId++;
 
 
     db.collection("users").findOneAndUpdate({ username: user },
@@ -567,13 +773,13 @@ app.post("/api/company/product/remove", (req, res) => {
     let productName = req.body.name;
     let productId = req.body.id;
 
-    db.collection('users').findOneAndUpdate(
+    db.collection('users').updateOne(
         { username: user },
         {
             $pull: { shop: { name: productName, id: productId } },
 
         }).then(result => {
-            res.send(result);
+            res.next();
         })
 })
 
@@ -584,29 +790,149 @@ app.post("/api/shop", (req, res) => {
         });
 })
 
-app.post("/api/shop/product", (req,res)=>{
-   
+app.post("/api/shop/product", (req, res) => {
+    
     let comp = req.body.companyName;
+    let companyLocation = req.body.companyLocation;
     let prod = req.body.product;
-    db.collection('users').findOne({username : comp},{projection : {shop : 1}}).then(result=>{
-        console.log("result : " + result);
+    db.collection('users').findOne({ firmName: comp }, { projection: { shop: 1, orders : 1 } }).then(result => {
         
+        if (result && result.shop) {
+            //find product
             let x = result.shop;
-            let ret = x.filter(y=> y.name == prod);
-            res.send({product : ret[0]});
+            let ret = x.filter(y => y.name == prod);
+            ret[0].producer = comp;
+            ret[0].producerLocation = companyLocation;
 
-        
+            //see if user can rate it
+
+            let user = req.session.user;
+            let orders = result.orders;
+            let canRate = false;
+
+            let filt = orders.filter(elem=> elem.product == prod && elem.user.username == user);
+            let comm = ret[0].comments;
+
+            let filt2 = comm.filter(elem=>elem.user == user);
+            //user can rate it if he didnt comment on the product already
+            //and has orderd it
+
+            //however, user can leave a comment every time he orders a product
+            console.log(filt.length);
+            console.log(filt2.length);
+            if(filt.length > 0 && filt2.length ==0 || filt.length > filt2.length){
+                canRate = true;
+            }
+          
+            res.send({ product: ret[0], canRate : canRate });
+        } else {
+            res.send({ product: null });
+        }
+    })
+})
+
+app.post("/api/shop/user/orders/cancel",(req,res)=>{
+    let firmName = req.body.firmName;
+    let product = req.body.product;
+    let user = req.session.user;
+
+    let quantity = parseInt(req.body.quantity);
+    if(!quantity){
+        quantity = 1;
+    }
+    console.log(firmName + " " + product + " " + user + " " + quantity);
+
+    db.collection('users').updateOne({firmName : firmName, type : "company"},{
+        $pull : {orders : 
+                    { product : product, username :user}
+                },
+        $inc : {"shop.$[element].quantity" : quantity}
+    },{
+        arrayFilters : [
+            {"element.name" : {$eq : product} }
+        ]
+    }
+    ).then(result=>{
+        console.log(result);
+    })
+
+})
+
+
+
+app.post("/api/shop/product/add/comment", (req, res) => {
+    console.log(req.body);
+    let comp = req.body.product.producer;
+    let prod = req.body.product.name;
+    let user = req.session.user;
+    let rating = req.body.rating;
+    let comment = { text: req.body.comment, user: user, rating : rating };
+    console.log(comment);
+    console.log(req.body);
+    //treba da se trazi preko array giltera u nizu shop kompanije a ne da pravis 
+    //novo polje koje se zove comments
+
+    db.collection('users').findOneAndUpdate({ firmName: comp, type: "company" },
+        { $push: { "shop.$[element].comments": comment } },
+        {
+            arrayFilters: [
+                { "element.name": { $eq: prod } }
+            ]
+        },
+        { returnOriginal: false }
+    ).then(
+        result => {
+            console.log(result);
+            //res.send(result);
+        }
+    )
+})
+
+app.post("/api/shop/user/orders", (req,res)=>{
+    let user = req.session.user;
+    //let element = {firmName : "", product : "", time : null, courier : -1};
+    let response = [];
+
+    console.log("ovo su narudzbine")
+;    db.collection('users').find({type : "company"},{orders : 1})
+    .toArray().then(result=>{
+        if(result){
+            for(i in result){
+                let firmName = result[i].firmName;
+                console.log(firmName);
+                if(result[i].orders){
+                    let userOrders = result[i].orders.filter(x=>x.username == user);
+                    for(j in userOrders){
+                        let product = userOrders[j].product;
+                        let time = userOrders[j].time;
+                        let quantity = userOrders[j].quantity;
+                        let properties = userOrders[j].properties;
+                        let type = userOrders[j].type;
+                        let price = userOrders[j].price;
+                        //let courier = userOrders[j].courier;
+                        response.push({firmName : firmName,
+                                        product : product, 
+                                        time : time, 
+                                        quantity : quantity,
+                                        properties : properties,
+                                        type : type,
+                                        price : price
+                                    });
+                    }
+                }
+                
+            }
+
+        }
        
-        //filtriraj proizvod koji se zove prod
-        //posalji nazad taj proizvod
-        
-        console.log("product sent");
+
+        res.send({response : response});
     })
 })
 
 
 app.post("/api/admin/users", (req, res) => {
-    db.collection('users').find({status : "registered"},
+    db.collection('users').find({ status: "registered" },
         { projection: { _id: 1, username: 1, email: 1, type: 1 } })
         .toArray()
         .then(result => {
@@ -631,28 +957,30 @@ app.post("/api/admin/requests", (req, res) => {
         { status: "pending" }, { projection: { _id: 1, username: 1, email: 1, type: 1 } })
         .toArray()
         .then(result => {
-        res.send(result);
-        console.log(result)
-    })
+            res.send(result);
+            console.log(result)
+        })
 })
 
 app.post("/api/admin/requests/add", (req, res) => {
     db.collection('users').find({ status: "pending" }, { projection: { username: 1, email: 1, type: 1 } })
         .toArray()
-        .then(result => {res.send(result); console.log(result)});
+        .then(result => { res.send(result); console.log(result) });
 })
 
 app.post("/api/admin/requests/confirm", (req, res) => {
     let user = req.body.user;
-    db.collection("users").updateOne({ username: user }, { $set: { status: "registered" } }).then(res.send({registered : true}));
+    db.collection("users").updateOne({ username: user }, { $set: { status: "registered" } }).then(res.send({ registered: true }));
 })
 
-app.post("/api/admin/requests/remove", (req,res)=>{
+app.post("/api/admin/requests/remove", (req, res) => {
     let user = req.body.user;
-    db.collection("users").deleteOne({username : user, status : "pending"}).then(result=>{
-        res.send({removed : result.deletedCount == 1 ? true  : false});
+    db.collection("users").deleteOne({ username: user, status: "pending" }).then(result => {
+        res.send({ removed: result.deletedCount == 1 ? true : false });
     });
 })
+
+
 
 
 

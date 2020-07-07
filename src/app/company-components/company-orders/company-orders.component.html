@@ -6,10 +6,6 @@
 <div class="productTable">
     <table mat-table *ngIf="hasOrders()" [dataSource]="orders" class="mat">
 
-        <!--- Note that these columns can be defined in any order.
-          The actual rendered columns are set as a property on the row definition" -->
-
-        <!-- Position Column -->
         <ng-container matColumnDef="orderId">
             <mat-header-cell *matHeaderCellDef> Id </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>

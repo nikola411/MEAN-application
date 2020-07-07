@@ -5,6 +5,7 @@ export class Farmer extends User {
     firstName: string;
     lastName: string;
     number : string;
+    place : string;
     garden : JSON[];
     warehouse : Object[];
 

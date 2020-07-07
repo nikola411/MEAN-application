@@ -102,7 +102,7 @@ export class RegisterForm{
       
     } else  {
       this.registered.setValue(
-        {mail : "",name :"",username : "", password : "",  surrname : "", repeat: "", date : "", number : "" , place : "/"});
+        {mail : "",name :"",username : "", password : "",  surrname : "", repeat: "", date : "", number : "" , place : ""});
       this.userType = true;
     }
   }
@@ -127,6 +127,7 @@ export class RegisterForm{
           email: this.registered.value.mail,
           date: this.registered.value.date,
           number: this.registered.value.number,
+          place : this.registered.value.place,
           garden : [],
           warehouse : [
             {type : "plant", name : "biljka1", producer : "nepoznati1", quantity : 20},

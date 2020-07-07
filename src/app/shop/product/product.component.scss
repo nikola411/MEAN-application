@@ -3,23 +3,70 @@
     width : 20vw;
 }
 
-ul{
-    overflow-y : scroll;
-}
-
-.mat-form-field{
-    background-color:grey;
-}
-
 .wrapper{
     width : 80vw;
     height :25vh;
-    background-color : blue;
+    //background-color : blue;
     margin : auto;
   
 }
+.info{
+    width : 80vw;
+    height :10vh;
+   // background-color : blue;
+    margin : auto;
+}
+
+.textarea{
+    width : 50vw;
+}
+
+.span{
+    font-size : 20px;
+}
+
+.comments { 
+    overflow : auto;
+    width : 80vw;
+    height : 40vh;
+    border-radius : 2px;
+}
+    .comments::-webkit-scrollbar {
+        width: 10px;
+      }
+      
+      /* Track */
+      .comments ::-webkit-scrollbar-track {
+        background: #f1f1f1; 
+      }
+       
+      /* Handle */
+      .comments::-webkit-scrollbar-thumb {
+        background: #888; 
+      }
+      
+      /* Handle on hover */
+     .comments ::-webkit-scrollbar-thumb:hover {
+        background: #333; 
+      }
+
 
 .outer {
     text-align : center;
     margin : auto;
+}
+textarea{
+    max-height : 5vh;
+}
+
+.mat-form-field{
+    background-color : grey;
+    width : 100%;
+   
+   
+}
+
+.ordering {
+    width : 80vw;
+    margin : 0;
 }

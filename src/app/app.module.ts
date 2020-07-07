@@ -82,6 +82,9 @@ import { Users } from './admin-components/users.component.ts/users.component';
 import { Requests } from './admin-components/requests/requests.component';
 import { Product } from './shop/product/product.component';
 
+import {StarRatingModule} from 'angular-star-rating';
+import { FooterComponent } from './footer/footer/footer.component';
+import { ChangePasswordFormComponent } from './footer/change-password-form/change-password-form.component';
 
 @NgModule({
   declarations: [
@@ -103,7 +106,9 @@ import { Product } from './shop/product/product.component';
     AdminMenu,
     Users,
     Requests,
-    Product
+    Product,
+    FooterComponent,
+    ChangePasswordFormComponent
 
   ],
   imports: [
@@ -161,7 +166,8 @@ import { Product } from './shop/product/product.component';
     PortalModule,
     ScrollingModule,
     RecaptchaFormsModule,
-    RecaptchaModule
+    RecaptchaModule,
+    StarRatingModule.forRoot()
 
   ],
   providers: [],
