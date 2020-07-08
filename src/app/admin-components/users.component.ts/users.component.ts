@@ -33,17 +33,19 @@ import { AdminService } from 'src/app/services/admin-service/admin.service';
         console.log("removing user");
         console.log(elem);
         this.adminService.removeUser({user : elem.username, email : elem.email}).subscribe(result=>{
-            this.refresh();
-        })
-    }
-
-    private refresh(){
-        this.adminService.showUsers().subscribe(result=>{
-            this.users = result;
-            this.tableSource.data= this.users;
+            let index = this.users.indexOf(elem);
+            this.users.splice(index,1);
             this.table.renderRows();
 
         })
+    }
+
+
+
+    promoteUser(element){
+        let index = this.users.indexOf(element);
+        this.users[index].type = "admin";
+        this.adminService.promoteUser({username : element.username}).subscribe();
     }
 
   }

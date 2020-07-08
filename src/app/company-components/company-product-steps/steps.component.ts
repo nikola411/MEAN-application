@@ -15,7 +15,7 @@ import { CompanyService } from 'src/app/services/company-service/company-service
   export class OrderSteps {
 
     i : number = 0;
-    steps : boolean[] = [true,false,false,false];
+    steps : boolean[] = [true,false,false,false,false];
 
     success : boolean = false;
 
@@ -28,20 +28,24 @@ import { CompanyService } from 'src/app/services/company-service/company-service
     productProperties = new FormControl("", Validators.required);
     productPrice = new FormControl("", Validators.required);
 
+    type = new FormControl("");
+
 
     constructor(private companyService :CompanyService, private router:Router){
 
     }
 
     next(){
-        console.log("lol");
+
         this.steps[this.i]=false;
         this.i++;
-        if(this.i<4){
+        if(this.i<5){
             this.steps[this.i]=true;
         } else {
             this.finish = true;
         }
+
+        console.log(this.type)
          
     }
     back(){
@@ -54,7 +58,8 @@ import { CompanyService } from 'src/app/services/company-service/company-service
         let obj = {name : this.productName.value,
                     quantity : this.productQuantity.value,
                     properties : this.productProperties.value,
-                    price : this.productPrice.value};
+                    price : this.productPrice.value
+                };
         
         this.companyService.addProduct(obj).subscribe(result=>{
             this.finish = false;
@@ -64,12 +69,10 @@ import { CompanyService } from 'src/app/services/company-service/company-service
 
         })
     }
+
+    onChange(event){
+        console.log(event);
+    }
   }
 
-  function success() {
-    setTimeout(function () {
-        if(false){
-            return ;
-        }
-    }, 5000);
-}
+

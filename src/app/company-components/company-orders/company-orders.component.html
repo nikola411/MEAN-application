@@ -4,11 +4,11 @@
     <h1>Trenutno nema pordzbina na cekanju</h1>
 </div>
 <div class="productTable">
-    <table mat-table *ngIf="hasOrders()" [dataSource]="orders" class="mat">
+    <mat-table *ngIf="hasOrders()" [dataSource]="orders" class="mat">
 
         <ng-container matColumnDef="orderId">
             <mat-header-cell *matHeaderCellDef> Id </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+            <mat-cell *matCellDef="let element"> {{element.orderId}} </mat-cell>
         </ng-container>
 
         <!-- Name Column -->
@@ -20,27 +20,47 @@
         <!-- Weight Column -->
         <ng-container matColumnDef="customer">
             <mat-header-cell *matHeaderCellDef> Narucilac </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.customer}} </mat-cell>
+            <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
         </ng-container>
 
         <!-- Symbol Column -->
         <ng-container matColumnDef="status">
             <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.status}} </mat-cell>
+            <mat-cell *matCellDef="let element"> 
+               
+                    {{element.status * 2}} 
+             
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="location">
+            <mat-header-cell *matHeaderCellDef>Lokacija </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.place}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="date">
+            <mat-header-cell *matHeaderCellDef> Datum </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.time | date}} </mat-cell>
         </ng-container>
 
 
         <ng-container matColumnDef="options">
-            <mat-header-cell *matHeaderCellDef> Opcije </mat-header-cell>
+            <mat-header-cell *matHeaderCellDef></mat-header-cell>
             <mat-cell *matCellDef="let element">
-                <button class="deleteBttn">
-                    <mat-icon class="deleteIcon" aria-hidden="false" aria-label="Example home icon">delete</mat-icon>
+                <button mat-stroked-button class="deleteBttn">
+                    <mat-icon (click) = "cancelOrder(element)" class="deleteIcon"  matTooltip = "Otkazi porudzbinu" aria-hidden="false" aria-label="Example home icon">delete</mat-icon>
+                </button>
+                <button mat-stroked-button>
+                    <mat-icon (click)="acceptOrder(element)" matTooltip="Prihvati porudzbinu">
+                        add
+                    </mat-icon>
+
                 </button>
             </mat-cell>
         </ng-container>
 
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-    </table>
+    </mat-table>
 
 </div>

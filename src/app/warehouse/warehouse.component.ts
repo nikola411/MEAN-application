@@ -100,10 +100,15 @@ export class Warehouse {
     let index = this.pendingRequests.indexOf(elem);
     //this is a much better method for 
     //refreshing table data
-    
+    let orderId = elem.orderId;
+
     this.pendingRequests.splice(index,1);
     this.table.renderRows();
+    let user = this.http.getUserInfo().username;
+    elem.user = user;
     
+    console.log(user);
+    console.log(elem);
     this.productService.cancelOrder(elem).subscribe();
 }
 

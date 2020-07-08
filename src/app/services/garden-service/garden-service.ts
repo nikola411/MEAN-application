@@ -22,6 +22,8 @@ export class GardenService{
     raiseTempRoute = "/api/user/garden/raise/temp";
     lowerTempRoute = "/api/user/garden/lower/temp";
 
+    useProductRoute = "/api/user/garden/product/use";
+
 
     private garden : any;
 
@@ -88,6 +90,11 @@ export class GardenService{
 
     }
 
+    useProduct(product):Observable<any>{
+        return this.http.post(this.useProductRoute, product);
+    }
+
+ 
     
 
 

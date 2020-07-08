@@ -15,6 +15,9 @@ export class FooterComponent implements OnInit {
     this.http.getFooterInfo().subscribe(result=>{
       this.alert = result.alert;
       this.numberOfAlerts = result.number;
+      if(this.numberOfAlerts == 0){
+        this.numberOfAlerts = null;
+      }
     })
   }
 

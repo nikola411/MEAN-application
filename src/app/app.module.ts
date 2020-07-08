@@ -85,6 +85,8 @@ import { Product } from './shop/product/product.component';
 import {StarRatingModule} from 'angular-star-rating';
 import { FooterComponent } from './footer/footer/footer.component';
 import { ChangePasswordFormComponent } from './footer/change-password-form/change-password-form.component';
+import { ProductDialog } from './dialogs/product-dialog/product-dialog.component';
+import { CourierDialog } from './dialogs/courier-dialog/courier-dialog.component';
 
 @NgModule({
   declarations: [
@@ -108,7 +110,9 @@ import { ChangePasswordFormComponent } from './footer/change-password-form/chang
     Requests,
     Product,
     FooterComponent,
-    ChangePasswordFormComponent
+    ChangePasswordFormComponent,
+    ProductDialog,
+    CourierDialog
 
   ],
   imports: [

@@ -1,0 +1,57 @@
+h2{
+    color : blueviolet;
+}
+
+.dialog{
+    width :60vw;
+    height : 50vh;
+    text-align : center;
+    
+
+}
+
+.plants { 
+    width : 60vw;
+    margin : auto;
+    height : inherit;
+    overflow-y : scroll;
+    overflow-x : hidden;
+}
+
+table{
+    overflow : auto;
+}
+
+tr{
+    text-align : center;
+}
+
+th.mat-header-cell {
+    text-align: center;
+  }
+
+  .mat-raised-button{
+      background-color : #00b600;
+      
+  }
+
+ ::ng-deep button :hover {
+      background-color : #006b00;
+  }
+
+  .button {
+      border-radius : 3px;
+      width : 6vw;
+      height : 4vh;
+      margin : auto;
+      background-color : #00b600;
+  }
+
+  .button :hover{
+    border-radius : 3px;
+    width : 6vw;
+    height : 4vh;
+    margin : auto;
+      background-color : #006b00;
+  }
+

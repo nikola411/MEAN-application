@@ -11,6 +11,8 @@ export class CompanyService {
   productsRoute = "/api/company/products";
   addProductRoute = "/api/company/product/add";
   removeProductRoute = "/api/company/product/remove";
+  getCouriersRoute = "/api/company/couriers/get";
+  emplyCourierRoute = "/api/company/courier/employ";
 
   constructor(private http: HttpClient) { }
 
@@ -29,6 +31,14 @@ export class CompanyService {
   removeProduct(product): Observable<any> {
     return this.http.post(this.removeProductRoute, product);
   }
+
+  getCouriers(firm):Observable<any>{
+    return this.http.post(this.getCouriersRoute, firm);
+  }
+
+  employCourier(order):Observable<any>{
+    return this.http.post(this.emplyCourierRoute, order);
+}
 
 
 

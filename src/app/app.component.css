@@ -10,41 +10,15 @@ body{
     background-repeat : no-repeat;
     background-position:center;
     background-size: cover;
-
     overflow : hidden;
   
 }
-
-
 
 .router-outlet { 
   overflow-x :scroll;
   overflow-y : scroll;
   
-  
- 
 }
-
-.mat-menu-item:hover {
-  background-color :rgba(20, 62, 75, 0.438);
-}
-
-.logreg { 
-    background-color : rgba(29, 86, 104, 0.438);
-    
-    border-radius : 4px;
-    
-    color:rgb(255, 255, 255);
-    margin : auto;
-    margin-bottom:2%;
-    height : 1cm;
-    width : 2cm;
-}
-button:hover{
-    background-color :rgba(20, 62, 75, 0.438);
-    
-}
-
 
 .footer {
   position : fixed;

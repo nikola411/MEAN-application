@@ -36,11 +36,11 @@
     <ng-container matColumnDef="options">
       <mat-header-cell *matHeaderCellDef> Opcije </mat-header-cell>
       <mat-cell *matCellDef="let element" >
-        <button class = "showPage" (click)="show(element)" >
+        <button mat-stroked-button class = "showPage" (click)="show(element)" >
           <mat-icon class = "deleteIcon" aria-hidden="false" aria-label="Example home icon" matTooltip="Prikazi proizvod">pageview</mat-icon>
         </button>
         <br>
-        <button class = "deleteBttn" (click)="delete(element)" matTooltip="Obrisi proizvod">
+        <button mat-stroked-button class = "deleteBttn" (click)="delete(element)" matTooltip="Obrisi proizvod">
             <mat-icon class = "deleteIcon" aria-hidden="false" aria-label="Example home icon">delete</mat-icon>
           </button>
       </mat-cell>

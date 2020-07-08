@@ -1,15 +1,5 @@
 <body>
   <h1 *ngIf="!loggedIn && !companyLogged && !adminLogged">Dobrodosli</h1>
-  <!--<mat-menu #appMenu = "matMenu" >
-    <button mat-menu-item (click)="clickLogin()" *ngIf="!loggedIn">Uloguj se</button>
-    <button mat-menu-item (click)="regClick()" *ngIf="!loggedIn">Registruj se</button>
-    <button mat-menu-item (click)="bodyClicked()">Nazad</button>
-
-  </mat-menu>
-  <button mat-icon-button [matMenuTriggerFor]="appMenu" class="logreg" *ngIf="!loggedIn && !companyLogged && !adminLogged">
-    Prijava
-  </button>-->
-  
 
   <user-menu *ngIf="loggedIn"></user-menu>
   <company-menu *ngIf = "companyLogged"></company-menu>
@@ -21,7 +11,7 @@
 
 </body>
 
-<footer *ngIf="loggedIn">
+<footer *ngIf="loggedIn || companyLogged || adminLogged">
   <div class="footer">
     <my-footer></my-footer>
   </div>

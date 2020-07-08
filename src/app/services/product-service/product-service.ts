@@ -11,12 +11,12 @@ export class ProductService{
 
     getProductRoute = "/api/shop/product";
     submitCommentRoute = "/api/shop/product/add/comment";
-    orderProductRoute = "/api/shop/product/order";
-    orderProductCourierRoute = "/api/company/orders/shop/courier";
+    orderProductRoute = "/api/shop/product/order"; 
     canRateProductRoute = "/api/shop/product/rate";
     getOrdersRoute = "/api/shop/user/orders";
 
     cancelOrderRoute = "/api/shop/user/orders/cancel";
+    
 
     constructor(private http : HttpClient){}
 
@@ -46,19 +46,17 @@ export class ProductService{
         
     }
 
-    getCourier(product):Observable<any>{
-        return this.http.post(this.orderProductCourierRoute, this.product);
-    }
+
 
     getOrders():Observable<any>{
         return this.http.post(this.getOrdersRoute, null);
     }
-
     cancelOrder(order):Observable<any>{
 
-        let cancel = {firmName : order.firmName, product : order.product, quantity : order.quantity};
+        let cancel = {firmName : order.firmName, product : order.product, quantity : order.quantity, user : order.user};
 
         return this.http.post(this.cancelOrderRoute, cancel);
     }
+
 
 }

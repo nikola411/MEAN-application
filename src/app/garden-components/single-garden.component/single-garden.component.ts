@@ -7,6 +7,7 @@ import { GardenService } from '../../services/garden-service/garden-service';
 import { DeleteDialog } from 'src/app/dialogs/delete-dialog/delete-garden-dialog';
 import { Router } from '@angular/router';
 import { PlantDialog } from 'src/app/dialogs/plant-dialog/plant-dialog.component';
+import { ProductDialog } from 'src/app/dialogs/product-dialog/product-dialog.component';
 
 interface myObj {
   hover: boolean;
@@ -126,8 +127,8 @@ export class SingleGarden {
     var state = parseInt(obj.state);
     if (state == 0) {
       return "0"
-    } else if (state < 0.33) return "1";
-    else if (state < 0.66) return "2";
+    } else if (state < 33) return "1";
+    else if (state < 66) return "2";
     else return "3";
   }
 
@@ -204,6 +205,28 @@ export class SingleGarden {
 
   }
 
+  useProduct(){
+    this.openDialog2().subscribe(result=>{
+      result.garden = this.gardenName;
+      result.height = this.height;
+      result.widht = this.width;
+
+      let properties = result.properties ? result.properties : 1;
+      for(let i in this.gardenInView){
+        for(let j in this.gardenInView[i]){
+          if(this.gardenInView[i][j].state!=-1){
+            this.gardenInView[i][j].state+=properties;
+          }
+        }
+      }
+      result.gardenMatrix = this.gardenInView;
+      console.log(result);
+      this.gardenService.useProduct(result).subscribe(result=>{
+
+      })
+    })
+  }
+
   openDialog(): Observable<string> {
 
     console.log("opening dialog");
@@ -217,7 +240,16 @@ export class SingleGarden {
     const dialogRef = this.dialog.open(PlantDialog, dialogConfig);
 
     return dialogRef.afterClosed();
+  }
 
+  openDialog2():Observable<any>{
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    
+    const dialogRef = this.dialog.open(ProductDialog,dialogConfig );
+    return dialogRef.afterClosed();
   }
 
 

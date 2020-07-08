@@ -33,10 +33,12 @@
       <mat-header-cell *matHeaderCellDef> Opcije </mat-header-cell>
       <mat-cell *matCellDef="let element" >
         
-        <button (click)="removeUser(element)">
+        <button mat-stroked-button (click)="removeUser(element)">
             <mat-icon class = "deleteIcon" aria-hidden="false" aria-label="Example home icon" matTooltip="Obrisi korisnika">delete</mat-icon>
         </button>
-          <mat-icon class = "deleteIcon" aria-hidden="false" aria-label="Example home icon" matTooltip="Prikazi proizvod">pageview</mat-icon>
+        <button mat-stroked-button (click)="promoteUser(element)">
+          <mat-icon class = "deleteIcon" aria-hidden="false" aria-label="Example home icon" matTooltip="Obrisi korisnika">arrow_upward</mat-icon>
+        </button>
       
             
     

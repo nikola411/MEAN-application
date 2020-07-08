@@ -12,6 +12,7 @@ export class AdminService {
   adminUsersRemoveRoute = "/api/admin/users/remove";
   adminRequestsConfirmRoute = "/api/admin/requests/confirm";
   adminRequestRemoveRoute = "/api/admin/requests/remove";
+  adminPromoteUserRoute = "/api/admin/users/promote";
 
   constructor(private http: HttpClient) { }
 
@@ -34,6 +35,10 @@ export class AdminService {
 
   removeRequest(elem): Observable<any> {
     return this.http.post(this.adminRequestRemoveRoute, elem);
+  }
+
+  promoteUser(username) : Observable<any>{
+    return this.http.post(this.adminPromoteUserRoute, username);
   }
 
 

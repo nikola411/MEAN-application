@@ -46,16 +46,13 @@ export class Product {
 
     constructor(private http: HttpService, private productService: ProductService, private ref: ChangeDetectorRef) {
         this.productService.getProduct().subscribe(result => {
-            console.log(result);
+            console.log(result)
             this.product1 = JSON.parse(JSON.stringify(result.product));
             this.productService.setProduct(this.product1);
             this.canRate = result.canRate;
-            console.log(result);
-            let user = this.http.getUser();
-           // this.productService.canRate(user).subscribe(result=>{
-           //     this.canRate = result.canRate;
-           // })
-            //console.log(this.product1);
+            console.log(this.product1);
+     
+
         })
     }
 
@@ -82,10 +79,7 @@ export class Product {
         this.product1.comments.push({ text: this.comment.value.text, user: user, rating : userRating });
         this.canRate = false;
         this.productService.submitComment({ product: this.product1, comment: this.comment.value.text, rating : userRating }).subscribe(result => {
-            //console.log(result);
 
-            // this.product1.comments = [...this.product1.comments.push()];
-            // this.product1.comments.push({comment : this.comment.value.text, user : user });
             this.comment.setValue({ 'text': '' });
         });
 
@@ -104,10 +98,11 @@ export class Product {
         let user = this.http.getUserInfo();
         console.log(user);
         let userCred = {
-            username: user.username,
+            user : user.username,
             email: user.email,
             phone: user.number,
-            place: user.place
+            place: user.place,
+            name : user.firstName +" " + user.lastName
         };
         console.log(userCred);
         console.log(this.product1);
@@ -118,15 +113,13 @@ export class Product {
             properties : this.product1.properties,
             price : this.product1.price,
             user: userCred,
-            quantity : this.quantity.value
+            quantity : this.quantity.value,
+            orderId : this.product1.orderId
         };
         console.log(order);
 
         this.productService.orderProduct(order).subscribe(result => {
             let user = this.http.getUserInfo() as Farmer;
-            let start = user.place;
-            let goingTo = this.product1.place;
-
             //this.productService.getCourier({ start: start, goingTo: goingTo }).subscribe(result => {
             //    console.log("uspesno ste narucili proizvod");
            // })

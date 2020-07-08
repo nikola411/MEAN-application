@@ -1,7 +1,7 @@
 
-<div class="registerForm">
+<div class="registerForm" *ngIf="!submitted">
   <!--<form class="form"  [formGroup]="registered" (submit)="showCaptchaB()" *ngIf="!showCaptcha"> --> 
-<form class="form"  [formGroup]="registered" (submit)="register()" *ngIf="!showCaptcha">
+<form class="form"  [formGroup]="registered" (submit)="showCaptchaB()" *ngIf="!showCaptcha">
   <div class="choose-form">
     <input type="radio" id="firm" name="choose" (change)="onChange($event)">
     <label for="firm">Firma</label>
@@ -87,9 +87,9 @@
 
     <br>
   <!--<label class="mistake">{{mistakeLabel}}</label>-->
-  <button [disabled]="registered.invalid" type="submit">submit</button>
+  <button mat-raised-button [disabled]="registered.invalid" type="submit">Registruj se</button>
 </form>
-<!--<form *ngIf = "showCaptcha" class="captcha">
+<form *ngIf = "showCaptcha" class="captcha">
   
   <div class = "gcaptcha">
     <p class="para">Jos samo par trenutaka...</p>
@@ -104,7 +104,13 @@
 
   </div>
  
-</form> -->
-
+</form> 
+</div>
+<div *ngIf="submitted">
+  <h2>Hvala vam na registraciji!</h2>
+  <h2>Admin tim ce uskoro pogledati vas zahtev!</h2>
+  <button mat-raised-button (click)="goBack()">
+    Nazad na pocetnu
+  </button>
 </div>
 

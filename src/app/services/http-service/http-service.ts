@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, Subject } from 'rxjs';
 import { HttpHeaders } from '@angular/common/http';
 import { User } from '../../models/user';
 
@@ -15,6 +15,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class HttpService {
     constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) { };
+
+
 
     private currUser: string = '';
     private currUsername : string = '';
@@ -48,19 +50,29 @@ export class HttpService {
         this.currUsername = obj.username;
         this.userInfo = obj.user;
         console.log(obj);
+        localStorage.setItem('user', JSON.stringify(obj.user));
+        console.log(obj);
     }
 
     getUser(): string {
-        return this.currUsername;
+        let user =JSON.parse(localStorage.getItem('user'));
+        
+        if(user){
+            return user.username;
+        } else {
+            return "";
+        }
+        
     }
 
     getUserInfo():any{
-        console.log(this.userInfo)
-        return this.userInfo;
+        let user = JSON.parse(localStorage.getItem('user'));
+        return user;
     }
 
     logout(): Observable<any> {
         this.currUser = '';
+        localStorage.removeItem('user');
         return this.http.put<any>(this.logoutRoute, null);
     }
 

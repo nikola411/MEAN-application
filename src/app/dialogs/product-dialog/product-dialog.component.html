@@ -1,0 +1,55 @@
+<div *ngIf="empty" class="empty">
+    <h2 mat-dialog-title>Nema dostupnih proizvoda u rasadniku</h2>
+</div>
+<div  class="dialog">
+
+    <h2 *ngIf="!empty" mat-dialog-title>Izaberite prozivod</h2>
+
+    <table *ngIf="!empty" mat-table [dataSource]="products" class="plants">
+
+        <ng-container matColumnDef="ime">
+            <th mat-header-cell *matHeaderCellDef> Naziv </th>
+            <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="proizvodjac">
+            <th mat-header-cell *matHeaderCellDef> Proizvodjac </th>
+            <td mat-cell *matCellDef="let element"> {{element.producer}} </td>
+        </ng-container>
+
+        <!-- Weight Column -->
+
+        <ng-container matColumnDef="svojstva">
+            <th mat-header-cell *matHeaderCellDef> Svojstva </th>
+            <td mat-cell *matCellDef="let element"> {{element.properties}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="izaberi">
+            <th mat-header-cell *matHeaderCellDef> Izaberi </th>
+            <td mat-cell *matCellDef="let element">
+                <div class="button" (click)="chooseProduct(element)">
+                    <mat-icon aria-hidden="false">check</mat-icon>
+                </div>
+
+            </td>
+
+        </ng-container>
+
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <br>
+    <div *ngIf="product" class="chosen">
+        Izabrani proizvodi :
+        {{product.name}}
+    </div>
+
+    <div class="buttons">
+        <button class="mat-raised-button" *ngIf = "!empty" (click)="save($event.target.value)" value="true">Primeni</button>
+        <button class="mat-raised-button " (click)="close()" value="false">Izadji</button>
+    </div>
+    <br>
+
+</div>

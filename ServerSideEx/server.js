@@ -20,10 +20,10 @@ const bdm = new BingDistanceMatrix(DISTANCE_API_KEY);
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'mojrasadnik.pia.etf@gmail.com',
-      pass: 'nikolacar11'
+        user: 'mojrasadnik.pia.etf@gmail.com',
+        pass: 'nikolacar11'
     }
-  });
+});
 
 const APP_EMAIL = "mojrasadnik.pia.etf@gmail.com";
 
@@ -45,6 +45,8 @@ let currId = 1;
 let db;
 let prodId = 0;
 let currUser = null;
+
+let orderId = null;
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(bodyParser.json());
@@ -230,8 +232,6 @@ app.put('/api/register', [
 
     const errors = validationResult(req);
 
-
-    let ret;
     if (!errors.isEmpty()) {
         console.log(errors);
         res.send({ status: errors });
@@ -239,11 +239,20 @@ app.put('/api/register', [
     } else {
         req.body.productId = 0;
         req.body.status = "pending";
+        if(req.body.type == "company"){
+            req.body.couriers = [
+                { id: 1, busy: false, going_to: "", start: null, orderId : null },
+                { id: 2, busy: false, going_to: "", start: null, orderId : null },
+                { id: 3, busy: false, going_to: "", start: null, orderId : null },
+                { id: 4, busy: false, going_to: "", start: null, orderId : null },
+                { id: 5, busy: false, going_to: "", start: null, orderId : null },
+            ];
+            req.body.orderId = 1;
+        }
+        
         console.log(req.body);
 
         db.collection('users').insertOne(req.body);
-
-
         res.send({ status: "registered" });
 
     }
@@ -273,13 +282,33 @@ app.post('/api/login', (req, res) => {
                     req.session.user = req.body.user;
 
                     loggedIn = results[i].type;
+                    let userInfo;
 
-                    let userInfo = {
-                        username: results[i].username, place: results[i].place,
-                        email: results[i].email, firstName: results[i].firstName,
-                        lastName: results[i].lastName, date: results[i].date,
-                        type: results[i].type
-                    };
+                    if (loggedIn == "farmer") {
+                        userInfo = {
+                            username: results[i].username, place: results[i].place,
+                            email: results[i].email, firstName: results[i].firstName,
+                            lastName: results[i].lastName, date: results[i].date,
+                            type: results[i].type
+                        };
+                    } else if (loggedIn == "company") {
+                        userInfo = {
+                            username: results[i].username, place: results[i].place,
+                            email: results[i].email, firmName: results[i].firmName,
+                            date: results[i].date,
+                            type: results[i].type,
+                            productId : results[i].productId
+                        };
+                        
+                    } else if (loggedIn == "admin") {
+                        userInfo = {
+                            username: results[i].username, type: results[i].type,
+                            email: results[i].email
+                        }
+                    }
+
+
+                    console.log(userInfo);
 
                     if (loggedIn == "company") {
                         prodId = results[i].productId;
@@ -315,46 +344,46 @@ app.get('/api/user', (req, res) => {
 
 })
 
-app.post("/api/user/footer",(req,res)=>{
+app.post("/api/user/footer", (req, res) => {
     let user = req.session.user;
-    db.collection("users").findOne({username : user}).then(result=>{
+    db.collection("users").findOne({ username: user }).then(result => {
         let response = "";
         let alert = "";
         let number = 0;
-        for(i in result.garden){
-            if(result.garden[i].temp<18 || result.garden[i].water<70  ){
-                alert+=result.garden[i].name +" ";
+        for (i in result.garden) {
+            if (result.garden[i].temp < 18 || result.garden[i].water < 70) {
+                alert += result.garden[i].name + " ";
                 number++;
             }
         }
-        if(number>1){
-            response = "U rasadnicima: " +alert + "su nepovoljni uslovi!!!";
-      
-        }else if(number == 1){
+        if (number > 1) {
+            response = "U rasadnicima: " + alert + "su nepovoljni uslovi!!!";
+
+        } else if (number == 1) {
             response = "U rasadniku: " + alert + "su nepovoljni uslovi!!!";
-        } 
-        
-        res.send({alert : response, number : number});
+        }
+
+        res.send({ alert: response, number: number });
     })
 })
 
 function checkingGardens() {
-    db.collection('users').find({type : "farmer"}).toArray().then(result=>{
+    db.collection('users').find({ type: "farmer" }).toArray().then(result => {
         let receivers = "";
-        for(i in result){
-            for(j in result.garden){
-                if(result.garden[j].temp < 18 ||result.garden[j].water < 70){
-                   receivers+=result[i].email + ",";
-                   console.log(result.garden[j].temp);
-                   console.log(result.garden[j].temp);
+        for (i in result) {
+            for (j in result.garden) {
+                if (result.garden[j].temp < 18 || result.garden[j].water < 70) {
+                    receivers += result[i].email + ",";
+                    console.log(result.garden[j].temp);
+                    console.log(result.garden[j].temp);
                 }
             }
         }
         console.log(receivers);
     })
-   
-  }
-  
+
+}
+
 //setInterval(checkingGardens, 1500);
 
 
@@ -606,6 +635,29 @@ app.post("/api/user/garden/lower/temp", (req, res) => {
 
 })
 
+app.post("/api/user/garden/product/use", (req, res) => {
+    let user = req.session.user;
+    let garden = req.body.garden;
+
+    let product = req.body.name;
+
+    let matrix = req.body.gardenMatrix;
+
+    db.collection('users').findOneAndUpdate({ username: user },
+        {
+            $set: { "garden.$[gard].garden": matrix },
+            $inc: { "warehouse.$[prod].quantity": -1 }
+        },
+        {
+            arrayFilters: [
+                { "gard.name": { $eq: garden } },
+                { "prod.name": { $eq: product } }
+
+            ]
+        }
+    ).then(result => console.log(result));
+})
+
 app.put("/api/user/warehouse", (req, res) => {
     let user = req.session.user;
 
@@ -644,47 +696,94 @@ app.post("/api/shop/product/order", (req, res) => {
 
     //username, email, phonenumber, 
     let user = req.body.user;
+    let username = user.user;
+    console.log(username);
     let quantity = req.body.quantity;
     let type = req.body.type;
     let properties = req.body.properties;
     let date = new Date;
+   
 
-    let order = { 
-                username : user.username,
-                email : user.email,
-                place : user.place, 
-                product: product, 
-                time: date, 
-                quantity : quantity, 
-                properties : properties, 
-                type : type 
-            };
+    let orderId = req.body.orderId;
+
+
+
+    let order = {
+        username: username,
+        name: user.name,
+        email: user.email,
+        place: user.place,
+        product: product,
+        time: null,
+        quantity: quantity,
+        properties: properties,
+        type: type,
+        status: null, 
+        orderId : orderId
+    };
     console.log(order);
 
     //inserts order into order array and returns product that is ordered
     //we cannot atomically acces the shop courires, so we need another funciton for that
     //we return a product to put in users warehouse\\\\\\\\\\\\\ as an order
 
-    db.collection('users').updateOne({ firmName: company, type: "company" }, {
-        $push: { orders: order },
-        $inc: { "shop.$[element].quantity": -quantity },
 
-    }, {
-        arrayFilters: [
-            { "element.name": { $eq: product } }
-        ],
-        
-    }).then(result => {
+        db.collection('users').updateOne({ firmName: company, type: "company" }, {
+            $push: { orders: order },
+            $inc: { "shop.$[element].quantity": -quantity , orderId : 1}
+           
+            
+    
+        }, {
+            arrayFilters: [
+                { "element.name": { $eq: product } }
+            ],
+    
+        }).then(result => {
+    
+            res.send({ updated: true });
+        })
+    
 
-        res.send({ updated: true });
-    })
+    
 })
 
-app.post("/api/company/orders/shop/courier", (req, res) => {
+app.post("/api/company/couriers/get", (req, res) => {
+    let username = req.session.user;
+    db.collection('users').findOne({ username: username }, { couriers: 1 })
+        .then(result => {
+            console.log(result);
+            res.send({ company_location: result.place, couriers: result.couriers });
+        })
+})
 
-    let request = req.body.request;
-    let start = request.start;
-    let end = request.goingTo;
+app.post("/api/company/courier/employ", (req, res) => {
+    console.log("ovde")
+    console.log(req.body);
+
+
+    let start = req.body.company_location;
+    let end = req.body.order.place;
+
+    if (req.body.courier == null) {
+        db.collection('users').updateOne({ username: company },
+            {
+                $set: { "orders.$[element].status": "NA CEKANJU" }
+            }, {
+            arrayFilters: [
+                { "element.username": { $eq: req.body.order.username } }
+            ]
+        }).then(res.next());
+    }
+
+    let company = req.session.user;
+
+    let now = new Date();
+
+    let order_username = req.body.order.username;
+
+    let id = req.body.courier.id;
+    console.log(id);
 
     let srcCoordUrl = LOCATION_API_URL + start + "?key=" + DISTANCE_API_KEY;
     let dstCoordUrl = LOCATION_API_URL + end + "?key=" + DISTANCE_API_KEY;
@@ -707,23 +806,43 @@ app.post("/api/company/orders/shop/courier", (req, res) => {
 
                 let ret = JSON.parse(body);
 
-                // console.log(ret.resourceSets[0].resources[0].results[0]); 
-                db.collection("users").updateOne({ type: "shop" },
-                    {
-                        "shop.couiers[element]":
-                        {
-                            $set:
-                                { startTime: request.start, goingTo: request.goingTo, busy: true }
-                        }
+                let duration = ret.resourceSets[0].resources[0].results[0].travelDuration;
 
+                let courier_update = req.body.courier;
+                courier_update.busy = true;
+                courier_update.goingTo = end;
+                courier_update.start = now;
+                courier_update.end = duration * 2;
+
+
+                let order_update = req.body.order;
+                order_update.status = duration;
+                order_update.time = now;
+                
+
+                console.log(duration)
+
+
+                db.collection("users").updateOne({ username: company, type: "company" },
+                    {
+                        $set: {
+                            "couriers.$[element].busy": true,
+                            "couriers.$[element].start": courier_update.start,
+                            "couriers.$[element].end": courier_update.end,
+                            "couriers.$[element].goingTo": courier_update.goingTo,
+                            "orders.$[order].status": order_update.status,
+                            "orders.$[order].time": order_update.time
+                        }
                     }, {
                     arrayFilters: [
-                        { "element.busy": { $eq: false } }
+                        { "element.id": { $eq: id } },
+                        { "order.orderId": { $eq: order_update.orderId } }
                     ]
+
                 }
                 ).then(result => {
                     //if(result.updated) res.send({deliveryTime : time});
-                    console.log(ret, result);
+                    res.send();
                 })
 
             });
@@ -731,10 +850,6 @@ app.post("/api/company/orders/shop/courier", (req, res) => {
 
         });
     })
-
-
-
-
 
 })
 
@@ -753,7 +868,7 @@ app.post("/api/company/product/add", (req, res) => {
     let product = req.body;
     product.comments = [];
     product.rating = null;
-    ///product.id = prodId++;
+    product.id = prodId++;
 
 
     db.collection("users").findOneAndUpdate({ username: user },
@@ -791,12 +906,12 @@ app.post("/api/shop", (req, res) => {
 })
 
 app.post("/api/shop/product", (req, res) => {
-    
+
     let comp = req.body.companyName;
     let companyLocation = req.body.companyLocation;
     let prod = req.body.product;
-    db.collection('users').findOne({ firmName: comp }, { projection: { shop: 1, orders : 1 } }).then(result => {
-        
+    db.collection('users').findOne({ firmName: comp }, { projection: { shop: 1, orders: 1 , orderId : 1} }).then(result => {
+
         if (result && result.shop) {
             //find product
             let x = result.shop;
@@ -810,50 +925,61 @@ app.post("/api/shop/product", (req, res) => {
             let orders = result.orders;
             let canRate = false;
 
-            let filt = orders.filter(elem=> elem.product == prod && elem.user.username == user);
+            let filt = orders.filter(elem => elem.product == prod && elem.username == user);
             let comm = ret[0].comments;
 
-            let filt2 = comm.filter(elem=>elem.user == user);
+            let filt2 = comm.filter(elem => elem.user == user);
             //user can rate it if he didnt comment on the product already
             //and has orderd it
 
             //however, user can leave a comment every time he orders a product
+
+            ret[0].orderId = result.orderId;
             console.log(filt.length);
             console.log(filt2.length);
-            if(filt.length > 0 && filt2.length ==0 || filt.length > filt2.length){
+            if (filt.length > 0 && filt2.length == 0 || filt.length > filt2.length) {
                 canRate = true;
             }
-          
-            res.send({ product: ret[0], canRate : canRate });
+
+            res.send({ product: ret[0], canRate: canRate });
         } else {
             res.send({ product: null });
         }
     })
 })
 
-app.post("/api/shop/user/orders/cancel",(req,res)=>{
+app.post("/api/shop/user/orders/cancel", (req, res) => {
     let firmName = req.body.firmName;
     let product = req.body.product;
-    let user = req.session.user;
+    let user = req.body.user;
+
+
+    console.log(req.body);
 
     let quantity = parseInt(req.body.quantity);
-    if(!quantity){
+    let orderId = req.body.orderId;
+    if (!quantity) {
         quantity = 1;
     }
+    console.log("canceling")
     console.log(firmName + " " + product + " " + user + " " + quantity);
 
-    db.collection('users').updateOne({firmName : firmName, type : "company"},{
-        $pull : {orders : 
-                    { product : product, username :user}
-                },
-        $inc : {"shop.$[element].quantity" : quantity}
-    },{
-        arrayFilters : [
-            {"element.name" : {$eq : product} }
+    db.collection('users').updateOne({ firmName: firmName, type: "company" }, {
+        $set: {
+            "orders.$[order].status": "canceled",
+            "couriers.$[courier].busy" : false
+        },
+        $inc: { "shop.$[element].quantity": quantity },
+
+    }, {
+        arrayFilters: [
+            { "element.name": { $eq: product } },
+            { "order.id" : {$eq : orderId }},
+            { "courier.orderId" : {$eq : orderId }}
         ]
     }
-    ).then(result=>{
-        console.log(result);
+    ).then(result => {
+        //console.log(result);
     })
 
 })
@@ -866,7 +992,7 @@ app.post("/api/shop/product/add/comment", (req, res) => {
     let prod = req.body.product.name;
     let user = req.session.user;
     let rating = req.body.rating;
-    let comment = { text: req.body.comment, user: user, rating : rating };
+    let comment = { text: req.body.comment, user: user, rating: rating };
     console.log(comment);
     console.log(req.body);
     //treba da se trazi preko array giltera u nizu shop kompanije a ne da pravis 
@@ -888,46 +1014,51 @@ app.post("/api/shop/product/add/comment", (req, res) => {
     )
 })
 
-app.post("/api/shop/user/orders", (req,res)=>{
+app.post("/api/shop/user/orders", (req, res) => {
     let user = req.session.user;
     //let element = {firmName : "", product : "", time : null, courier : -1};
     let response = [];
 
-    console.log("ovo su narudzbine")
-;    db.collection('users').find({type : "company"},{orders : 1})
-    .toArray().then(result=>{
-        if(result){
-            for(i in result){
-                let firmName = result[i].firmName;
-                console.log(firmName);
-                if(result[i].orders){
-                    let userOrders = result[i].orders.filter(x=>x.username == user);
-                    for(j in userOrders){
-                        let product = userOrders[j].product;
-                        let time = userOrders[j].time;
-                        let quantity = userOrders[j].quantity;
-                        let properties = userOrders[j].properties;
-                        let type = userOrders[j].type;
-                        let price = userOrders[j].price;
-                        //let courier = userOrders[j].courier;
-                        response.push({firmName : firmName,
-                                        product : product, 
-                                        time : time, 
-                                        quantity : quantity,
-                                        properties : properties,
-                                        type : type,
-                                        price : price
-                                    });
+    console.log("ovo su narudzbine");
+    db.collection('users').find({ type: "company" }, { orders: 1 })
+        .toArray().then(result => {
+            if (result) {
+                for (i in result) {
+                    let firmName = result[i].firmName;
+                    console.log(firmName);
+                    if (result[i].orders) {
+                        let userOrders = result[i].orders.filter(x => x.username == user && x.status != "canceled");
+                        for (j in userOrders) {
+                            let product = userOrders[j].product;
+                            let time = userOrders[j].time;
+                            let quantity = userOrders[j].quantity;
+                            let status = userOrders[j].status;
+                            let properties = userOrders[j].properties;
+                            let type = userOrders[j].type;
+                            let price = userOrders[j].price;
+                            let orderId = userOrders[j].orderId;
+
+                            response.push({
+                                firmName: firmName,
+                                product: product,
+                                time: time,
+                                quantity: quantity,
+                                properties: properties,
+                                type: type,
+                                price: price,
+                                status : status,
+                                orderId : orderId
+                            });
+                        }
                     }
+
                 }
-                
+
             }
+            console.log(response);
 
-        }
-       
-
-        res.send({response : response});
-    })
+            res.send({ response: response });
+        })
 })
 
 
@@ -978,6 +1109,17 @@ app.post("/api/admin/requests/remove", (req, res) => {
     db.collection("users").deleteOne({ username: user, status: "pending" }).then(result => {
         res.send({ removed: result.deletedCount == 1 ? true : false });
     });
+})
+
+app.post("/api/admin/users/promote",(req,res)=>{
+    let user = req.body;
+    db.collection('users').updateOne({username : user}, {$set : {type : "admin"}})
+    .then(res.next());
+})
+
+app.post("/api/admin/users/demote",(req,res)=>{
+    
+    
 })
 
 

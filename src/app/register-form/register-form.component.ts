@@ -30,6 +30,7 @@ export class RegisterForm{
   myCaptcha : string;
   values : any;
   registered : FormGroup;
+  submitted : boolean = false;
 
   constructor(private http:HttpService, private router:Router, private route:ActivatedRoute){
 
@@ -73,6 +74,7 @@ export class RegisterForm{
       console.log(result);
       if(result.success == true){
         this.register();
+        this.submitted = true;
       } else {
         this.router.navigate(['register'], {relativeTo : this.route});
       }
@@ -162,8 +164,8 @@ export class RegisterForm{
             this.setLabel("Lozinka ili mejl neipsravni");
             console.log(result);
         } else {
-          console.log("registrovani ste");
-          this.router.navigate(['/']);
+          //console.log("registrovani ste");
+          //this.router.navigate(['/']);
         }
       });
     
@@ -175,6 +177,10 @@ export class RegisterForm{
   
 
 
+  }
+
+  goBack(){
+    this.router.navigate(['login']);
   }
  
 }

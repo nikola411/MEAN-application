@@ -4,6 +4,22 @@
 <div *ngIf="steps[0]">
     <form (submit)="next()">
 
+       
+            <label>Tip:</label>
+            <br>
+            <mat-radio-group aria-label="Select an option" (change)="onChange($event)" required>
+                <mat-radio-button value="plant">Biljka</mat-radio-button>
+                
+                <mat-radio-button value="chemical">Hemikalija</mat-radio-button>
+            </mat-radio-group>
+        
+        <br>
+        <button mat-raised-button type="submit">Dalje</button>
+    </form>
+</div>
+<div *ngIf="steps[1]">
+    <form (submit)="next()">
+
         <mat-form-field>
             <label mat-label for="name">Ime</label>
             <input [formControl]="productName" type="text" name="name" matInput>
@@ -12,7 +28,7 @@
         <button mat-raised-button type="submit">Dalje</button>
     </form>
 </div>
-<div *ngIf="steps[1]">
+<div *ngIf="steps[2]">
 
     <form (submit)="next()">
         <mat-form-field>
@@ -24,7 +40,7 @@
     </form>
 </div>
 
-<div *ngIf="steps[2]">
+<div *ngIf="steps[3]">
 
     <form (submit)="next()">
         <mat-form-field>
@@ -36,7 +52,7 @@
     </form>
 
 </div>
-<div *ngIf="steps[3]">
+<div *ngIf="steps[4]">
 
     <form (submit)="next()">
         <mat-form-field>

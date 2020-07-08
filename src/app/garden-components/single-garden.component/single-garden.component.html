@@ -35,6 +35,9 @@
     <div class="gardenMenuComp">
       Zauzeto : {{gardenOccSpace}}
     </div>
+    <div class="product">
+      <button mat-button (click)="useProduct()" matTooltip="Primenite proizvod iz magacina">Pospesi rast</button>
+    </div>
 
   </div>
 
@@ -71,19 +74,19 @@
             <div [ngSwitch]="detectPhase(col)" class="phaseContainer">
               <div *ngSwitchCase="1" class="phase">
                 <img
-                  src="https://scontent-vie1-1.xx.fbcdn.net/v/t31.0-8/s960x960/15800098_1269925123030849_9137289149843361505_o.jpg?_nc_cat=101&_nc_sid=7aed08&_nc_eui2=AeFnYtr6k9_JxepuTm-fJDZZPvpitLcvnR4--mK0ty-dHvqNhjGkSYxBrmLvF3qMlBXPZUpXQFCOm3wIVAe_NwX-&_nc_ohc=rnq6L9g8ke0AX9870lC&_nc_ht=scontent-vie1-1.xx&_nc_tp=7&oh=28bb39d253670c010287fa8514d9551a&oe=5EFD5A62">
+                  src="https://images.unsplash.com/photo-1551970634-747846a548cb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80">
               </div>
               <div *ngSwitchCase="2" class="phase">
                 <img
-                  src="https://scontent-vie1-1.xx.fbcdn.net/v/t31.0-8/p960x960/17972427_1378667058823321_6174648985414528554_o.jpg?_nc_cat=102&_nc_sid=7aed08&_nc_eui2=AeGaBGLXNLS6f1aO5OrbbqvhnLLjKJmA3gCcsuMomYDeAI4Z-K2AslvVnmqq_u04ubJV1NuG4IPJSwrKg04sNgxK&_nc_ohc=0XwZxLzzd1AAX_JaBHF&_nc_ht=scontent-vie1-1.xx&_nc_tp=6&oh=ccb01cfebd669f1707fa6d7996748632&oe=5EFE9FD8">
+                  src="https://images.unsplash.com/photo-1551970634-747846a548cb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80">
               </div>
               <div *ngSwitchCase="3" class="phase">
                 <img
-                  src="https://scontent-vie1-1.xx.fbcdn.net/v/t31.0-8/s960x960/20934668_1512742335415792_8584628956770650041_o.jpg?_nc_cat=100&_nc_sid=7aed08&_nc_eui2=AeGyOHs78LslJtytwjU7TJIb2ZMuVWloz47Zky5VaWjPjt7qP5iFZPSbtyrMOgj3JeTcY1gd3_NZzaMTEyYhbrVD&_nc_ohc=6yg7us3VwNAAX_69a6P&_nc_ht=scontent-vie1-1.xx&_nc_tp=7&oh=1520a1fde05ba89a00d355958ce4db9f&oe=5EFD97C1">
+                  src="https://images.unsplash.com/photo-1503153181849-4e4f85a341ce?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60">
               </div>
               <div *ngSwitchCase="0" class="phase">
                 <img
-                  src="https://scontent-vie1-1.xx.fbcdn.net/v/t1.0-9/p720x720/30515886_1749499811740042_5841291909246484480_o.jpg?_nc_cat=107&_nc_sid=85a577&_nc_eui2=AeGPnwdtnzHtHAaEJm798TUPq5La-DQLyrSrktr4NAvKtJxECyLCqAH2TrYirJ3Ahk243IDH8hLXReOO2TLsUfby&_nc_ohc=m4ZuCURAq28AX-vLcNA&_nc_ht=scontent-vie1-1.xx&_nc_tp=6&oh=5d509045035b247990430fc03f59a18b&oe=5EFD46A2">
+                  src="https://ak.picdn.net/shutterstock/videos/25254071/thumb/3.jpg">
               </div>
               <div *ngSwitchDefault class="phase">
                 <img
