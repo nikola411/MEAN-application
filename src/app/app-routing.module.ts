@@ -18,6 +18,8 @@ import { Users } from './admin-components/users.component.ts/users.component';
 import { Requests } from './admin-components/requests/requests.component';
 import { Product } from './shop/product/product.component';
 import { CompanyStatistics } from './company-components/company-statistics/company-statistics.component';
+import { ChangePasswordFormComponent } from './footer/change-password-form/change-password-form.component';
+import { CompanyProductPage } from './company-components/company-product-page/company-product.component';
 
 const routes: Routes = [
   { path: 'home', component: UserComponent },
@@ -47,7 +49,8 @@ const routes: Routes = [
       { path: "orders", component: CompanyOrders },
       { path : "products", component : CompanyProducts },
       { path : "product" , children : [
-        {path : "add", component : OrderSteps}
+        {path : "add", component : OrderSteps},
+        {path : "show", component : CompanyProductPage}
       ]},
       { path : "statistics", component : CompanyStatistics}
     ]
@@ -63,6 +66,9 @@ const routes: Routes = [
     {
       path : "requests", component : Requests
     }
+  ]},
+  {path : "footer", canActivate : [AuthGuard],children :[
+    {path : "password", component : ChangePasswordFormComponent}
   ]}
 ]
 @NgModule({

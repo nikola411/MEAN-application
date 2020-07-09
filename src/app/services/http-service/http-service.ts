@@ -98,6 +98,10 @@ export class HttpService {
         return this.http.post(this.getFooterInfoRoute, null);
     }
 
+    changePassword(req):Observable<any>{
+        return this.http.post(this.changePasswordRoute, req);
+    }
+
 
 
 

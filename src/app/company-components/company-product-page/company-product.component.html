@@ -1,0 +1,38 @@
+<div class = "outer">
+    <div class = "info" *ngIf="product">
+      
+        <h1>Informacije o prozivodu</h1>
+        <div class = "info" >
+                <span><b>Ime </b>: {{product.name}}  </span>
+                <span><b>Cena</b> : {{product.price}}  </span>
+                <span><b>Na stanju</b> : {{product.quantity}}  </span>
+                <span><b>Svojstva</b> : {{product.properties}}  </span>
+                
+                
+        </div> 
+    </div>
+    <div>
+        Ocena : 
+        <h1 *ngIf="hasRating()">{{rating}}/5</h1>
+        <h1 *ngIf="!hasRating()">Nema ocena za ovaj proizvod</h1>
+    </div>
+    <div class = "wrapper" >
+        <h2>Komentari:</h2>
+        <p *ngIf="!hasComments()">Nema komentara za ovaj prozivod</p>
+        <div *ngIf="hasComments()" class = "comments" >
+            <div *ngFor="let comm of product.comments">
+                <mat-card>
+                    <mat-card-title>
+                        {{comm.user}}
+                    </mat-card-title>
+                    <mat-card-content >
+                        Komentar : <p>{{comm.text}}</p>
+                        Ocena : {{comm.rating}}/5
+                    </mat-card-content>
+                    
+                </mat-card>
+               
+            </div>
+        </div>
+    
+    </div>

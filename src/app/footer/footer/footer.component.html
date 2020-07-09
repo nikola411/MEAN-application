@@ -6,13 +6,18 @@
         
    
         <div class = "alert">
-            <b>{{numberOfAlerts}}</b>
+            <button mat-stroked-button (click)="removeAlerts()" *ngIf="alert">
+                <mat-icon>close</mat-icon>
+            </button>
+            <b>{{numberOfAlerts}}  </b>
             <b>{{alert}}</b>
+           
         </div>
+     
         
         <div class="settings">
             
-            <button mat-raised-button>Promeni lozinku</button>
+            <button (click)="changePass()" mat-raised-button>Promeni lozinku</button>
         </div>
     
    

@@ -92,6 +92,9 @@ import * as charts from "fusioncharts/fusioncharts.charts";
 import * as FusionTheme from "fusioncharts/themes/fusioncharts.theme.fusion";
 
 import { CompanyStatistics } from './company-components/company-statistics/company-statistics.component';
+import { DeleteDialog } from './dialogs/delete-dialog/delete-garden-dialog';
+
+import { CompanyProductPage } from './company-components/company-product-page/company-product.component';
 
 
 FusionChartsModule.fcRoot(FusionCharts, charts, FusionTheme);
@@ -108,6 +111,7 @@ FusionChartsModule.fcRoot(FusionCharts, charts, FusionTheme);
     Warehouse,
     PlantDialog,
     CompanyMenu,
+    DeleteDialog,
     CompanyOrders,
     CompanyProducts,
     OrderSteps,
@@ -120,8 +124,8 @@ FusionChartsModule.fcRoot(FusionCharts, charts, FusionTheme);
     ChangePasswordFormComponent,
     ProductDialog,
     CourierDialog,
-    CompanyStatistics
-
+    CompanyStatistics,
+    CompanyProductPage
   ],
   imports: [
     HttpClientModule,
@@ -180,11 +184,7 @@ FusionChartsModule.fcRoot(FusionCharts, charts, FusionTheme);
     RecaptchaFormsModule,
     RecaptchaModule,
     FusionChartsModule,
-  
-
-
-
-
+ 
   ],
   providers: [],
   bootstrap: [AppComponent]

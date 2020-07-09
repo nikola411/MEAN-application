@@ -11,7 +11,7 @@
   
     <!-- Name Column -->
     <ng-container matColumnDef="username">
-      <mat-header-cell *matHeaderCellDef> Korisnicko ime </mat-header-cell>
+      <mat-header-cell class = "username" *matHeaderCellDef> Korisnicko ime </mat-header-cell>
       <mat-cell *matCellDef="let element" > {{element.username}} </mat-cell>
     </ng-container>
   
@@ -37,7 +37,7 @@
             <mat-icon class = "deleteIcon" aria-hidden="false" aria-label="Example home icon" matTooltip="Obrisi korisnika">delete</mat-icon>
         </button>
         <button mat-stroked-button (click)="promoteUser(element)">
-          <mat-icon class = "deleteIcon" aria-hidden="false" aria-label="Example home icon" matTooltip="Obrisi korisnika">arrow_upward</mat-icon>
+          <mat-icon class = "deleteIcon" aria-hidden="false" aria-label="Example home icon" matTooltip="Promovisi korisnika">arrow_upward</mat-icon>
         </button>
       
             

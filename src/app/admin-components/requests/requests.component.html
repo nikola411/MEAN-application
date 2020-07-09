@@ -1,4 +1,6 @@
-<mat-table [dataSource]="tableSource" class="mat">
+
+<h1 *ngIf="requests.length==0">Trenutno nema zahteva</h1>
+<mat-table [dataSource]="tableSource" class="mat" *ngIf="requests.length>0">
 
     <!--- Note that these columns can be defined in any order.
           The actual rendered columns are set as a property on the row definition" -->
@@ -34,10 +36,10 @@
       <mat-header-cell *matHeaderCellDef> Opcije </mat-header-cell>
       <mat-cell *matCellDef="let element" >
         
-        <button (click)="removeRequest(element)">
+        <button mat-stroked-button (click)="removeRequest(element)">
             <mat-icon class = "deleteIcon" aria-hidden="false" aria-label="Example home icon" matTooltip="Obrisi korisnika">delete</mat-icon>
         </button>
-        <button (click)="confirmRequest(element)">
+        <button mat-stroked-button (click)="confirmRequest(element)">
             <mat-icon class = "deleteIcon" aria-hidden="false" aria-label="Example home icon" matTooltip="Dodaj korisnika">add</mat-icon>
         </button>
          

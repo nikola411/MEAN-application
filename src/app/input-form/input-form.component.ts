@@ -41,13 +41,20 @@ export class InputForm  {
         //ako ne postoji korisnik na register
         //let object = JSON.parse(JSON.stringify(result));
        // console.log(result);
+       if(result.user != null){
         if(result.route != "/login" || result.route != "/register") {
-         console.log(result.user);
-          this.buttonService.setInfo(result.user.type);
-          this.loginService.setUser({type : result.user.type, username : result.user.username, user : result.user});
-          //console.log(result);
-          this.router.navigate([result.route]);
-        } 
+          console.log(result.user);
+           this.buttonService.setInfo(result.user.type);
+           this.loginService.setUser({type : result.user.type, username : result.user.username, user : result.user});
+           //console.log(result);
+           this.router.navigate([result.route]);
+         } else {
+           this.loginCredBad = true;
+         }
+       } else {
+        this.loginCredBad = true;
+       }
+   
         
        
   

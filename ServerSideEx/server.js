@@ -252,6 +252,11 @@ app.put('/api/register', [
             ];
             req.body.orderId = 1;
         }
+        if(req.body.type =="farmer"){
+            req.body.alerts = [];
+           
+        }
+        req.body.lastLogin = null;
 
         console.log(req.body);
 
@@ -263,9 +268,16 @@ app.put('/api/register', [
 })
 
 app.put("/api/logout", (req, res) => {
-    req.session.destroy();
-    loggedIn = false;
-    res.send({ route: '/login' });
+    let date = new Date();
+    let user = req.session.user;
+    db.collection('users').updateOne({username : user},{
+        $set : {lastLogin : date }
+    }).then(result=>{
+        req.session.destroy();
+        loggedIn = false;
+        res.send({ route: '/login' });
+    })
+   
 })
 
 app.post('/api/login', (req, res) => {
@@ -273,62 +285,65 @@ app.post('/api/login', (req, res) => {
     let password = req.body.pass;
     let user = req.body.user;
 
-    db.collection('users').find(
+    console.log(req.body);
+
+    db.collection('users').findOne(
         { username: req.body.user, password: req.body.pass, status: "registered" }
     )
-        .toArray()
         .then(results => {
             console.log(results);
-            for (i in results) {
-                if (results[i].password == password) {
+            
+                if (results && results.password == password) {
                     req.session.userId = currId++;
                     req.session.user = req.body.user;
 
-                    loggedIn = results[i].type;
+                    loggedIn = results.type;
                     let userInfo;
 
                     if (loggedIn == "farmer") {
                         userInfo = {
-                            username: results[i].username, place: results[i].place,
-                            email: results[i].email, firstName: results[i].firstName,
-                            lastName: results[i].lastName, date: results[i].date,
-                            type: results[i].type
+                            username: results.username, place: results.place,
+                            email: results.email, firstName: results.firstName,
+                            lastName: results.lastName, date: results.date,
+                            type: results.type
                         };
+                      
                     } else if (loggedIn == "company") {
                         userInfo = {
-                            username: results[i].username, place: results[i].place,
-                            email: results[i].email, firmName: results[i].firmName,
-                            date: results[i].date,
-                            type: results[i].type,
-                            productId: results[i].productId
+                            username: results.username, place: results.place,
+                            email: results.email, firmName: results.firmName,
+                            date: results.date,
+                            type: results.type,
+                            productId: results.productId
                         };
 
                     } else if (loggedIn == "admin") {
                         userInfo = {
-                            username: results[i].username, type: results[i].type,
-                            email: results[i].email
+                            username: results.username, type: results.type,
+                            email: results.email
                         }
+                        console.log(userInfo);
                     }
 
 
                     console.log(userInfo);
 
                     if (loggedIn == "company") {
-                        prodId = results[i].productId;
+                        prodId = results.productId;
                     }
-                    if (results[i].type != "admin") {
+                    if (results.type != "admin") {
                         res.send({ route: "/user", user: userInfo });
                     } else {
                         res.send({ route: "/admin", user: userInfo });
                     }
 
                     return;
+                } else {
+                    console.log("didnt find anything");
+                    res.send({ route: "/register", user : null });
+        
                 }
-            }
-
-            console.log("didnt find anything");
-            res.send({ route: "/register" });
-
+             
         }
 
         );
@@ -354,7 +369,7 @@ app.post("/api/user/footer", (req, res) => {
         let alert = "";
         let number = 0;
         for (i in result.garden) {
-            if (result.garden[i].temp < 18 || result.garden[i].water < 70) {
+            if (result.garden[i].temp < 12 || result.garden[i].water < 70) {
                 alert += result.garden[i].name + " ";
                 number++;
             }
@@ -370,24 +385,8 @@ app.post("/api/user/footer", (req, res) => {
     })
 })
 
-function checkingGardens() {
-    db.collection('users').find({ type: "farmer" }).toArray().then(result => {
-        let receivers = "";
-        for (i in result) {
-            for (j in result.garden) {
-                if (result.garden[j].temp < 18 || result.garden[j].water < 70) {
-                    receivers += result[i].email + ",";
-                    console.log(result.garden[j].temp);
-                    console.log(result.garden[j].temp);
-                }
-            }
-        }
-        console.log(receivers);
-    })
 
-}
 
-//setInterval(checkingGardens, 1500);
 
 
 app.post('/api/user/addgarden', (req, res) => {
@@ -412,7 +411,7 @@ app.post('/api/user/addgarden', (req, res) => {
 
         }
     }
-    req.body.water = 70;
+    req.body.water = 200;
     req.body.temp = 18;
     req.body.free = width * height;
     req.body.lastChecked = date;
@@ -445,6 +444,34 @@ app.post("/api/user/delete/garden", (req, res) => {
 
 
 })
+function checkingGardens(){
+    db.collection.find({type : "farmer", status : "registered"}).toArray().then(result=>{
+        for(let i in result){
+            let gardens ="";
+            for(let j in result.garden){
+               
+                if(result.garden[j].temp<18 || result.garden[j].water < 70){
+                    gardens+=result.garden[j].name;
+                }
+            }
+            if(gardens!=""){
+                transporter.sendMail({
+                    from : APP_EMAIL,
+                    to : result[i].email,
+                    subject : "Stanje",
+                    text :" U bastama " + gardens + "su nepovoljni uslovi"
+                }, (err,info)=>{
+
+                });
+                db.collection('users').updateOne({username : result[i].username},{
+                    $push : {alerts : gardens}
+                })
+            }
+        }
+    })
+}
+
+setInterval(checkingGardens, 3600000);
 
 app.get("/api/user/gardens", (req, res) => {
     db.collection('users').findOne({ username: req.session.user }, { projection: { garden: 1, _id: 0 } }).then(result => {
@@ -469,7 +496,7 @@ app.post("/api/user/showGarden", (req, res) => {
             return result.name === req.body.name;
         }
         );
-
+        
 
         res.send(picked);
     })
@@ -1133,7 +1160,14 @@ app.post("/api/shop/user/orders", (req, res) => {
                                         db.collection('users').updateOne({ username: user }, {
                                             $push: { warehouse: warehouseEnt }
                                         }).then(
-                                            console.log("ubacio u warehouse")
+                                            db.collection('users').updateOne({firmName : firmName , type : "company"},{
+                                                $set : {"orders.$[ord].status" : "finished"}
+                                            },{
+                                                arrayFilters : [
+                                                    {"ord.orderId" : {$eq : userOrders[j].orderId}}
+                                                ]
+                                            }).then(console.log("izbacio"))
+                                            //console.log("ubacio u warehouse")
                                         )
                                         console.log("sada nastavljam");
                                         forWarehouse.push(warehouseEnt);
@@ -1225,6 +1259,32 @@ app.post("/api/admin/users/promote", (req, res) => {
 app.post("/api/admin/users/demote", (req, res) => {
 
 
+})
+
+app.post("/api/user/change/password",(req,res)=>{
+    let user = req.session.user;
+    let newPassword = req.body.password;
+    console.log("changing pass")
+
+    db.collection('users').updateOne({username : user},{
+        $set : {password : newPassword}
+    }).then(result=>{
+        req.session.destroy();
+        res.send();
+    })
+})
+
+app.post("/api/company/product/page",(req,res)=>{
+    let user = req.session.user;
+    let product = req.body.product;
+
+    db.collection('users').findOne({username : user},{projection : {shop : 1, _id : 0}}).then(result=>{
+        let index = result.shop.filter(x=>x.name == product);
+        console.log(result);
+        console.log(index);
+        console.log(product);
+        res.send({product : index[0]});
+    })
 })
 
 

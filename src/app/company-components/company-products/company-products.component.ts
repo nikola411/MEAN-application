@@ -47,7 +47,8 @@ export class CompanyProducts {
     }
 
     show(product) {
-
+        this.companyService.setProduct(product.name);
+        this.router.navigate(['company/product/show']);
     }
 
     delete(product) {

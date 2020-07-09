@@ -1,0 +1,6 @@
+.outer {
+    width : 80vw;
+    max-height : 70vh;
+    margin : auto;
+    overflow-y : auto;
+}
