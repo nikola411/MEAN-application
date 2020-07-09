@@ -27,8 +27,13 @@
         <ng-container matColumnDef="status">
             <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
             <mat-cell *matCellDef="let element"> 
-               
+               <div *ngIf="element.status!='NA CEKANJU'">
                     {{element.status * 2}} 
+               </div>
+               <div *ngIf="element.status=='NA CEKANJU'">
+                   NA CEKANJU
+               </div>
+                    
              
             </mat-cell>
         </ng-container>
@@ -50,7 +55,7 @@
                 <button mat-stroked-button class="deleteBttn">
                     <mat-icon (click) = "cancelOrder(element)" class="deleteIcon"  matTooltip = "Otkazi porudzbinu" aria-hidden="false" aria-label="Example home icon">delete</mat-icon>
                 </button>
-                <button mat-stroked-button>
+                <button mat-stroked-button *ngIf="!element.status || element.status=='NA CEKANJU'">
                     <mat-icon (click)="acceptOrder(element)" matTooltip="Prihvati porudzbinu">
                         add
                     </mat-icon>

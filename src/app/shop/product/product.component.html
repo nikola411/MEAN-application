@@ -20,14 +20,14 @@
 <button mat-raised-button (click)="cancelOrdering()" *ngIf="ordering">Odustani</button>
 <br>
 
-<div *ngIf="ordering">
+<div *ngIf="ordering" class = "ordering">
     <br>
     <mat-form-field>
         <mat-label for="quant">Kolicina</mat-label>
-        <input matInput [formControl]="quantity" name="quant">
+        <input matInput [formControl]="quantity" name="quant" type ="number" max="maximum">
     </mat-form-field>
     <br>
-    <button mat-raised-button (click)="finishOrder()">Zavrsi</button>
+    <button [disabled]="quantity.invalid" mat-raised-button (click)="finishOrder()">Zavrsi</button>
 </div>
 <br>
 <div class = "wrapper" *ngIf="!ordering">

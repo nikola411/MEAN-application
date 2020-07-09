@@ -90,6 +90,11 @@ export class Warehouse {
   showPending() {
     this.productService.getOrders().subscribe(result=>{
       console.log(result);
+
+      let date = new Date();
+      
+     
+    
       this.pending = true;
       this.pendingRequests = result.response as Request[];
     })

@@ -207,7 +207,8 @@ export class SingleGarden {
 
   useProduct(){
     this.openDialog2().subscribe(result=>{
-      result.garden = this.gardenName;
+      if(result){
+        result.garden = this.gardenName;
       result.height = this.height;
       result.widht = this.width;
 
@@ -224,6 +225,8 @@ export class SingleGarden {
       this.gardenService.useProduct(result).subscribe(result=>{
 
       })
+      }
+      
     })
   }
 

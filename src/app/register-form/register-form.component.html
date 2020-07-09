@@ -1,25 +1,25 @@
-
 <div class="registerForm" *ngIf="!submitted">
-  <!--<form class="form"  [formGroup]="registered" (submit)="showCaptchaB()" *ngIf="!showCaptcha"> --> 
-<form class="form"  [formGroup]="registered" (submit)="showCaptchaB()" *ngIf="!showCaptcha">
-  <div class="choose-form">
-    <input type="radio" id="firm" name="choose" (change)="onChange($event)">
-    <label for="firm">Firma</label>
-    <input type="radio" id="worker" name="choose" (change)="onChange($event)" checked>
-    <label for="worker">Poljoprivrednik</label>
-  </div>
-  <br>
-  
+  <!--<form class="form"  [formGroup]="registered" (submit)="showCaptchaB()" *ngIf="!showCaptcha"> -->
+  <form class="form" [formGroup]="registered" (submit)="showCaptchaB()" *ngIf="!showCaptcha">
+    <div class="choose-form">
+      <input type="radio" id="firm" name="choose" (change)="onChange($event)">
+      <label for="firm">Firma</label>
+      <input type="radio" id="worker" name="choose" (change)="onChange($event)" checked>
+      <label for="worker">Poljoprivrednik</label>
+    </div>
+    <br>
+
     <div class="first">
       <mat-form-field appearance="fill">
         <mat-label *ngIf="userType">Ime</mat-label>
         <mat-label *ngIf="!userType">Ime firme</mat-label>
-        <input matInput class="input-field" name="firstName" formControlName="name" [placeholder]='userType ? "Ime" : "Ime firme"'>
+        <input matInput class="input-field" name="firstName" formControlName="name"
+          [placeholder]='userType ? "Ime" : "Ime firme"'>
       </mat-form-field>
     </div>
     <br *ngIf="userType">
-    <div class="last" *ngIf ="userType">
-      <mat-form-field appearance="fill" >
+    <div class="last" *ngIf="userType">
+      <mat-form-field appearance="fill">
         <mat-label>Prezime</mat-label>
         <input matInput class="input-field" name="lastName" formControlName="surrname" placeholder="Prezime">
       </mat-form-field>
@@ -29,7 +29,8 @@
       <mat-form-field appearance="fill">
         <mat-label *ngIf="userType">Korisnicko ime</mat-label>
         <mat-label *ngIf="!userType">Jedinstveno ime firme</mat-label>
-        <input matInput class="input-field" name="username" formControlName="username" [placeholder]="userType ? 'Korisnicko ime' : 'Jedinstveno ime'">
+        <input matInput class="input-field" name="username" formControlName="username"
+          [placeholder]="userType ? 'Korisnicko ime' : 'Jedinstveno ime'">
 
       </mat-form-field>
     </div>
@@ -86,25 +87,23 @@
     </div>
 
     <br>
-  <!--<label class="mistake">{{mistakeLabel}}</label>-->
-  <button mat-raised-button [disabled]="registered.invalid" type="submit">Registruj se</button>
-</form>
-<form *ngIf = "showCaptcha" class="captcha">
-  
-  <div class = "gcaptcha">
-    <p class="para">Jos samo par trenutaka...</p>
-    <re-captcha
-    #captchaRef="reCaptcha"
-    (resolved)="resolved($event)"
-    [(ngModel)]="myCaptcha"
-    name="captcha"
-    required
-    siteKey="6LcAfgEVAAAAABtAw9aJtPHeYkRVKzEbMDJjPQ2c"
-  ></re-captcha>
+    <!--<label class="mistake">{{mistakeLabel}}</label>-->
+    <button mat-raised-button [disabled]="registered.invalid" type="submit">Registruj se</button>
+  </form>
+  <div class="captcha">
+    <form *ngIf="showCaptcha" class="captcha">
+
+      <div class="gcaptcha">
+        <p class="para">Jos samo par trenutaka...</p>
+        <re-captcha #captchaRef="reCaptcha" (resolved)="resolved($event)" [(ngModel)]="myCaptcha" name="captcha"
+          required siteKey="6LcAfgEVAAAAABtAw9aJtPHeYkRVKzEbMDJjPQ2c"></re-captcha>
+
+      </div>
+
+    </form>
 
   </div>
- 
-</form> 
+
 </div>
 <div *ngIf="submitted">
   <h2>Hvala vam na registraciji!</h2>
@@ -113,4 +112,3 @@
     Nazad na pocetnu
   </button>
 </div>
-

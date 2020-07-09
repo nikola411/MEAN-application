@@ -12,6 +12,7 @@ class shopElement {
     product : string;
     price : string;
     quantity : string;
+    type : string;
 }
 
 
@@ -27,12 +28,13 @@ export class Shop {
     @ViewChild(MatTable) table : MatTable<any>;
     tableSource = new MatTableDataSource<any>();
 
-    displayedColumns = [ 'compName','product','price','location','quantity', 'options' ];
+    displayedColumns = [ 'compName','product','price','type','location','quantity', 'options' ];
 
     constructor (private shopService:ShopService, private productService : ProductService, private router:Router){
         this.shop = new Array<any>();
         this.shopService.shop().subscribe(result => {
             let i,j;
+            console.log(result);
 
             let firmName = "";
             let location = "";
@@ -50,6 +52,7 @@ export class Shop {
                         elem.product = result[i].shop[j].name;
                         elem.quantity = result[i].shop[j].quantity;
                         elem.price = result[i].shop[j].price;
+                        elem.type = result[i].shop[j].type;
                         
                         this.shop.push(elem);
                      }

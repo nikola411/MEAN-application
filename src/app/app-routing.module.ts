@@ -17,6 +17,7 @@ import { Shop } from './shop/shop/shop.component';
 import { Users } from './admin-components/users.component.ts/users.component';
 import { Requests } from './admin-components/requests/requests.component';
 import { Product } from './shop/product/product.component';
+import { CompanyStatistics } from './company-components/company-statistics/company-statistics.component';
 
 const routes: Routes = [
   { path: 'home', component: UserComponent },
@@ -47,7 +48,8 @@ const routes: Routes = [
       { path : "products", component : CompanyProducts },
       { path : "product" , children : [
         {path : "add", component : OrderSteps}
-      ]}
+      ]},
+      { path : "statistics", component : CompanyStatistics}
     ]
   },
   {path : "shop",canActivate : [AuthGuard], children:[

@@ -75,6 +75,9 @@ app.use(session({
     }
 }));
 
+const ordersToDeliver = [];
+
+
 
 
 app.post("/api/position", (req, res) => {
@@ -239,17 +242,17 @@ app.put('/api/register', [
     } else {
         req.body.productId = 0;
         req.body.status = "pending";
-        if(req.body.type == "company"){
+        if (req.body.type == "company") {
             req.body.couriers = [
-                { id: 1, busy: false, going_to: "", start: null, orderId : null },
-                { id: 2, busy: false, going_to: "", start: null, orderId : null },
-                { id: 3, busy: false, going_to: "", start: null, orderId : null },
-                { id: 4, busy: false, going_to: "", start: null, orderId : null },
-                { id: 5, busy: false, going_to: "", start: null, orderId : null },
+                { id: 1, busy: false, going_to: "", start: null, orderId: null },
+                { id: 2, busy: false, going_to: "", start: null, orderId: null },
+                { id: 3, busy: false, going_to: "", start: null, orderId: null },
+                { id: 4, busy: false, going_to: "", start: null, orderId: null },
+                { id: 5, busy: false, going_to: "", start: null, orderId: null },
             ];
             req.body.orderId = 1;
         }
-        
+
         console.log(req.body);
 
         db.collection('users').insertOne(req.body);
@@ -297,9 +300,9 @@ app.post('/api/login', (req, res) => {
                             email: results[i].email, firmName: results[i].firmName,
                             date: results[i].date,
                             type: results[i].type,
-                            productId : results[i].productId
+                            productId: results[i].productId
                         };
-                        
+
                     } else if (loggedIn == "admin") {
                         userInfo = {
                             username: results[i].username, type: results[i].type,
@@ -399,6 +402,9 @@ app.post('/api/user/addgarden', (req, res) => {
 
     req.body.garden = new Array(height);
 
+    let date = new Date();
+
+
     for (var i = 0; i < height; i++) {
         req.body.garden[i] = new Array(width);
         for (var j = 0; j < width; j++) {
@@ -409,6 +415,7 @@ app.post('/api/user/addgarden', (req, res) => {
     req.body.water = 70;
     req.body.temp = 18;
     req.body.free = width * height;
+    req.body.lastChecked = date;
 
     db.collection('users').findOneAndUpdate({ "username": req.session.user }, {
         $push: { "garden": req.body }
@@ -679,12 +686,52 @@ app.put("/api/user/warehouse", (req, res) => {
 app.post("/api/company/orders", (req, res) => {
     let user = req.session.user;
 
+
     db.collection("users").findOne({ username: user }, {
         projection: {
             orders: 1, _id: 0
         }
     }).then(result => {
-        res.send(result);
+        let date = new Date();
+        let mili1 = date.getTime();
+        //console.log(result);
+        
+        let x = result.orders.filter(res=>res.status!="canceled"&& res.status!="finished" && res.status!="NA CEKANJU");
+        console.log(x);
+        for(let i in x){
+            let date2 = new Date(x[i].time);
+
+            let mili2 = date2.getTime();
+
+            let diff =(mili2-mili1)/1000/60;
+            //order has arrived
+            console.log("difference");
+            console.log(diff);
+            if(x[i].status*2+diff<0){
+                db.collection('users').updateOne({username : user},{
+                    $set : {"orders.$[ord].status" : "finished"}
+                },{
+                    arrayFilters : [
+                        {"ord.orderId" : {$eq : x[i].orderId}}
+                    ]
+                }).then(res=>{
+                    let index = result.indexOf(x[i]);
+                    result.orders[index].status = "finished";
+                })
+            }else {
+                let index = result.orders.indexOf(x[i]);
+                if(typeof result.orders[index].status == "number"){
+                    result.orders[index].status +=diff;
+                }
+                
+                
+            }
+        }
+        let ret = result.orders.filter(x=>
+            x.status !="canceled" && x.status!="finished"
+        )
+        console.log(ret);
+        res.send({orders : ret});
     })
 })
 
@@ -702,7 +749,7 @@ app.post("/api/shop/product/order", (req, res) => {
     let type = req.body.type;
     let properties = req.body.properties;
     let date = new Date;
-   
+
 
     let orderId = req.body.orderId;
 
@@ -718,8 +765,8 @@ app.post("/api/shop/product/order", (req, res) => {
         quantity: quantity,
         properties: properties,
         type: type,
-        status: null, 
-        orderId : orderId
+        status: null,
+        orderId: orderId
     };
     console.log(order);
 
@@ -728,128 +775,149 @@ app.post("/api/shop/product/order", (req, res) => {
     //we return a product to put in users warehouse\\\\\\\\\\\\\ as an order
 
 
-        db.collection('users').updateOne({ firmName: company, type: "company" }, {
-            $push: { orders: order },
-            $inc: { "shop.$[element].quantity": -quantity , orderId : 1}
-           
-            
-    
-        }, {
-            arrayFilters: [
-                { "element.name": { $eq: product } }
-            ],
-    
-        }).then(result => {
-    
-            res.send({ updated: true });
-        })
-    
+    db.collection('users').updateOne({ firmName: company, type: "company" }, {
+        $push: { orders: order },
+        $inc: { "shop.$[element].quantity": -quantity, orderId: 1 }
 
-    
+
+
+    }, {
+        arrayFilters: [
+            { "element.name": { $eq: product } }
+        ],
+
+    }).then(result => {
+
+        res.send({ updated: true });
+    })
+
+
+
 })
 
 app.post("/api/company/couriers/get", (req, res) => {
     let username = req.session.user;
     db.collection('users').findOne({ username: username }, { couriers: 1 })
         .then(result => {
-            console.log(result);
+            let date = new Date();
+            let time1 = date.getTime();
+            for(let i in result.couriers){
+                let date2 = new Date(result.couriers[i].start);
+                let time2 = date2.getTime();
+                let diff = (time1-time2)/1000/60;
+                console.log(result.couriers[i].end - diff);
+
+                if(result.couriers[i].end -diff<0){
+                    
+                    result.couriers[i].busy = false;
+                }
+            }
             res.send({ company_location: result.place, couriers: result.couriers });
         })
 })
 
-app.post("/api/company/courier/employ", (req, res) => {
+app.post("/api/company/courier/employ", (req, res, next) => {
     console.log("ovde")
     console.log(req.body);
 
 
     let start = req.body.company_location;
     let end = req.body.order.place;
+    let company = req.session.user;
 
     if (req.body.courier == null) {
-        db.collection('users').updateOne({ username: company },
+        db.collection('users').findOneAndUpdate({ username: company },
             {
                 $set: { "orders.$[element].status": "NA CEKANJU" }
             }, {
             arrayFilters: [
-                { "element.username": { $eq: req.body.order.username } }
+                { "element.orderId": { $eq: req.body.order.orderId } }
             ]
-        }).then(res.next());
-    }
+        }, {
+            returnOriginal: false
+        }).then(result => {
+            let x = result.value.orders.filter(x => x.status != "canceled");
+            res.send(x);
+            next();
+        });
+    } else {
 
-    let company = req.session.user;
+        let now = new Date();
 
-    let now = new Date();
+        let order_username = req.body.order.username;
 
-    let order_username = req.body.order.username;
+        let id = req.body.courier.id;
+        console.log(id);
 
-    let id = req.body.courier.id;
-    console.log(id);
-
-    let srcCoordUrl = LOCATION_API_URL + start + "?key=" + DISTANCE_API_KEY;
-    let dstCoordUrl = LOCATION_API_URL + end + "?key=" + DISTANCE_API_KEY;
+        let srcCoordUrl = LOCATION_API_URL + start + "?key=" + DISTANCE_API_KEY;
+        let dstCoordUrl = LOCATION_API_URL + end + "?key=" + DISTANCE_API_KEY;
 
 
-    request(srcCoordUrl, (err, response, body) => {
-        let ret = JSON.parse(body);
-        let srcCoords = ret.resourceSets[0].resources[0].point.coordinates;
-
-        request(dstCoordUrl, (err, response, body) => {
-
+        request(srcCoordUrl, (err, response, body) => {
             let ret = JSON.parse(body);
-            let dstCoords = ret.resourceSets[0].resources[0].point.coordinates;
+            let srcCoords = ret.resourceSets[0].resources[0].point.coordinates;
 
-            let distanceUrl = DISTANCE_API_URL + "?origins=" + srcCoords.join()
-                + "&destinations=" + dstCoords.join()
-                + "&travelMode=driving&key=" + DISTANCE_API_KEY;
-
-            request(distanceUrl, (err, response, body) => {
+            request(dstCoordUrl, (err, response, body) => {
 
                 let ret = JSON.parse(body);
+                let dstCoords = ret.resourceSets[0].resources[0].point.coordinates;
 
-                let duration = ret.resourceSets[0].resources[0].results[0].travelDuration;
+                let distanceUrl = DISTANCE_API_URL + "?origins=" + srcCoords.join()
+                    + "&destinations=" + dstCoords.join()
+                    + "&travelMode=driving&key=" + DISTANCE_API_KEY;
 
-                let courier_update = req.body.courier;
-                courier_update.busy = true;
-                courier_update.goingTo = end;
-                courier_update.start = now;
-                courier_update.end = duration * 2;
+                request(distanceUrl, (err, response, body) => {
+
+                    let ret = JSON.parse(body);
+
+                    let duration = ret.resourceSets[0].resources[0].results[0].travelDuration;
+
+                    let courier_update = req.body.courier;
+                    courier_update.busy = true;
+                    courier_update.goingTo = end;
+                    courier_update.start = now;
+                    courier_update.end = duration * 2;
 
 
-                let order_update = req.body.order;
-                order_update.status = duration;
-                order_update.time = now;
-                
-
-                console.log(duration)
+                    let order_update = req.body.order;
+                    order_update.status = duration;
+                    order_update.time = now;
 
 
-                db.collection("users").updateOne({ username: company, type: "company" },
-                    {
-                        $set: {
-                            "couriers.$[element].busy": true,
-                            "couriers.$[element].start": courier_update.start,
-                            "couriers.$[element].end": courier_update.end,
-                            "couriers.$[element].goingTo": courier_update.goingTo,
-                            "orders.$[order].status": order_update.status,
-                            "orders.$[order].time": order_update.time
-                        }
+                    console.log(duration)
+
+
+                    db.collection("users").findOneAndUpdate({ username: company, type: "company" },
+                        {
+                            $set: {
+                                "couriers.$[element].busy": true,
+                                "couriers.$[element].start": courier_update.start,
+                                "couriers.$[element].end": courier_update.end,
+                                "couriers.$[element].goingTo": courier_update.goingTo,
+                                "orders.$[order].status": order_update.status,
+                                "orders.$[order].time": order_update.time
+                            }
+                        }, {
+                        arrayFilters: [
+                            { "element.id": { $eq: id } },
+                            { "order.orderId": { $eq: order_update.orderId } }
+                        ]
+
                     }, {
-                    arrayFilters: [
-                        { "element.id": { $eq: id } },
-                        { "order.orderId": { $eq: order_update.orderId } }
-                    ]
+                        returnOriginal: false
+                    }
+                    ).then(result => {
+                        //if(result.updated) res.send({deliveryTime : time});
+                        console.log(result);
+                        res.send(result.value.orders);
+                    })
 
-                }
-                ).then(result => {
-                    //if(result.updated) res.send({deliveryTime : time});
-                    res.send();
-                })
+                });
+
 
             });
-
-
-        });
-    })
+        })
+    }
 
 })
 
@@ -883,6 +951,14 @@ app.post("/api/company/product/add", (req, res) => {
     )
 })
 
+app.post("/api/company/orders/statistics",(req,res)=>{
+    let user = req.session.user;
+
+    db.collection('users').findOne({username : user},{orders : 1} ).then(result=>{
+        res.send(result.orders);
+    })
+})
+
 app.post("/api/company/product/remove", (req, res) => {
     let user = req.session.user;
     let productName = req.body.name;
@@ -894,7 +970,7 @@ app.post("/api/company/product/remove", (req, res) => {
             $pull: { shop: { name: productName, id: productId } },
 
         }).then(result => {
-            res.next();
+            res.send();
         })
 })
 
@@ -910,7 +986,7 @@ app.post("/api/shop/product", (req, res) => {
     let comp = req.body.companyName;
     let companyLocation = req.body.companyLocation;
     let prod = req.body.product;
-    db.collection('users').findOne({ firmName: comp }, { projection: { shop: 1, orders: 1 , orderId : 1} }).then(result => {
+    db.collection('users').findOne({ firmName: comp }, { projection: { shop: 1, orders: 1, orderId: 1 } }).then(result => {
 
         if (result && result.shop) {
             //find product
@@ -954,9 +1030,11 @@ app.post("/api/shop/user/orders/cancel", (req, res) => {
     let user = req.body.user;
 
 
+
+
     console.log(req.body);
 
-    let quantity = parseInt(req.body.quantity);
+    let quantity = req.body.quantity;
     let orderId = req.body.orderId;
     if (!quantity) {
         quantity = 1;
@@ -967,15 +1045,15 @@ app.post("/api/shop/user/orders/cancel", (req, res) => {
     db.collection('users').updateOne({ firmName: firmName, type: "company" }, {
         $set: {
             "orders.$[order].status": "canceled",
-            "couriers.$[courier].busy" : false
+            "couriers.$[courier].busy": false
         },
         $inc: { "shop.$[element].quantity": quantity },
 
     }, {
         arrayFilters: [
             { "element.name": { $eq: product } },
-            { "order.id" : {$eq : orderId }},
-            { "courier.orderId" : {$eq : orderId }}
+            { "order.orderId": { $eq: orderId } },
+            { "courier.orderId": { $eq: orderId } }
         ]
     }
     ).then(result => {
@@ -1018,46 +1096,73 @@ app.post("/api/shop/user/orders", (req, res) => {
     let user = req.session.user;
     //let element = {firmName : "", product : "", time : null, courier : -1};
     let response = [];
+    let forWarehouse = [];
 
     console.log("ovo su narudzbine");
     db.collection('users').find({ type: "company" }, { orders: 1 })
         .toArray().then(result => {
             if (result) {
+
                 for (i in result) {
                     let firmName = result[i].firmName;
-                    console.log(firmName);
+
                     if (result[i].orders) {
                         let userOrders = result[i].orders.filter(x => x.username == user && x.status != "canceled");
-                        for (j in userOrders) {
-                            let product = userOrders[j].product;
-                            let time = userOrders[j].time;
-                            let quantity = userOrders[j].quantity;
-                            let status = userOrders[j].status;
-                            let properties = userOrders[j].properties;
-                            let type = userOrders[j].type;
-                            let price = userOrders[j].price;
-                            let orderId = userOrders[j].orderId;
+                        let date = new Date();
+                        let time = date.getTime();
 
-                            response.push({
-                                firmName: firmName,
-                                product: product,
-                                time: time,
-                                quantity: quantity,
-                                properties: properties,
-                                type: type,
-                                price: price,
-                                status : status,
-                                orderId : orderId
-                            });
+                        for (j in userOrders) {
+                            let date2 = new Date(userOrders[j].time);
+                            let time2 = date2.getTime();
+                            let diff = Math.floor((time2 - time) / 1000 / 60);
+                            console.log(diff);
+
+                            //type,name,producer,quantity
+                            if (userOrders[j].status != "canceled" && userOrders[j].status !="finished") {
+                                if (typeof userOrders[j].status == "number") {
+                                    if (userOrders[j].status + diff < 0) {
+                                        //call function to put this in warehouse
+                                        let warehouseEnt = {};
+
+                                        warehouseEnt.type = userOrders[j].type;
+                                        warehouseEnt.name = userOrders[j].product;
+                                        warehouseEnt.properties = userOrders[j].properties;
+                                        warehouseEnt.producer = firmName;
+                                        warehouseEnt.quantity = userOrders[j].quantity;
+
+                                        db.collection('users').updateOne({ username: user }, {
+                                            $push: { warehouse: warehouseEnt }
+                                        }).then(
+                                            console.log("ubacio u warehouse")
+                                        )
+                                        console.log("sada nastavljam");
+                                        forWarehouse.push(warehouseEnt);
+
+                                    } else {
+                                        userOrders[j].status += diff;
+                                        userOrders[j].firmName = firmName;
+                                        response.push(userOrders[j]);
+                                    }
+                                } else {
+                                    userOrders[j].firmName = firmName;
+                                    response.push(userOrders[j]);
+                                }
+                            }
+
+
+
                         }
                     }
 
                 }
 
             }
-            console.log(response);
+            // console.log(response);
 
             res.send({ response: response });
+
+
+
         })
 })
 
@@ -1111,15 +1216,15 @@ app.post("/api/admin/requests/remove", (req, res) => {
     });
 })
 
-app.post("/api/admin/users/promote",(req,res)=>{
+app.post("/api/admin/users/promote", (req, res) => {
     let user = req.body;
-    db.collection('users').updateOne({username : user}, {$set : {type : "admin"}})
-    .then(res.next());
+    db.collection('users').updateOne({ username: user }, { $set: { type: "admin" } })
+        .then(res.next());
 })
 
-app.post("/api/admin/users/demote",(req,res)=>{
-    
-    
+app.post("/api/admin/users/demote", (req, res) => {
+
+
 })
 
 

@@ -55,7 +55,8 @@ import { CompanyService } from 'src/app/services/company-service/company-service
     }
 
     add(){
-        let obj = {name : this.productName.value,
+        let obj = {type : this.type.value,
+                    name : this.productName.value,
                     quantity : this.productQuantity.value,
                     properties : this.productProperties.value,
                     price : this.productPrice.value
@@ -71,7 +72,7 @@ import { CompanyService } from 'src/app/services/company-service/company-service
     }
 
     onChange(event){
-        console.log(event);
+        this.type.setValue(event.value);
     }
   }
 

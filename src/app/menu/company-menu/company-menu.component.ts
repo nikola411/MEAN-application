@@ -48,6 +48,7 @@ export class CompanyMenu {
 
   showStats() {
 
+    this.router.navigate(['/company/statistics']);
   }
 
   back() {

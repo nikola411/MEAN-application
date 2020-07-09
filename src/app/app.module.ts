@@ -82,12 +82,19 @@ import { Users } from './admin-components/users.component.ts/users.component';
 import { Requests } from './admin-components/requests/requests.component';
 import { Product } from './shop/product/product.component';
 
-import {StarRatingModule} from 'angular-star-rating';
 import { FooterComponent } from './footer/footer/footer.component';
 import { ChangePasswordFormComponent } from './footer/change-password-form/change-password-form.component';
 import { ProductDialog } from './dialogs/product-dialog/product-dialog.component';
 import { CourierDialog } from './dialogs/courier-dialog/courier-dialog.component';
+import { FusionChartsModule } from "angular-fusioncharts";
+import * as FusionCharts from "fusioncharts";
+import * as charts from "fusioncharts/fusioncharts.charts";
+import * as FusionTheme from "fusioncharts/themes/fusioncharts.theme.fusion";
 
+import { CompanyStatistics } from './company-components/company-statistics/company-statistics.component';
+
+
+FusionChartsModule.fcRoot(FusionCharts, charts, FusionTheme);
 @NgModule({
   declarations: [
     AppComponent,
@@ -112,7 +119,8 @@ import { CourierDialog } from './dialogs/courier-dialog/courier-dialog.component
     FooterComponent,
     ChangePasswordFormComponent,
     ProductDialog,
-    CourierDialog
+    CourierDialog,
+    CompanyStatistics
 
   ],
   imports: [
@@ -171,7 +179,11 @@ import { CourierDialog } from './dialogs/courier-dialog/courier-dialog.component
     ScrollingModule,
     RecaptchaFormsModule,
     RecaptchaModule,
-    StarRatingModule.forRoot()
+    FusionChartsModule,
+  
+
+
+
 
   ],
   providers: [],

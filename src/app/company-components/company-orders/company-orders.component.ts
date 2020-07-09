@@ -42,14 +42,20 @@ export class CompanyOrders {
     private dialog: MatDialog) {
 
     this.companyService.getCompanyOrders().subscribe(result => {
-      console.log(result)
+      /*console.log(result)
       for(let i in result.orders){
-        if(result.orders[i].status !="canceled"){
+        if(result.orders[i].status !="canceled" && result.orders[i].status!="finished"){
           this.orders.push(result.orders[i]);
         }
-      }
+      }*/
+      this.orders = result.orders;
+
    
       for (let i in this.orders) {
+        if(typeof this.orders[i].status == "number"){
+          this.orders[i].status = Math.floor(this.orders[i].status);
+        }
+        
         this.orders[i].time = this.orders[i].time as Date;
 
       }
@@ -89,10 +95,15 @@ export class CompanyOrders {
         let courier_obj = result as any;
         let courier = courier_obj.courier as Courier;
         let location = courier_obj.location;
-        console.log(courier);
+        //console.log(courier);
         let form = { company_location : location,order : element, courier : courier};
-        console.log(form);
+        //console.log(form);
         this.companyService.employCourier(form).subscribe(result=>{
+          console.log(result);
+          let index = this.orders.indexOf(element);
+          
+          this.orders = [...result.filter(x=>x.status != "canceled")];
+          this.table.renderRows();
           this.router.navigate(['company/orders']);
         })
 

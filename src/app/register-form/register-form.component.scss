@@ -4,9 +4,7 @@ div{
 }
 .mat-label {
     color:black;
-    
 }
-
 .mat-form-field{
     height : 8vh;
 }
@@ -14,17 +12,12 @@ div{
     height : 80vh;
 }
 
-.gcaptcha {
-    position : relative;
-    left : 35vw;
-    text-align : left;
-    
+.captcha {
+    margin : auto;
+    display : inline-block;
 }
 
-.para{
-    position :relative;
-    left :7vw;
-}
+
 
 
 

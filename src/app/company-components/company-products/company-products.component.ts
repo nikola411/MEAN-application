@@ -21,7 +21,7 @@ export class CompanyProducts {
 
     products : any[];
     tableSource = new MatTableDataSource<any>();
-    displayedColumns = ['productId', 'name', 'quantity', 'options'];
+    displayedColumns = ['productId','type', 'name', 'quantity', 'options'];
 
     constructor(
         private http: HttpService,

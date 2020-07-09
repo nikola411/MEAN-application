@@ -17,6 +17,11 @@
       <mat-header-cell *matHeaderCellDef> Id </mat-header-cell>
       <mat-cell *matCellDef="let element" > {{element.id}} </mat-cell>
     </ng-container>
+
+    <ng-container matColumnDef="type">
+      <mat-header-cell *matHeaderCellDef> Tip </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.type}} </mat-cell>
+    </ng-container>
   
     <!-- Name Column -->
     <ng-container matColumnDef="name">

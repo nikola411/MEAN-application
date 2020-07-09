@@ -53,7 +53,7 @@ export class ProductService{
     }
     cancelOrder(order):Observable<any>{
 
-        let cancel = {firmName : order.firmName, product : order.product, quantity : order.quantity, user : order.user};
+        let cancel = {firmName : order.firmName, product : order.product, quantity : order.quantity, user : order.user, orderId : order.orderId};
 
         return this.http.post(this.cancelOrderRoute, cancel);
     }

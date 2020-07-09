@@ -5,6 +5,7 @@ import { copyArrayItem } from '@angular/cdk/drag-drop';
 import { ProductService } from 'src/app/services/product-service/product-service';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { Farmer } from 'src/app/models/farmer';
+import { Router } from '@angular/router';
 
 export interface productTemplate {
     name: string;
@@ -27,9 +28,10 @@ export class Product {
 
     product1: any = {};
     ordering = false;
-    product2: any = {};
-    product3: any;
-    quantity = new FormControl('', Validators.required);
+    maximum : number = 0;
+    quantity : FormControl;
+ 
+    
 
     canRate : boolean = false;
 
@@ -44,13 +46,23 @@ export class Product {
 
     first = true;
 
-    constructor(private http: HttpService, private productService: ProductService, private ref: ChangeDetectorRef) {
+    constructor(private http: HttpService, 
+                private router : Router,
+                private productService: ProductService, 
+                private ref: ChangeDetectorRef) {
         this.productService.getProduct().subscribe(result => {
             console.log(result)
             this.product1 = JSON.parse(JSON.stringify(result.product));
             this.productService.setProduct(this.product1);
             this.canRate = result.canRate;
+            this.maximum = this.product1.quantity;
             console.log(this.product1);
+            console.log(this.quantity);
+            this.quantity = new FormControl('',  Validators.compose([
+                Validators.required,
+                Validators.max(this.maximum) 
+            ]));
+        
      
 
         })
@@ -119,10 +131,8 @@ export class Product {
         console.log(order);
 
         this.productService.orderProduct(order).subscribe(result => {
-            let user = this.http.getUserInfo() as Farmer;
-            //this.productService.getCourier({ start: start, goingTo: goingTo }).subscribe(result => {
-            //    console.log("uspesno ste narucili proizvod");
-           // })
+            this.router.navigate(['shop/all']);
+         
         })
     }
 
