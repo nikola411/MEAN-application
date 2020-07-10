@@ -89,9 +89,10 @@ export class Product {
         let userInfo = this.http.getUserInfo();
         //console.log(userInfo)
         this.product1.comments.push({ text: this.comment.value.text, user: user, rating : userRating });
+        this.isCommenting = false;
         this.canRate = false;
         this.productService.submitComment({ product: this.product1, comment: this.comment.value.text, rating : userRating }).subscribe(result => {
-
+           
             this.comment.setValue({ 'text': '' });
         });
 

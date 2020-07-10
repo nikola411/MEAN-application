@@ -44,31 +44,57 @@ export class SingleGarden {
   ) {
 
     this.gardenService.getGardenForDisplaying().subscribe(result => {
-
-      var dummy1 = Object.values(result);
-      var res = Object.values(dummy1[0]);
-      this.garden = res;
-
-      this.gardenInView = res[4];
-
-      this.width = res[2];
-      this.height = res[3];
-      this.gardenName = res[0];
-      this.gardenFreeSpace = res[7];
-      this.gardenTemperature = res[6];
-      this.gardenWaterLevel = res[5];
-      this.gardenOccSpace = this.width * this.height - this.gardenFreeSpace;
-
-      //init matrix of boolean for every plant in garden
-      //that shows is it hovered or not
-      this.hover = [];
-
-      for (var i: number = 0; i < this.width; i++) {
-        this.hover[i] = [];
-        for (var j: number = 0; j < this.height; j++) {
-          this.hover[i][j] = { hover: false, planted: this.gardenInView[i][j].state == -1 ? false : true };
+      if(result){
+        var dummy1 = Object.values(result);
+        var res = Object.values(dummy1[0]);
+        this.garden = res;
+  
+        this.gardenInView = res[4];
+  
+        console.log(this.gardenInView);
+  
+        this.width = res[2];
+        this.height = res[3];
+        this.gardenName = res[0];
+        this.gardenFreeSpace = res[7];
+        this.gardenTemperature = res[6];
+        this.gardenWaterLevel = res[5];
+        this.gardenOccSpace = this.width * this.height - this.gardenFreeSpace;
+  
+        //init matrix of boolean for every plant in garden
+        //that shows is it hovered or not
+        this.hover = [];
+  
+        for (var i: number = 0; i < this.width; i++) {
+          this.hover[i] = [];
+          for (var j: number = 0; j < this.height; j++) {
+            this.hover[i][j] = { hover: false, planted: this.gardenInView[i][j].state == -1 ? false : true };
+          }
+        }
+  
+  
+        let now = new Date();
+        let update = false;
+        //updating matrix by time;
+        for (let i in this.gardenInView) {
+          for (let j in this.gardenInView) {
+            if (this.gardenInView[i][j].state != -1) {
+              let time = new Date(this.gardenInView[i][j].planted);
+              if ((now.getTime() - time.getTime()) / 1000 / 60 / 60 > 1) {
+                update = true;
+                this.gardenInView[i][j].state += Math.floor((now.getTime() - time.getTime()) / 1000 /60/60);
+  
+              }
+  
+            }
+          }
+  
+        }
+        if (update) {
+          this.gardenService.updateGarden({ garden: this.gardenInView, name: this.gardenName }).subscribe();
         }
       }
+   
 
     });
 
@@ -104,19 +130,64 @@ export class SingleGarden {
     return this.hover[i][j].hover;
   }
 
+  isForbidden(obj):boolean{
+    var i: number = parseInt(obj.x);
+    var j: number = parseInt(obj.y);
+
+    let date = new Date();
+   
+    if (obj.takenOut) {
+      let takenOut = new Date(obj.takenOut);
+      let canTakeOut = ((date.getTime() - takenOut.getTime()) / 1000 / 60 / 60) > 24;
+    
+      return !this.hover[i][j].planted && !canTakeOut;
+    } else {
+      return false;
+    }
+
+
+  }
+
   isPlanted(obj): boolean {
 
     var i: number = parseInt(obj.x);
     var j: number = parseInt(obj.y);
 
+    let date = new Date();
+   
+    if (obj.takenOut) {
+      let takenOut = new Date(obj.takenOut);
+      let canTakeOut = ((date.getTime() - takenOut.getTime()) / 1000 / 60 / 60) > 24;
+    
+      return this.hover[i][j].planted || !canTakeOut;
+    } else {
+      return this.hover[i][j].planted;
+    }
 
-    return this.hover[i][j].planted;
 
+
+  }
+
+ 
+
+  canImprove(obj){
+    var i: number = parseInt(obj.x);
+    var j: number = parseInt(obj.y);
+
+    let date = new Date();
+    if (obj.takenOut) {
+      let takenOut = new Date(obj.takenOut);
+      let canTakeOut = ((date.getTime() - takenOut.getTime()) / 1000 / 60 / 60) > 24;
+    
+      return this.hover[i][j].planted && !canTakeOut &&(this.gardenInView[i][j].state <100);
+    } else {
+      return this.hover[i][j].planted &&(this.gardenInView[i][j].state <100);
+    }
   }
 
   toTakeOut(obj): boolean {
 
-    return obj.state == 100 ? true : false;
+    return obj.state >= 100 ;
   }
 
   detectPhase(obj): string {
@@ -133,18 +204,14 @@ export class SingleGarden {
   }
 
   plant(obj) {
-    var req = { name: this.gardenName, x: parseInt(obj.x), y: parseInt(obj.y), producer: null, plantName : null };
+    var req = { name: this.gardenName, x: parseInt(obj.x), y: parseInt(obj.y), producer: null, plantName: null };
     this.openDialog().subscribe(result => {
 
       if (result) {
-        console.log(result);
         req.plantName = JSON.parse(JSON.stringify(result)).name;
         req.producer = JSON.parse(JSON.stringify(result)).producer;
-        console.log(req);
         this.gardenService.plant(req).subscribe(result => {
 
-          console.log("ovosmo update" );
-          console.log( this.gardenInView[req.x][req.y]);
           this.gardenInView[req.x][req.y].name = req.plantName;
           this.gardenInView[req.x][req.y].state = 0;
           this.gardenInView[req.x][req.y].producer = req.producer;
@@ -164,14 +231,16 @@ export class SingleGarden {
   takeOut(obj) {
     var req = { name: this.gardenName, x: parseInt(obj.x), y: parseInt(obj.y) };
     this.hover[req.x][req.y].planted = false;
-    //this.gardenInView[req.x][req.y].state = -1;
+    let date = new Date();
+
     this.gardenService.takeOut(req).subscribe(result => {
       this.gardenInView[req.x][req.y].state = -1;
       this.gardenInView[req.x][req.y].name = "";
       this.gardenInView[req.x][req.y].producer = "";
+      this.gardenInView[req.x][req.y].takenOut = date;
       this.gardenFreeSpace++;
       this.gardenOccSpace--;
-      
+
     })
 
   }
@@ -205,28 +274,31 @@ export class SingleGarden {
 
   }
 
-  useProduct(){
-    this.openDialog2().subscribe(result=>{
-      if(result){
+  useProduct(element) {
+    this.openDialog2().subscribe(result => {
+      if (result) {
         result.garden = this.gardenName;
-      result.height = this.height;
-      result.widht = this.width;
+        result.height = this.height;
+        result.width = this.width;
 
-      let properties = result.properties ? result.properties : 1;
-      for(let i in this.gardenInView){
-        for(let j in this.gardenInView[i]){
-          if(this.gardenInView[i][j].state!=-1){
-            this.gardenInView[i][j].state+=properties;
-          }
+        let properties = result.properties ? result.properties : 1;
+        let i = element.x;
+        let j = element.y;
+
+        this.gardenInView[i][j].state += properties;
+        if(this.gardenInView[i][j].state >100){
+          this.gardenInView[i][j].state=100;
         }
-      }
-      result.gardenMatrix = this.gardenInView;
-      console.log(result);
-      this.gardenService.useProduct(result).subscribe(result=>{
-
-      })
-      }
       
+        result.i = i;
+        result.j = j;
+        result.increment = properties;
+        
+        this.gardenService.useProduct(result).subscribe(result => {
+
+        })
+      }
+
     })
   }
 
@@ -245,13 +317,13 @@ export class SingleGarden {
     return dialogRef.afterClosed();
   }
 
-  openDialog2():Observable<any>{
+  openDialog2(): Observable<any> {
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    
-    const dialogRef = this.dialog.open(ProductDialog,dialogConfig );
+
+    const dialogRef = this.dialog.open(ProductDialog, dialogConfig);
     return dialogRef.afterClosed();
   }
 

@@ -4,7 +4,7 @@ h2{
 
 .dialog{
     width :60vw;
-    height : 50vh;
+    max-height : 50vh;
     text-align : center;
     
 
@@ -13,7 +13,7 @@ h2{
 .plants { 
     width : 60vw;
     margin : auto;
-    height : inherit;
+    max-height : 35;
     overflow-y : scroll;
     overflow-x : hidden;
 }

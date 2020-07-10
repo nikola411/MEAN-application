@@ -187,6 +187,13 @@ FusionChartsModule.fcRoot(FusionCharts, charts, FusionTheme);
  
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents :[ CourierDialog, 
+    DeleteDialog,
+    ProductDialog,
+    PlantDialog
+
+
+    ]
 })
 export class AppModule { }

@@ -33,13 +33,18 @@ export class ProductDialog  {
         @Inject(MAT_DIALOG_DATA) data) {
 
             this.http.getWarehouse().subscribe(result=>{
-               
+                console.log(result)
                 if(Object.keys(result).length !== 0){
                     
                     let filt = result.warehouse.filter(x => x.type == "chemical" && x.quantity !=0);
                     console.log(filt);
                     this.products = filt;
-                    this.empty = false;
+                    if(filt.length>0){
+                        this.empty = false;
+                    }else {
+                        this.empty = true;
+                    }
+                   
                 } else {
                     this.empty = true;
                 }

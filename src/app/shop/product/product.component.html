@@ -52,7 +52,7 @@
     <button mat-raised-button (click)="leaveComment()" *ngIf="!isCommenting">Ostavi komentar</button>
     <button mat-raised-button (click)="backToComments()" *ngIf="isCommenting">Nazad na komentare</button>
 
-    <h2 *ngIf="!canRate && isCommenting">Ne mozete ostaviti komentar za ovaj proizvod</h2>
+    <h2 *ngIf="!canRate || isCommenting">Ne mozete ostaviti komentar za ovaj proizvod</h2>
     <div class = "rating" *ngIf="canRate && isCommenting">
         <h2>Oceni</h2>
         <div class="rating">

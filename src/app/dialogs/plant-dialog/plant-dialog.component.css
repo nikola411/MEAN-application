@@ -4,7 +4,7 @@ h2{
 
 .dialog{
     width :60vw;
-    height : 50vh;
+    max-height : 50vh;
     text-align : center;
     
 
@@ -13,7 +13,8 @@ h2{
 .plants { 
     width : 60vw;
     margin : auto;
-    height : inherit;
+    max-height : 35vh;
+   
     overflow-y : scroll;
     overflow-x : hidden;
 }
@@ -30,26 +31,18 @@ th.mat-header-cell {
       background-color : #00b600;
       
   }
-
-button :hover {
-      background-color : #006b00;
-  }
-
-  .button {
+  button {
       border-radius : 3px;
-      width : 6vw;
-      height : 4vh;
+  
       margin : auto;
       background-color : #00b600;
   }
 
-  .button :hover{
-    border-radius : 3px;
-    width : 6vw;
-    height : 4vh;
-    margin : auto;
-      background-color : #006b00;
-  }
+
+
+
+
+
 
 
 

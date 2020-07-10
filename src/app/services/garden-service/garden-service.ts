@@ -9,9 +9,9 @@ import { HttpClient } from '@angular/common/http';
 export class GardenService{
     
 
-    addGardenRoute = "/api/user/addgarden";
+    addGardenRoute = "/api/user/gardens/add";
     showGardensRoute = "/api/user/gardens";
-    showGardenRoute = "/api/user/showgarden";
+    showGardenRoute = "/api/user/garden/show";
     removeGardenRoute = "/api/user/delete/garden";
 
     plantInGardenRoute = "/api/user/garden/plant";
@@ -23,6 +23,11 @@ export class GardenService{
     lowerTempRoute = "/api/user/garden/lower/temp";
 
     useProductRoute = "/api/user/garden/product/use";
+
+    updateGardenRoute = "/api/user/garden/update";
+
+    firstCheckGardensUpdateRoute = "/api/user/gardens/update/first";
+    updateConditionsRoute = "/api/user/gardens/update/conditions";
 
 
     private garden : any;
@@ -91,8 +96,21 @@ export class GardenService{
     }
 
     useProduct(product):Observable<any>{
-        return this.http.post(this.useProductRoute, product);
+        return this.http.put(this.useProductRoute, product);
     }
+
+    updateGarden(garden):Observable<any>{
+        return this.http.post(this.updateGardenRoute, garden);
+    }
+
+    firstCheck(time):Observable<any>{
+        return this.http.post(this.firstCheckGardensUpdateRoute, time);
+    }
+
+    updateGardensConditions(update) : Observable<any>{
+        return this.http.post(this.updateConditionsRoute, update );
+    }
+
 
  
     

@@ -28,13 +28,41 @@ export class GardenTable {
 
     constructor(private http: HttpService,
         private router: Router,
-        private route: ActivatedRoute,
         private gardenService: GardenService,
-        private buttonService: ButtonService,
         private dialog: MatDialog) {
             this.gardenService.showGardens().subscribe(result=>{
+               
                 this.gardens.data = result.garden;
-                if(this.gardens.data.length ==0)this.hasGardens = false;
+                if(this.gardens.data.length ==0){
+                    this.hasGardens = false;
+                } else {
+
+                    //this should be done in service
+                    //but linking subscribes is not good
+                    let now = new Date();
+                    if(result.lastChecked == null){
+
+                        this.gardenService.firstCheck({ lastChecked : now}).subscribe();
+                    } else {
+                        let checked = new Date(result.lastChecked);
+                        let diff = (now.getTime()-checked.getTime())/1000/60/60;
+                        if(diff > 1){
+                            for(let i in this.gardens.data){
+                                this.gardens.data[i].temp-=Math.floor(diff);
+                                this.gardens.data[i].water -= Math.floor(diff);
+                                if(this.gardens.data[i].water < 0) this.gardens.data[i].water = 0;
+                                if(this.gardens.data[i].temp<-21) this.gardens.data[i].temp = -21;
+                            }
+                            this.gardenService.updateGardensConditions({gardens : this.gardens.data, lastChecked : now}).subscribe();
+                        }
+                       
+                    }
+               
+               
+                }
+                
+                
+                
                 
             })
           
@@ -49,20 +77,6 @@ export class GardenTable {
     tableClicked(obj) {
 
         this.gardenService.setGarden(obj);
-
-        /*this.http.showMyGarden(obj).subscribe(result => {
-            /* result is an object of format {0: {name : '',place : '', widht: '', height:'', garden:'', water:'', temp:'', free:''}}
-      so dummy1 is an array of values of fields of result(only 0) and dummy2 is an array of values of dummy 1
-      (length = 7)
-      
-
-
-            var dummy1 = Object.values(result);
-            var dummy2 = Object.values(dummy1[0]);
-
-            this.gardenService.getGardenForDisplaying(dummy2);
-        }
-        )*/
         this.router.navigate(['user/garden/show/single']);
     }
 

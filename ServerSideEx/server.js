@@ -18,10 +18,11 @@ const BingDistanceMatrix = require('bing-distance-matrix');
 const bdm = new BingDistanceMatrix(DISTANCE_API_KEY);
 
 var transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: 'gmail', 
+    
     auth: {
-        user: 'mojrasadnik.pia.etf@gmail.com',
-        pass: 'nikolacar11'
+        user: 'mojrasadnik.etf.pia@gmail.com',
+        pass: 'Mojalozinka11'
     }
 });
 
@@ -254,9 +255,10 @@ app.put('/api/register', [
         }
         if(req.body.type =="farmer"){
             req.body.alerts = [];
+            req.body.lastChecked = null;
            
         }
-        req.body.lastLogin = null;
+       
 
         console.log(req.body);
 
@@ -286,6 +288,7 @@ app.post('/api/login', (req, res) => {
     let user = req.body.user;
 
     console.log(req.body);
+
 
     db.collection('users').findOne(
         { username: req.body.user, password: req.body.pass, status: "registered" }
@@ -389,7 +392,7 @@ app.post("/api/user/footer", (req, res) => {
 
 
 
-app.post('/api/user/addgarden', (req, res) => {
+app.post('/api/user/gardens/add', (req, res) => {
     let user = req.session.user;
 
     let newGarden = req.body;
@@ -407,7 +410,7 @@ app.post('/api/user/addgarden', (req, res) => {
     for (var i = 0; i < height; i++) {
         req.body.garden[i] = new Array(width);
         for (var j = 0; j < width; j++) {
-            req.body.garden[i][j] = { state: -1, x: i, y: j, name: "", producer: "" };
+            req.body.garden[i][j] = { state: -1, x: i, y: j, name: "", producer: "", planted : null };
 
         }
     }
@@ -445,11 +448,13 @@ app.post("/api/user/delete/garden", (req, res) => {
 
 })
 function checkingGardens(){
-    db.collection.find({type : "farmer", status : "registered"}).toArray().then(result=>{
+    db.collection('users').find({type : "farmer", status : "registered"}).toArray().then(result=>{
         for(let i in result){
             let gardens ="";
+           
             for(let j in result.garden){
-               
+                result.garden[j].temp--;
+                result.garden[j].water--;
                 if(result.garden[j].temp<18 || result.garden[j].water < 70){
                     gardens+=result.garden[j].name;
                 }
@@ -471,10 +476,10 @@ function checkingGardens(){
     })
 }
 
-setInterval(checkingGardens, 3600000);
+setInterval(checkingGardens, 180000);
 
 app.get("/api/user/gardens", (req, res) => {
-    db.collection('users').findOne({ username: req.session.user }, { projection: { garden: 1, _id: 0 } }).then(result => {
+    db.collection('users').findOne({ username: req.session.user }, { projection: { lastChecked : 1 ,garden: 1, _id: 0 } }).then(result => {
 
         //ovako filtriramo rezultat - pogodno za trazenje baste
 
@@ -485,21 +490,61 @@ app.get("/api/user/gardens", (req, res) => {
     })
 })
 
-app.post("/api/user/showGarden", (req, res) => {
+app.post("/api/user/gardens/update/first",(req,res)=>{
+    let user = req.session.user;
+    let lastChecked = req.body.lastChecked;
+    db.collection('users').updateOne({username : user}, {$set : {lastChecked : lastChecked}}).then(
+        res.send()
+    )
+})
+
+app.post("/api/user/gardens/update/conditions",(req,res)=>{
+    let user = req.session.user;
+    let gardens = req.body.gardens;
+    let lastChecked = req.body.lastChecked;
+
+    db.collection('users').updateOne({username : user},{$set : {garden : gardens, lastChecked : lastChecked}}).then(
+        res.send()
+    )
+})
+
+app.post("/api/user/garden/show", (req, res) => {
     let user = req.session.user;
     let garden = req.body;
 
 
     db.collection('users').findOne({ username: user }, { projection: { garden: 1 } }).then(result => {
-        var picked = result['garden'].filter(result => {
+        if(result){
+            var picked = result['garden'].filter(result => {
 
-            return result.name === req.body.name;
+                return result.name === req.body.name;
+                }
+            );
+            
+    
+            res.send(picked);
+        } else {
+            res.send(null);
         }
-        );
         
-
-        res.send(picked);
     })
+})
+
+app.post("/api/user/garden/update",(req,res)=>{
+    let user = req.session.user;
+    let garden_name = req.body.name;
+    let garden = req.body.garden;
+    console.log(" BASTAAA")
+    console.log(garden);
+
+    db.collection('users').updateOne({username : user},
+        {
+            $set : {"garden.$[element].garden" : garden}
+        },{
+            arrayFilters : [
+               { "element.name" : {$eq : garden_name}}
+            ]
+        })
 })
 
 app.post("/api/user/garden/plant", (req, res) => {
@@ -510,6 +555,7 @@ app.post("/api/user/garden/plant", (req, res) => {
     let j = parseInt(req.body.y);
     let producer = req.body.producer;
     let plantName = req.body.plantName;
+    let date = new Date();
 
 
     db.collection('users').findOneAndUpdate(
@@ -523,6 +569,7 @@ app.post("/api/user/garden/plant", (req, res) => {
             $set: {
                 "garden.$[element].garden.$[i].$[j].name": plantName,
                 "garden.$[element].garden.$[i].$[j].producer": producer,
+                "garden.$[element].garden.$[i].$[j].planted" : date
             }
         },
         {
@@ -549,6 +596,7 @@ app.post("/api/user/garden/take-out", (req, res) => {
     let name = req.body.name;
     let i = parseInt(req.body.x);
     let j = parseInt(req.body.y);
+    let takenOut = new Date();
 
 
     db.collection('users').findOneAndUpdate(
@@ -556,6 +604,9 @@ app.post("/api/user/garden/take-out", (req, res) => {
         {
             $set: {
                 "garden.$[element].garden.$[i].$[j].state": -1,
+                "garden.$[element].garden.$[i].$[j].takenOut" : takenOut,
+                "garden.$[element].garden.$[i].$[j].producer" : "",
+                "garden.$[element].garden.$[i].$[j].name" : ""
             },
             $inc: {
                 "garden.$[element].free": 1,
@@ -669,23 +720,31 @@ app.post("/api/user/garden/lower/temp", (req, res) => {
 
 })
 
-app.post("/api/user/garden/product/use", (req, res) => {
+app.put("/api/user/garden/product/use", (req, res) => {
     let user = req.session.user;
     let garden = req.body.garden;
 
     let product = req.body.name;
+    let increment = req.body.increment;
+    let i = req.body.i;
+    let j = req.body.j;
 
-    let matrix = req.body.gardenMatrix;
+    console.log(req.body)
 
     db.collection('users').findOneAndUpdate({ username: user },
         {
-            $set: { "garden.$[gard].garden": matrix },
-            $inc: { "warehouse.$[prod].quantity": -1 }
+           
+            $inc: { 
+                "warehouse.$[prod].quantity": -1 ,
+                "garden.$[gard].garden.$[i].$[j].state": increment 
+            }
         },
         {
             arrayFilters: [
                 { "gard.name": { $eq: garden } },
-                { "prod.name": { $eq: product } }
+                { "prod.name": { $eq: product } },
+                {"i.x" : {$eq : i}},
+                {"j.y" : {$eq : j}}
 
             ]
         }
@@ -697,7 +756,7 @@ app.put("/api/user/warehouse", (req, res) => {
 
     db.collection("users").findOneAndUpdate(
         { username: user },
-
+        //take out products and plats you dont have anymore
         { $pull: { warehouse: { quantity: { $eq: 0 } } } },
 
         { returnOriginal: false }
@@ -726,33 +785,37 @@ app.post("/api/company/orders", (req, res) => {
         let x = result.orders.filter(res=>res.status!="canceled"&& res.status!="finished" && res.status!="NA CEKANJU");
         console.log(x);
         for(let i in x){
-            let date2 = new Date(x[i].time);
+            if(x[i].time){
+                let date2 = new Date(x[i].time);
 
-            let mili2 = date2.getTime();
-
-            let diff =(mili2-mili1)/1000/60;
-            //order has arrived
-            console.log("difference");
-            console.log(diff);
-            if(x[i].status*2+diff<0){
-                db.collection('users').updateOne({username : user},{
-                    $set : {"orders.$[ord].status" : "finished"}
-                },{
-                    arrayFilters : [
-                        {"ord.orderId" : {$eq : x[i].orderId}}
-                    ]
-                }).then(res=>{
-                    let index = result.indexOf(x[i]);
-                    result.orders[index].status = "finished";
-                })
-            }else {
-                let index = result.orders.indexOf(x[i]);
-                if(typeof result.orders[index].status == "number"){
-                    result.orders[index].status +=diff;
+                let mili2 = date2.getTime();
+    
+                let diff =(mili2-mili1)/1000/60/60;
+                //order has arrived
+                console.log("difference");
+                console.log(diff);
+                if(x[i].status*2+diff<0){
+                    db.collection('users').updateOne({username : user},{
+                        $set : {"orders.$[ord].status" : "finished"}
+                    },{
+                        arrayFilters : [
+                            {"ord.orderId" : {$eq : x[i].orderId}}
+                        ]
+                    }).then(res=>{
+                        let index = result.orders.indexOf(x[i]);
+                        result.orders[index].status = "finished";
+                    })
+                }else {
+                    let index = result.orders.indexOf(x[i]);
+                    if(typeof result.orders[index].status == "number"){
+                        result.orders[index].status +=diff;
+                    }
+                    
+                    
                 }
-                
-                
+
             }
+           
         }
         let ret = result.orders.filter(x=>
             x.status !="canceled" && x.status!="finished"
@@ -858,11 +921,11 @@ app.post("/api/company/courier/employ", (req, res, next) => {
                 $set: { "orders.$[element].status": "NA CEKANJU" }
             }, {
             arrayFilters: [
-                { "element.orderId": { $eq: req.body.order.orderId } }
-            ]
-        }, {
-            returnOriginal: false
-        }).then(result => {
+                     { "element.orderId": { $eq: req.body.order.orderId } }
+                ],
+                returnOriginal: false
+            }
+        ).then(result => {
             let x = result.value.orders.filter(x => x.status != "canceled");
             res.send(x);
             next();

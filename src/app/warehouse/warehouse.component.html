@@ -1,4 +1,15 @@
+<div class="slider">
+
+  <mat-button-toggle-group name="show" aria-label="Izaberi:">
+    <mat-button-toggle value="bold" (click)="showWarehouse()" checked>Magacin</mat-button-toggle>
+    <mat-button-toggle value="bold" (click)="showPending()">Zahtevi</mat-button-toggle>
+  </mat-button-toggle-group>
+
+
+</div>
 <div class="warehouse">
+
+
 
   <mat-table *ngIf="!pending" [dataSource]="sortedData" matSort (matSortChange)="sortData($event)" class="chemicals">
 
@@ -97,15 +108,6 @@
   </mat-table>
 
 </div>
-  <div class="slider">
-
-    <mat-button-toggle-group name="show" aria-label="Izaberi:">
-      <mat-button-toggle value="bold" (click)="showWarehouse()" pressed>Magacin</mat-button-toggle>
-      <mat-button-toggle value="bold" (click)="showPending()">Zahtevi</mat-button-toggle>
-    </mat-button-toggle-group>
-
-
-  </div>
 
 
 

@@ -13,16 +13,23 @@
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
 }
+
+.mat-stroked-button {
+    background-color : rgb(50, 50, 51);
+    color : white;
+    
+}
 ::ng-deep .mat-form-field {
     height:1.8cm;
-    background-color:rgba(116, 116, 116, 0.5);
+    background-color:rgb(50, 50, 51);
+    color : white;
    
    
      .mat-input-element {
          color: rgb(30, 30, 31);
      }
      .mat-form-field-label {
-         color: rgb(35, 35, 36);
+         color: #ff884d;
      }
      .mat-form-field-underline {
          background-color:rgba(72, 78, 110, 0.4);

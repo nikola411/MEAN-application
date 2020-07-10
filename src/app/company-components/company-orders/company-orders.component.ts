@@ -48,6 +48,8 @@ export class CompanyOrders {
           this.orders.push(result.orders[i]);
         }
       }*/
+
+      console.log(result)
       this.orders = result.orders;
 
    
@@ -100,9 +102,10 @@ export class CompanyOrders {
         //console.log(form);
         this.companyService.employCourier(form).subscribe(result=>{
           console.log(result);
+
           let index = this.orders.indexOf(element);
           
-          this.orders = [...result.filter(x=>x.status != "canceled")];
+          this.orders = [...result.filter(x=>x.status != "canceled" && x.status !="finished")];
           this.table.renderRows();
           this.router.navigate(['company/orders']);
         })

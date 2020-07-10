@@ -5,28 +5,28 @@
     </div>
     <div class="gardenMenuComp">
       Kolicina vode: {{gardenWaterLevel}}l
-    </div>
-    <div class="gardenMenuComp">
-      <button class="updateButton" (click)="addWater()">
-        <mat-icon class="deleteIcon" aria-hidden="false" aria-label="Example home icon">add</mat-icon>
-      </button>
-      <button class="updateButton" (click)="removeWater()">
-        <mat-icon class="deleteIcon" aria-hidden="false" aria-label="Example home icon">remove</mat-icon>
-      </button>
-    </div>
-    <div class="gardenMenuComp">
-      Temperatura
-      :
-      {{gardenTemperature}}&#8451;
-    </div>
-    <div class="gardenMenuComp">
+      <div class="buttons">
+        <button mat-raised-button class="updateButton" (click)="addWater()">
+          <mat-icon class="deleteIcon" aria-hidden="false" aria-label="Example home icon">add</mat-icon>
+        </button>
+        <button mat-raised-button class="updateButton" (click)="removeWater()">
+          <mat-icon class="deleteIcon" aria-hidden="false" aria-label="Example home icon">remove</mat-icon>
+        </button>
+      </div>
 
-      <button class="updateButton" (click)="raiseTemp()">
-        <mat-icon class="deleteIcon" aria-hidden="false" aria-label="Example home icon">add</mat-icon>
-      </button>
-      <button class="updateButton" (click)="lowerTemp()">
-        <mat-icon class="deleteIcon" aria-hidden="false" aria-label="Example home icon">remove</mat-icon>
-      </button>
+    </div>
+
+    <div class="gardenMenuComp">
+      Temperatura: {{gardenTemperature}}&#8451;
+      <div class="buttons">
+        <button mat-raised-button class="updateButton" (click)="raiseTemp()">
+          <mat-icon class="deleteIcon" aria-hidden="false" aria-label="Example home icon">add</mat-icon>
+        </button>
+        <button mat-raised-button class="updateButton" (click)="lowerTemp()">
+          <mat-icon class="deleteIcon" aria-hidden="false" aria-label="Example home icon">remove</mat-icon>
+        </button>
+
+      </div>
 
     </div>
     <div class="gardenMenuComp">
@@ -35,9 +35,7 @@
     <div class="gardenMenuComp">
       Zauzeto : {{gardenOccSpace}}
     </div>
-    <div class="product">
-      <button mat-button (click)="useProduct()" matTooltip="Primenite proizvod iz magacina">Pospesi rast</button>
-    </div>
+
 
   </div>
 
@@ -47,26 +45,38 @@
 
         <th class="plant" *ngFor="let col of row" (mouseenter)="hoverPlant(col)" (mouseleave)="unhoverPlant(col)">
           <div *ngIf="hovering(col)" class="hovering">
-            <div *ngIf="!isPlanted(col)" class="empty">
-              <button mat-raised-button class="plantButton" (click)="plant(col)">Zasadi</button>
-            </div>
-            <div *ngIf="isPlanted(col)" class="plantCell">
-              <br>
-              <br>
-              <label for="progres">Progres: </label>
-              <mat-progress-bar thumbLabel mode="determinate" value="{{col.state}}" name="progres"></mat-progress-bar>
-              <br>
-              <p>Ime: {{col.name}} </p>
+            <div class="empty">
+              <button mat-raised-button *ngIf="!isPlanted(col)" class="plantButton" (click)="plant(col)">Zasadi</button>
 
-              <p>Proizvodjac: {{col.producer}}</p>
-              <div *ngIf = "toTakeOut(col)" class = "tooltip">
-                <span class="tooltiptext">Izvadi sadnicu</span>
-                <button (click) = "takeOut(col)">
+            </div>
+
+            <div *ngIf="isPlanted(col)" class="plantCell">
+              <div *ngIf="!isForbidden(col)">
+                  <br>
+                  <br>
+                <label for="progres">Progres: </label>
+                <mat-progress-bar thumbLabel mode="determinate" value="{{col.state}}" name="progres"></mat-progress-bar>
+                  <br>
+                <p>Ime: {{col.name}} </p>
+                <p>Proizvodjac: {{col.producer}}</p>
+              </div>
+              <div *ngIf="isForbidden(col)" class="forbidden" matTooltip="Ne mozete saditi ovde">
+                <mat-icon class="forbiddenIcon">close</mat-icon>
+              </div>
+
+              <div *ngIf="toTakeOut(col)">
+                <button mat-raised-button matTooltip="Izvadi sadnicu" (click)="takeOut(col)">
                   <mat-icon>clear</mat-icon>
                 </button>
               </div>
+              <button mat-raised-button matTooltip="Pospesi rast" *ngIf="canImprove(col)" class="productButton"
+                (click)="useProduct(col)">
+                <mat-icon class="upward">
+                  arrow_upward
+                </mat-icon>
+              </button>
             </div>
-             
+
 
           </div>
 
@@ -85,8 +95,7 @@
                   src="https://images.unsplash.com/photo-1503153181849-4e4f85a341ce?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60">
               </div>
               <div *ngSwitchCase="0" class="phase">
-                <img
-                  src="https://ak.picdn.net/shutterstock/videos/25254071/thumb/3.jpg">
+                <img src="https://ak.picdn.net/shutterstock/videos/25254071/thumb/3.jpg">
               </div>
               <div *ngSwitchDefault class="phase">
                 <img

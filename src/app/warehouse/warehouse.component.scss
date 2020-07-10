@@ -14,20 +14,14 @@
     display : none;
 }
 
-.slider {
-    
-    margin : auto;
-    margin-bottom : 5vh;
-    right : calc(80vw / 2);
-    top : 15vh;
-}
+
 
 .mat-table{
     margin : auto;
     width : inherit;
-    height : 60vh;
-    border-radius : 20px;
-   
+    overflow : auto;
+    max-height : 60vh;
+    
 }
 
 .ng-container{
