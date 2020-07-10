@@ -1,3 +1,4 @@
 # MEAN-application
 
-This project was a homework for a subject that is called Programming of internet applications and includes building full-stack MEAN application
+This project was univercity homework project. It includes a full MEAN stack application and was done individually.
+
